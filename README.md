@@ -382,6 +382,75 @@ make check   # ruff lint + mypy typecheck + pytest (377 tests, all passing)
 
 See `CLAUDE.md` for design decisions, test conventions, and contributor workflow.
 
+---
+
+## E2E Testing (Browser Automation)
+
+A reusable Playwright-based framework for testing any webapp — included at `tests/e2e_framework/`.
+Tests describe **user journeys**, not implementation details. Output is structured for both human debugging and AI agents (Claude Code, OpenClaw).
+
+### Install
+
+```bash
+pip install pytest-playwright
+playwright install chromium
+```
+
+### Write a journey test
+
+```python
+from tests.e2e_framework import assert_button_cycle, assert_form_clears, screenshot_on_failure
+
+def test_create_item(page):
+    with screenshot_on_failure(page, "create_item"):
+        assert_form_clears(
+            page,
+            fields={"#item-name": "Widget"},
+            submit="#btn-create",
+            success_selector="#toast",
+            success_text="Created",
+            label="create_item",
+        )
+
+def test_async_action(page):
+    with screenshot_on_failure(page, "async_action"):
+        assert_button_cycle(page, button="#btn-run", label="run_job",
+                            expect_disabled_ms=2000, expect_reenabled_ms=30000)
+```
+
+### Run
+
+```bash
+pytest tests/ -k "e2e" --base-url http://localhost:PORT --headed   # visible browser
+pytest tests/ -k "e2e" --base-url http://localhost:PORT            # headless (CI)
+```
+
+### Available primitives
+
+| Primitive | Use when |
+|-----------|----------|
+| `assert_button_cycle` | Async button: click → disables → work → re-enables |
+| `assert_form_clears` | Form submit: fill → submit → success text → fields clear |
+| `assert_toggle_pair` | Show/hide toggle: click → one panel shows, one hides |
+| `assert_layer_tabs` | Tab switching: each tab shows exactly one layer |
+| `assert_live_update` | Auto-refresh: element text changes within N seconds |
+| `poll_api_job` | Poll a REST job endpoint until terminal state |
+| `trigger_and_poll` | POST to trigger + poll in one call |
+| `capture_console` | Context manager: capture browser JS errors |
+| `screenshot_on_failure` | Context manager: auto-screenshot on any assertion failure |
+
+### Failure output (AI-readable)
+
+```
+[E2E FAIL] create_item
+  Field '#item-name' not cleared after submit — still contains: 'Widget'
+  Screenshot: /tmp/e2e_create_item.png
+```
+
+For Claude Code / OpenClaw: grep `[E2E FAIL]` in output → read the `Screenshot:` path with the Read tool.
+
+See `tests/e2e_framework/README.md` for full documentation.
+
 ## License
 
 MIT
