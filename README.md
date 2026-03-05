@@ -384,19 +384,49 @@ See `CLAUDE.md` for design decisions, test conventions, and contributor workflow
 
 ---
 
-## E2E Testing (Browser Automation)
+## 7. E2E Testing: Browser Automation for Any Webapp
 
-A reusable Playwright-based framework for testing any webapp — included at `tests/e2e_framework/`.
-Tests describe **user journeys**, not implementation details. Output is structured for both human debugging and AI agents (Claude Code, OpenClaw).
+**The problem you're solving:** You have a webapp. You test it manually. You ship a regression. The form doesn't clear after submit, the async button stays disabled, the live counter stops updating — and you find out from a user, not a test.
 
-### Install
+**With this:** A reusable Playwright framework at `tests/e2e_framework/` that tests user journeys, not implementation details. Output is structured for both human debugging and AI agents (Claude Code, OpenClaw).
 
 ```bash
-pip install pytest-playwright
-playwright install chromium
+pip install pytest-playwright && playwright install chromium
+pytest tests/ -k "e2e" --base-url http://localhost:PORT --headed   # visible browser
+pytest tests/ -k "e2e" --base-url http://localhost:PORT            # headless (CI)
 ```
 
-### Write a journey test
+**Available primitives:**
+
+| Primitive | Use when |
+|-----------|----------|
+| `assert_button_cycle` | Async button: click → disables → work → re-enables |
+| `assert_form_clears` | Form submit: fill → submit → success text → fields clear |
+| `assert_toggle_pair` | Show/hide toggle: click → one panel shows, one hides |
+| `assert_layer_tabs` | Tab switching: each tab shows exactly one layer |
+| `assert_live_update` | Auto-refresh: element text changes within N seconds |
+| `poll_api_job` | Poll a REST job endpoint until terminal state |
+| `trigger_and_poll` | POST to trigger + poll in one call |
+| `capture_console` | Context manager: capture browser JS errors |
+| `screenshot_on_failure` | Context manager: auto-screenshot on any assertion failure |
+
+<details>
+<summary><b>Technical innovation: AI-readable failure output</b></summary>
+
+Failure messages are formatted for grep + Read tool consumption:
+
+```
+[E2E FAIL] create_item
+  Field '#item-name' not cleared after submit — still contains: 'Widget'
+  Screenshot: /tmp/e2e_create_item.png
+```
+
+Claude Code / OpenClaw: grep `[E2E FAIL]` in output → read the `Screenshot:` path with the Read tool.
+
+</details>
+
+<details>
+<summary><b>Implementation: journey-first test primitives</b></summary>
 
 ```python
 from tests.e2e_framework import assert_button_cycle, assert_form_clears, screenshot_on_failure
@@ -418,38 +448,9 @@ def test_async_action(page):
                             expect_disabled_ms=2000, expect_reenabled_ms=30000)
 ```
 
-### Run
-
-```bash
-pytest tests/ -k "e2e" --base-url http://localhost:PORT --headed   # visible browser
-pytest tests/ -k "e2e" --base-url http://localhost:PORT            # headless (CI)
-```
-
-### Available primitives
-
-| Primitive | Use when |
-|-----------|----------|
-| `assert_button_cycle` | Async button: click → disables → work → re-enables |
-| `assert_form_clears` | Form submit: fill → submit → success text → fields clear |
-| `assert_toggle_pair` | Show/hide toggle: click → one panel shows, one hides |
-| `assert_layer_tabs` | Tab switching: each tab shows exactly one layer |
-| `assert_live_update` | Auto-refresh: element text changes within N seconds |
-| `poll_api_job` | Poll a REST job endpoint until terminal state |
-| `trigger_and_poll` | POST to trigger + poll in one call |
-| `capture_console` | Context manager: capture browser JS errors |
-| `screenshot_on_failure` | Context manager: auto-screenshot on any assertion failure |
-
-### Failure output (AI-readable)
-
-```
-[E2E FAIL] create_item
-  Field '#item-name' not cleared after submit — still contains: 'Widget'
-  Screenshot: /tmp/e2e_create_item.png
-```
-
-For Claude Code / OpenClaw: grep `[E2E FAIL]` in output → read the `Screenshot:` path with the Read tool.
-
 See `tests/e2e_framework/README.md` for full documentation.
+
+</details>
 
 ## License
 
