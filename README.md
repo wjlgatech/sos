@@ -300,90 +300,6 @@ python src/__main__.py marketing-publish \
 
 ---
 
-## Safety, Efficiency & Scalability
-
-Independent evaluation across 11 source modules (~3,200 lines):
-
-| Dimension | Score | Highlights |
-|-----------|-------|------------|
-| **Safety** | 7.5/10 | Input validation on all public APIs. Atomic file writes (temp + rename) across all state persistence. Exception isolation in every loop — one failing callback never blocks others. Ethical constraint framework on self-improvement proposals. API keys read from env only, never logged. Subprocess calls use list form (no shell injection). |
-| **Efficiency** | 8.0/10 | FIFO caps on activity_log (100), verification_history (1000), watchdog history (50), cost baselines (20). O(n) algorithms where n is bounded. State persistence every 2 hours, not every operation. LLM calls optional and single-shot (no retry loops). |
-| **Scalability** | 7.0/10 | Multi-agent support via config.yaml. Handler/callback/strategy registries for extension without core modification. Daemon mode with SIGTERM handling. Config-driven thresholds and escalation tiers. |
-
-<details>
-<summary><b>What makes this safe to run as a daemon</b></summary>
-
-- **Atomic writes everywhere**: State files use `write-to-tmp + os.replace()` pattern — no corruption on crash
-- **Per-item exception handling**: Daemon loop, callback dispatch, handler dispatch all wrap individual items in try/except
-- **Bounded memory**: Activity logs capped at 100 entries, verification at 1000, watchdog at 50
-- **Graceful shutdown**: SIGTERM handler sets flag, current loop finishes cleanly
-- **No shell injection**: All subprocess calls use `subprocess.run([...])` list form with timeouts
-- **Secrets never logged**: API keys and gateway tokens read from env/config, never appear in logs or state files
-
-</details>
-
-<details>
-<summary><b>Known limitations (honest accounting)</b></summary>
-
-- `improvement_history` and `performance_history` are unbounded — will accumulate ~17 MB/year in daemon mode (tracked for future cap)
-- State files not scoped by agent_id — concurrent multi-agent daemons can race on writes
-- Config changes require daemon restart (no hot-reload)
-- Ethical constraint fields on proposals are opt-in — not enforced if proposal omits them
-
-</details>
-
----
-
-## Quickstart
-
-```bash
-cd ~/.openclaw/workspace/self-optimization
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-make install-watchdog    # gateway auto-recovery
-make cost-audit          # find cost waste
-```
-
-## Scheduling
-
-| Job | Schedule | Setup |
-|-----|----------|-------|
-| Gateway watchdog | Every 5 min | `make install-watchdog` |
-| Idle check | Every 2 hours | `~/.openclaw/cron/jobs.json` |
-| Daily review | 11 PM daily | `~/.openclaw/cron/jobs.json` |
-| Cost governance | On demand | `make cost-govern` |
-
-## Architecture
-
-```
-src/
-├── cost_governor.py               # Token/cost optimization
-├── gateway_watchdog.py            # Gateway health monitor
-├── anti_idling_system.py          # Idle detection + action dispatch
-├── filesystem_scanner.py          # Real activity detection
-├── multi_agent_performance.py     # Performance tracking
-├── recursive_self_improvement.py  # Self-improvement protocol
-├── results_verification.py        # Result quality (SMARC)
-├── orchestrator.py                # Integration layer
-├── config_loader.py               # YAML parser (no PyYAML)
-├── llm_provider.py                # Anthropic API (stdlib urllib)
-└── __main__.py                    # CLI entry point
-```
-
-**Zero dependencies.** Entire system runs on Python stdlib. No `requests`, no `pyyaml`, no `psutil`. Cron jobs and launchd agents start fast and work without virtualenv activation.
-
-## Development
-
-```bash
-source .venv/bin/activate
-make check   # ruff lint + mypy typecheck + pytest (377 tests, all passing)
-```
-
-See `CLAUDE.md` for design decisions, test conventions, and contributor workflow.
-
----
-
 ## 7. E2E Testing: Browser Automation for Any Webapp
 
 **The problem you're solving:** You have a webapp. You test it manually. You ship a regression. The form doesn't clear after submit, the async button stays disabled, the live counter stops updating — and you find out from a user, not a test.
@@ -451,6 +367,93 @@ def test_async_action(page):
 See `tests/e2e_framework/README.md` for full documentation.
 
 </details>
+
+---
+
+## Safety, Efficiency & Scalability
+
+Independent evaluation across 11 source modules (~3,200 lines):
+
+| Dimension | Score | Highlights |
+|-----------|-------|------------|
+| **Safety** | 7.5/10 | Input validation on all public APIs. Atomic file writes (temp + rename) across all state persistence. Exception isolation in every loop — one failing callback never blocks others. Ethical constraint framework on self-improvement proposals. API keys read from env only, never logged. Subprocess calls use list form (no shell injection). |
+| **Efficiency** | 8.0/10 | FIFO caps on activity_log (100), verification_history (1000), watchdog history (50), cost baselines (20). O(n) algorithms where n is bounded. State persistence every 2 hours, not every operation. LLM calls optional and single-shot (no retry loops). |
+| **Scalability** | 7.0/10 | Multi-agent support via config.yaml. Handler/callback/strategy registries for extension without core modification. Daemon mode with SIGTERM handling. Config-driven thresholds and escalation tiers. |
+
+<details>
+<summary><b>What makes this safe to run as a daemon</b></summary>
+
+- **Atomic writes everywhere**: State files use `write-to-tmp + os.replace()` pattern — no corruption on crash
+- **Per-item exception handling**: Daemon loop, callback dispatch, handler dispatch all wrap individual items in try/except
+- **Bounded memory**: Activity logs capped at 100 entries, verification at 1000, watchdog at 50
+- **Graceful shutdown**: SIGTERM handler sets flag, current loop finishes cleanly
+- **No shell injection**: All subprocess calls use `subprocess.run([...])` list form with timeouts
+- **Secrets never logged**: API keys and gateway tokens read from env/config, never appear in logs or state files
+
+</details>
+
+<details>
+<summary><b>Known limitations (honest accounting)</b></summary>
+
+- `improvement_history` and `performance_history` are unbounded — will accumulate ~17 MB/year in daemon mode (tracked for future cap)
+- State files not scoped by agent_id — concurrent multi-agent daemons can race on writes
+- Config changes require daemon restart (no hot-reload)
+- Ethical constraint fields on proposals are opt-in — not enforced if proposal omits them
+
+</details>
+
+---
+
+## Quickstart
+
+```bash
+cd ~/.openclaw/workspace/self-optimization
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+
+make install-watchdog    # gateway auto-recovery
+make cost-audit          # find cost waste
+```
+
+## Scheduling
+
+| Job | Schedule | Setup |
+|-----|----------|-------|
+| Gateway watchdog | Every 5 min | `make install-watchdog` |
+| Idle check | Every 2 hours | `~/.openclaw/cron/jobs.json` |
+| Daily review | 11 PM daily | `~/.openclaw/cron/jobs.json` |
+| Cost governance | On demand | `make cost-govern` |
+
+## Architecture
+
+```
+src/
+├── cost_governor.py               # Token/cost optimization
+├── gateway_watchdog.py            # Gateway health monitor
+├── anti_idling_system.py          # Idle detection + action dispatch
+├── filesystem_scanner.py          # Real activity detection
+├── multi_agent_performance.py     # Performance tracking
+├── recursive_self_improvement.py  # Self-improvement protocol
+├── results_verification.py        # Result quality (SMARC)
+├── marketing_eval.py              # Marketing content effectiveness
+├── orchestrator.py                # Integration layer
+├── config_loader.py               # YAML parser (no PyYAML)
+├── llm_provider.py                # Anthropic API (stdlib urllib)
+└── __main__.py                    # CLI entry point
+tests/
+└── e2e_framework/                 # Reusable Playwright browser automation
+```
+
+**Zero dependencies.** Entire system runs on Python stdlib. No `requests`, no `pyyaml`, no `psutil`. Cron jobs and launchd agents start fast and work without virtualenv activation.
+
+## Development
+
+```bash
+source .venv/bin/activate
+make check   # ruff lint + mypy typecheck + pytest (377 tests, all passing)
+```
+
+See `CLAUDE.md` for design decisions, test conventions, and contributor workflow.
 
 ## License
 
