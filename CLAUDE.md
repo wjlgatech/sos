@@ -35,6 +35,8 @@ tests/
 ├── conftest.py                       # Centralized sys.path setup
 └── __init__.py
 state/                                # Runtime state (gitignored)
+skills/                               # Public-ecosystem skills (own README/CLI/tests)
+└── email-reader/                     # Read Gmail over IMAP (stdlib, connector-free)
 ```
 
 ## Orchestrator Architecture

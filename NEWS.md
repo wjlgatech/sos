@@ -12,6 +12,24 @@
 - `model_available()` — is the backup model actually pulled? (for health checks).
 
 11 tests (offline classification/routing + one opt-in live local-model call). Reference implementation in a real app — Anthropic SDK → Ollama, returning an Anthropic-shaped response so call sites need zero change — lives in DreamMakeTrue `apps/api/src/llm.py`.
+## 2026-06-06: Skills — Email Reader (Gmail over IMAP)
+
+**The gap:** Reading a Gmail mailbox depended on the hosted MCP connector, which
+can authenticate without read scope and then fail every search with
+`insufficient authentication scopes`. No connector-independent path existed.
+
+**The fix:** A new top-level `skills/` directory (per the public-skill-ecosystem
+model) holding the first skill, `email-reader` — read/search Gmail directly over
+`imap.gmail.com` using **Python stdlib only** (`imaplib`, `email`), authenticated
+with a Gmail address + a Google App Password kept in a gitignored `.env`.
+
+**What changed:**
+- New `skills/email-reader/` — `SKILL.md` (agent contract), `README.md`,
+  `gmail_imap.py` CLI, `.env.example`, and `test_gmail_imap.py`
+- CLI commands: `search`, `read`, `folders`; filters `--from/--to/--subject/
+  --text/--since/--before/--unread/--limit/--json`; default folder `[Gmail]/All Mail`
+- Read-only (folders opened with `readonly=True`); zero third-party deps
+- 6 self-contained tests, all passing (run with or without pytest)
 
 ## 2026-02-24: Self-Discovering, Self-Healing, Self-Evaluating (v0.9)
 

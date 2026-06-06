@@ -96,6 +96,17 @@ See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
 </details>
 
+### Standalone skills (top-level `skills/`)
+
+Beyond the plugin, the repo also hosts **standalone skills** under `skills/` — each a self-contained unit with its own `SKILL.md` contract, README, CLI, and tests (no plugin install required; credentials live in a gitignored `.env`).
+
+- **`skills/email-reader/`** — read/search a Gmail mailbox over IMAP using **Python stdlib only** (`imaplib`, `email`), authenticated with a Gmail address + a Google App Password. Bypasses the hosted Gmail MCP connector (which can authenticate without read scope and then fail every search with `insufficient authentication scopes`). CLI: `search` / `read` / `folders` with `--from/--to/--subject/--text/--since/--before/--unread/--limit/--json`; read-only (`readonly=True`); zero third-party deps. See [`skills/email-reader/README.md`](skills/email-reader/README.md).
+
+  ```bash
+  cp skills/email-reader/.env.example skills/email-reader/.env   # add address + App Password
+  python3 skills/email-reader/gmail_imap.py search --unread --limit 10
+  ```
+
 ---
 
 ## 3. E2E Testing: Browser Automation for Any Webapp
@@ -536,6 +547,8 @@ src/
 └── __main__.py                    # CLI entry point
 tests/
 └── e2e_framework/                 # Reusable Playwright browser automation
+skills/
+└── email-reader/                  # Read Gmail over IMAP (stdlib, connector-free)
 ```
 
 **Zero dependencies.** Entire system runs on Python stdlib. No `requests`, no `pyyaml`, no `psutil`. Cron jobs and launchd agents start fast and work without virtualenv activation.
