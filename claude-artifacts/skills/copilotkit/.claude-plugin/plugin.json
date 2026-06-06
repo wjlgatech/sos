@@ -1,0 +1,7 @@
+{
+  "name": "copilotkit",
+  "version": "0.1.0",
+  "description": "Integrate CopilotKit (in-app AI copilot UI) into a React/Next.js app — provider, runtime route, useCopilotAction/useCopilotReadable, themed, with version/bundling gotchas pre-solved.",
+  "keywords": ["copilotkit", "ai-copilot", "nextjs", "react", "agentic-ui"],
+  "license": "MIT"
+}
