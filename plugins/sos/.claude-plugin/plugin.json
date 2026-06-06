@@ -1,0 +1,12 @@
+{
+  "name": "sos",
+  "description": "Reusable Claude Code toolkit: the /goal-10x objective-driven dev loop + skills for living-knowledge explanations, CopilotKit integration, and the future-self framework.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Paul Wu",
+    "email": "wjlgatech@gmail.com"
+  },
+  "homepage": "https://github.com/wjlgatech/sos/tree/main/plugins/sos",
+  "repository": "https://github.com/wjlgatech/sos",
+  "license": "MIT"
+}

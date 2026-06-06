@@ -40,13 +40,14 @@ macOS cron can't read `~/Documents/` or access Python virtualenvs due to TCC san
 
 Every 5 minutes via system crontab, probes all three services:
 
-| Service | Port | Auto-restart | Critical |
-|---------|------|-------------|----------|
-| Base gateway | 3000 | Yes (launchd) | Yes |
-| Enterprise gateway | 18789 | No (manual) | Yes |
-| Web UI (Vite) | 5173 | No (manual) | No |
+| Service            | Port  | Auto-restart  | Critical |
+| ------------------ | ----- | ------------- | -------- |
+| Base gateway       | 3000  | Yes (launchd) | Yes      |
+| Enterprise gateway | 18789 | No (manual)   | Yes      |
+| Web UI (Vite)      | 5173  | No (manual)   | No       |
 
 For services with launchd agents:
+
 1. TCP socket probe to `127.0.0.1:{port}` (faster than HTTP health checks)
 2. If down: `launchctl kickstart -k` (atomic kill + restart)
 3. If kickstart fails: `bootout` + `bootstrap` (full service reload)
@@ -66,12 +67,12 @@ Idempotent cron management via marker comments. Safe to run `make install-watchd
 
 **With this:** One command audits your config, identifies waste, and applies optimized settings. Real result from our production setup:
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Model cost | $15.00/M tokens | $0.80/M tokens | **-94.7%** |
-| Compaction | safeguard (lazy) | default (eager) | Stops token growth |
-| Heartbeat | Opus ($15/M) | Haiku ($0.80/M) | Trivial work, trivial cost |
-| Bootstrap cap | 150K chars | 8K chars/file | 19x tighter |
+| Metric        | Before           | After           | Change                     |
+| ------------- | ---------------- | --------------- | -------------------------- |
+| Model cost    | $15.00/M tokens  | $0.80/M tokens  | **-94.7%**                 |
+| Compaction    | safeguard (lazy) | default (eager) | Stops token growth         |
+| Heartbeat     | Opus ($15/M)     | Haiku ($0.80/M) | Trivial work, trivial cost |
+| Bootstrap cap | 150K chars       | 8K chars/file   | 19x tighter                |
 
 ```bash
 make cost-audit     # find waste
@@ -122,16 +123,23 @@ Three strategies: `aggressive` (local Ollama, free), `balanced` (Haiku, 19x chea
 ```
 
 **What you get back:**
+
 ```json
 {
   "triggered": true,
-  "actions_proposed": ["conduct_strategic_analysis", "explore_new_skill_development"],
-  "actions_executed": ["conduct_strategic_analysis", "explore_new_skill_development"],
+  "actions_proposed": [
+    "conduct_strategic_analysis",
+    "explore_new_skill_development"
+  ],
+  "actions_executed": [
+    "conduct_strategic_analysis",
+    "explore_new_skill_development"
+  ],
   "idle_rate": 0.97,
   "service_health": {
-    "gateway": {"healthy": true, "port": 3000},
-    "enterprise": {"healthy": false, "port": 18789, "critical": true},
-    "vite-ui": {"healthy": true, "port": 5173}
+    "gateway": { "healthy": true, "port": 3000 },
+    "enterprise": { "healthy": false, "port": 18789, "critical": true },
+    "vite-ui": { "healthy": true, "port": 5173 }
   },
   "services_down": ["enterprise"]
 }
@@ -164,6 +172,7 @@ The filesystem scanner examines `~/.openclaw/workspace/`:
 - Markdown parsing in `memory/daily-reflections/`
 
 Detection flow:
+
 1. Calculate idle rate from real filesystem activity
 2. If above threshold: generate context-aware emergency actions (contrasts dominant activity type)
 3. Dispatch each action through registered handlers
@@ -224,11 +233,11 @@ Performance score = accuracy (40%) + efficiency (35%) + adaptability (25%). Uses
 <details>
 <summary><b>Implementation: config-driven escalation tiers</b></summary>
 
-| Tier | Trigger | Duration | Actions |
-|------|---------|----------|---------|
-| Tier 1 | Score < 70% | 2 weeks | Performance review, skill assessment |
-| Tier 2 | Score < 50% | 1 month | Targeted coaching, personalized learning plan |
-| Tier 3 | Sustained low | 3 months | Comprehensive rehabilitation program |
+| Tier   | Trigger       | Duration | Actions                                       |
+| ------ | ------------- | -------- | --------------------------------------------- |
+| Tier 1 | Score < 70%   | 2 weeks  | Performance review, skill assessment          |
+| Tier 2 | Score < 50%   | 1 month  | Targeted coaching, personalized learning plan |
+| Tier 3 | Sustained low | 3 months | Comprehensive rehabilitation program          |
 
 Thresholds configured in `config.yaml`. Falls back to sensible defaults if config is missing.
 
@@ -250,13 +259,13 @@ make marketing-status      # inventory: published vs draft
 
 **Scoring (weighted composite, 0-100):**
 
-| Sub-score | Weight | What it measures |
-|-----------|--------|------------------|
-| Engagement rate | 30% | engagements / impressions, normalized |
-| Reach | 20% | impressions vs channel benchmarks (Twitter: 5K good, LinkedIn: 2K good) |
-| Conversion | 20% | clicks + conversions relative to engagement |
-| Content quality | 15% | structural: word count, CTAs, links, code blocks, hashtags |
-| Freshness | 15% | decay: `max(0, 100 - days_old * 2)` |
+| Sub-score       | Weight | What it measures                                                        |
+| --------------- | ------ | ----------------------------------------------------------------------- |
+| Engagement rate | 30%    | engagements / impressions, normalized                                   |
+| Reach           | 20%    | impressions vs channel benchmarks (Twitter: 5K good, LinkedIn: 2K good) |
+| Conversion      | 20%    | clicks + conversions relative to engagement                             |
+| Content quality | 15%    | structural: word count, CTAs, links, code blocks, hashtags              |
+| Freshness       | 15%    | decay: `max(0, 100 - days_old * 2)`                                     |
 
 Grades: A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, F < 60. Draft content scored on quality only.
 
@@ -286,6 +295,7 @@ COLLECT → ANALYZE → ADVISE → EXECUTE → EVALUATE → REPEAT
 - **REPEAT**: Weekly CI (`.github/workflows/marketing-eval.yml`), daily orchestrator integration
 
 Record metrics via CLI:
+
 ```bash
 python src/__main__.py marketing-metrics \
   --content-id social-posts-post-1 \
@@ -314,16 +324,16 @@ pytest tests/ -k "e2e" --base-url http://localhost:PORT            # headless (C
 
 **Available primitives:**
 
-| Primitive | Use when |
-|-----------|----------|
-| `assert_button_cycle` | Async button: click → disables → work → re-enables |
-| `assert_form_clears` | Form submit: fill → submit → success text → fields clear |
-| `assert_toggle_pair` | Show/hide toggle: click → one panel shows, one hides |
-| `assert_layer_tabs` | Tab switching: each tab shows exactly one layer |
-| `assert_live_update` | Auto-refresh: element text changes within N seconds |
-| `poll_api_job` | Poll a REST job endpoint until terminal state |
-| `trigger_and_poll` | POST to trigger + poll in one call |
-| `capture_console` | Context manager: capture browser JS errors |
+| Primitive               | Use when                                                  |
+| ----------------------- | --------------------------------------------------------- |
+| `assert_button_cycle`   | Async button: click → disables → work → re-enables        |
+| `assert_form_clears`    | Form submit: fill → submit → success text → fields clear  |
+| `assert_toggle_pair`    | Show/hide toggle: click → one panel shows, one hides      |
+| `assert_layer_tabs`     | Tab switching: each tab shows exactly one layer           |
+| `assert_live_update`    | Auto-refresh: element text changes within N seconds       |
+| `poll_api_job`          | Poll a REST job endpoint until terminal state             |
+| `trigger_and_poll`      | POST to trigger + poll in one call                        |
+| `capture_console`       | Context manager: capture browser JS errors                |
 | `screenshot_on_failure` | Context manager: auto-screenshot on any assertion failure |
 
 <details>
@@ -370,15 +380,47 @@ See `tests/e2e_framework/README.md` for full documentation.
 
 ---
 
+## 8. Claude Code Artifacts: Reusable Skills, Workflows & Commands
+
+**The problem you're solving:** You build a genuinely good Claude Code skill or multi-agent workflow inside one product repo, then it dies there — the next project re-invents it from scratch.
+
+**With this:** Reusable Claude Code artifacts ship as an **installable plugin** ([`plugins/sos/`](plugins/sos/)) — this repo is also a Claude Code **plugin marketplace**, so the skills work on **any machine**, not just where they were built (there's no Anthropic-cloud sync of `~/.claude`). Markdown skills + a command — no Python required (the self-monitoring _patterns_ stay in `src/`).
+
+```bash
+/plugin marketplace add wjlgatech/sos
+/plugin install sos@wjlgatech-plugins
+# → /sos:goal-10x  /sos:living-knowledge  /sos:copilotkit  /sos:future-self  (every project, this machine)
+```
+
+Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
+
+<details>
+<summary><b>What's included (plugin <code>sos</code>)</b></summary>
+
+| Component                     | Type     | What it does                                                                                          |
+| ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `commands/goal-10x.md`        | command  | `/sos:goal-10x` — research + coach + drive-to-green + self-improve (discovers each project's harness) |
+| `skills/living-knowledge/`    | skill    | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                      |
+| `skills/copilotkit/`          | skill    | integrate CopilotKit into a Next.js app, gotchas pre-solved                                           |
+| `skills/future-self/`         | skill    | "Be Your Future Self Now" framework, operationalized                                                  |
+| `scripts/install-doc-sync.sh` | util     | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                    |
+| `workflows/goal-10x.js`       | workflow | reference (workflows aren't plugin-distributable yet) — copy into a project's `.claude/workflows/`    |
+
+See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
+
+</details>
+
+---
+
 ## Safety, Efficiency & Scalability
 
 Independent evaluation across 11 source modules (~3,200 lines):
 
-| Dimension | Score | Highlights |
-|-----------|-------|------------|
-| **Safety** | 7.5/10 | Input validation on all public APIs. Atomic file writes (temp + rename) across all state persistence. Exception isolation in every loop — one failing callback never blocks others. Ethical constraint framework on self-improvement proposals. API keys read from env only, never logged. Subprocess calls use list form (no shell injection). |
-| **Efficiency** | 8.0/10 | FIFO caps on activity_log (100), verification_history (1000), watchdog history (50), cost baselines (20). O(n) algorithms where n is bounded. State persistence every 2 hours, not every operation. LLM calls optional and single-shot (no retry loops). |
-| **Scalability** | 7.0/10 | Multi-agent support via config.yaml. Handler/callback/strategy registries for extension without core modification. Daemon mode with SIGTERM handling. Config-driven thresholds and escalation tiers. |
+| Dimension       | Score  | Highlights                                                                                                                                                                                                                                                                                                                                      |
+| --------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Safety**      | 7.5/10 | Input validation on all public APIs. Atomic file writes (temp + rename) across all state persistence. Exception isolation in every loop — one failing callback never blocks others. Ethical constraint framework on self-improvement proposals. API keys read from env only, never logged. Subprocess calls use list form (no shell injection). |
+| **Efficiency**  | 8.0/10 | FIFO caps on activity_log (100), verification_history (1000), watchdog history (50), cost baselines (20). O(n) algorithms where n is bounded. State persistence every 2 hours, not every operation. LLM calls optional and single-shot (no retry loops).                                                                                        |
+| **Scalability** | 7.0/10 | Multi-agent support via config.yaml. Handler/callback/strategy registries for extension without core modification. Daemon mode with SIGTERM handling. Config-driven thresholds and escalation tiers.                                                                                                                                            |
 
 <details>
 <summary><b>What makes this safe to run as a daemon</b></summary>
@@ -417,12 +459,12 @@ make cost-audit          # find cost waste
 
 ## Scheduling
 
-| Job | Schedule | Setup |
-|-----|----------|-------|
-| Gateway watchdog | Every 5 min | `make install-watchdog` |
-| Idle check | Every 2 hours | `~/.openclaw/cron/jobs.json` |
-| Daily review | 11 PM daily | `~/.openclaw/cron/jobs.json` |
-| Cost governance | On demand | `make cost-govern` |
+| Job              | Schedule      | Setup                        |
+| ---------------- | ------------- | ---------------------------- |
+| Gateway watchdog | Every 5 min   | `make install-watchdog`      |
+| Idle check       | Every 2 hours | `~/.openclaw/cron/jobs.json` |
+| Daily review     | 11 PM daily   | `~/.openclaw/cron/jobs.json` |
+| Cost governance  | On demand     | `make cost-govern`           |
 
 ## Architecture
 
