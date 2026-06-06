@@ -402,6 +402,7 @@ Headliner: **`/goal-10x`** — an objective-driven dev loop that researches the 
 | `commands/goal.md`            | command   | `/goal <stage>` verify one stage; `/goal all` drive all objectives to green autonomously |
 | `commands/goal-10x.md`        | command   | `/goal-10x` — research + coach + drive + self-improve                                    |
 | `workflows/goal-10x.js`       | workflow  | multi-agent understand → verify → fix → judge → synthesize                               |
+| `skills/living-knowledge/`    | skill     | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)         |
 | `skills/copilotkit/`          | skill     | integrate CopilotKit into a Next.js app, gotchas pre-solved                              |
 | `skills/future-self.md`       | skill     | "Be Your Future Self Now" framework, operationalized                                     |
 | `scripts/install-doc-sync.sh` | installer | CHANGELOG + docs-sync pre-commit guard for any repo (stack-aware)                        |
