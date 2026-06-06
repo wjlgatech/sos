@@ -384,30 +384,29 @@ See `tests/e2e_framework/README.md` for full documentation.
 
 **The problem you're solving:** You build a genuinely good Claude Code skill or multi-agent workflow inside one product repo, then it dies there — the next project re-invents it from scratch.
 
-**With this:** Reusable Claude Code artifacts (skills, workflows, slash commands, installers) live in [`claude-artifacts/`](claude-artifacts/), version-controlled and ready to drop into any `.claude/` project. Markdown/JS — no Python required (the Python self-monitoring _patterns_ stay in `src/`).
+**With this:** Reusable Claude Code artifacts ship as an **installable plugin** ([`plugins/sos/`](plugins/sos/)) — this repo is also a Claude Code **plugin marketplace**, so the skills work on **any machine**, not just where they were built (there's no Anthropic-cloud sync of `~/.claude`). Markdown skills + a command — no Python required (the self-monitoring _patterns_ stay in `src/`).
 
 ```bash
-cp -R claude-artifacts/skills/copilotkit ~/.claude/skills/         # global skill
-cp claude-artifacts/workflows/goal-10x.js <project>/.claude/workflows/
-sh claude-artifacts/scripts/install-doc-sync.sh                    # run inside any git repo
+/plugin marketplace add wjlgatech/sos
+/plugin install sos@wjlgatech-plugins
+# → /sos:goal-10x  /sos:living-knowledge  /sos:copilotkit  /sos:future-self  (every project, this machine)
 ```
 
-Headliner: **`/goal-10x`** — an objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run. Backed by a multi-agent workflow (Understand ∥ → Verify → Fix-in-worktrees → adversarial Judge → Synthesize).
+Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
 
 <details>
-<summary><b>What's included</b></summary>
+<summary><b>What's included (plugin <code>sos</code>)</b></summary>
 
-| Artifact                      | Type      | What it does                                                                             |
-| ----------------------------- | --------- | ---------------------------------------------------------------------------------------- |
-| `commands/goal.md`            | command   | `/goal <stage>` verify one stage; `/goal all` drive all objectives to green autonomously |
-| `commands/goal-10x.md`        | command   | `/goal-10x` — research + coach + drive + self-improve                                    |
-| `workflows/goal-10x.js`       | workflow  | multi-agent understand → verify → fix → judge → synthesize                               |
-| `skills/living-knowledge/`    | skill     | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)         |
-| `skills/copilotkit/`          | skill     | integrate CopilotKit into a Next.js app, gotchas pre-solved                              |
-| `skills/future-self.md`       | skill     | "Be Your Future Self Now" framework, operationalized                                     |
-| `scripts/install-doc-sync.sh` | installer | CHANGELOG + docs-sync pre-commit guard for any repo (stack-aware)                        |
+| Component                     | Type     | What it does                                                                                          |
+| ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `commands/goal-10x.md`        | command  | `/sos:goal-10x` — research + coach + drive-to-green + self-improve (discovers each project's harness) |
+| `skills/living-knowledge/`    | skill    | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                      |
+| `skills/copilotkit/`          | skill    | integrate CopilotKit into a Next.js app, gotchas pre-solved                                           |
+| `skills/future-self/`         | skill    | "Be Your Future Self Now" framework, operationalized                                                  |
+| `scripts/install-doc-sync.sh` | util     | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                    |
+| `workflows/goal-10x.js`       | workflow | reference (workflows aren't plugin-distributable yet) — copy into a project's `.claude/workflows/`    |
 
-See [`claude-artifacts/README.md`](claude-artifacts/README.md) for install details + provenance.
+See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
 </details>
 
