@@ -1,4 +1,4 @@
-# Self-Optimization System
+# SOS: Self-Optimization System
 
 **Your AI agents forget to work. This system catches them — and fixes them automatically.**
 
