@@ -70,10 +70,8 @@ def capture_console(page: Page, *, fail_on_error: bool = False):
 
         if fail_on_error and log.errors:
             path = Path("/tmp/e2e_console_error.png")
-            try:
+            with contextlib.suppress(Exception):
                 page.screenshot(path=str(path))
-            except Exception:
-                pass
             raise AssertionError(
                 f"\n[E2E FAIL] {len(log.errors)} browser console error(s) captured:\n"
                 + "\n".join(f"  - {e}" for e in log.errors)

@@ -14,11 +14,10 @@ Design rules:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from playwright.sync_api import Page, expect
-
 
 # ─── Internal helpers ─────────────────────────────────────────────────────────
 
