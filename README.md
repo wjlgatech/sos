@@ -389,10 +389,17 @@ See `tests/e2e_framework/README.md` for full documentation.
 ```bash
 /plugin marketplace add wjlgatech/sos
 /plugin install sos@wjlgatech-plugins
-# → /sos:goal-10x  /sos:living-knowledge  /sos:copilotkit  /sos:future-self  (every project, this machine)
+# → /sos:goal-10x  /sos:ship-loop  /sos:lavish  /sos:treehouse  /sos:no-mistakes
+#   /sos:living-knowledge  /sos:copilotkit  /sos:future-self   (every project, this machine)
 ```
 
 Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
+
+New: **`/sos:ship-loop`** — the **Plan → Code → Validate** lifecycle for high-velocity, *parallel* agentic shipping (distilled from Kun Chen's lavish/treehouse/no-mistakes). It composes three **agent-agnostic** skills — usable by Claude, Codex, Hermes, or OpenClaw — that compound:
+
+- **`/sos:lavish`** (Plan): turn a rough idea into an AI-ready **HTML** spec — a *queryable* contract (stable requirement ids, machine-checkable acceptance criteria, file maps, parallelization tags) that agents parse far more reliably than prose. HTML, not Markdown, because a spec is a typed tree, not a blob.
+- **`/sos:treehouse`** (Code): fan the spec out to many agents in **isolated git worktrees** — decompose by dependency into waves (with same-wave file-collision detection), one unit per agent per worktree per PR. Produces PRs, never self-merges.
+- **`/sos:no-mistakes`** (Validate): audit each PR for the mistakes *AI* makes — hallucinated APIs, silent scope creep, theater tests, security naivety — into a merge/fix/reject verdict. Runs **on top of** unit tests as the final gate, not instead of them.
 
 <details>
 <summary><b>What's included (plugin <code>sos</code>)</b></summary>
@@ -400,6 +407,10 @@ Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop 
 | Component                     | Type     | What it does                                                                                          |
 | ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
 | `commands/goal-10x.md`        | command  | `/sos:goal-10x` — research + coach + drive-to-green + self-improve (discovers each project's harness) |
+| `commands/ship-loop.md`       | command  | `/sos:ship-loop` — Plan→Code→Validate lifecycle composing the three skills below (rough idea → audited PRs) |
+| `skills/lavish/`              | skill    | Plan: rough idea → AI-ready **HTML** spec (queryable, machine-checkable, parallelizable) + scaffold/validator |
+| `skills/treehouse/`           | skill    | Code: fan a spec out to parallel agents in isolated worktrees (dependency waves, collision detection) + planner |
+| `skills/no-mistakes/`         | skill    | Validate: audit AI code for AI-specific failure modes → merge/fix/reject (on top of unit tests, not instead) |
 | `skills/living-knowledge/`    | skill    | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                      |
 | `skills/copilotkit/`          | skill    | integrate CopilotKit into a Next.js app, gotchas pre-solved                                           |
 | `skills/future-self/`         | skill    | "Be Your Future Self Now" framework, operationalized                                                  |
