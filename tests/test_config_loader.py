@@ -133,12 +133,18 @@ class TestMultiAgentOrchestrator:
     def test_registers_all_config_agents(self, tmp_path):
         from orchestrator import SelfOptimizationOrchestrator
 
+        # Write a config with loopy + loopy1 so the test is hermetic (does not
+        # depend on a config.yaml under the developer's ~/.openclaw).
+        config = tmp_path / "config.yaml"
+        config.write_text("agents:\n  - loopy\n  - loopy1\n")
+
         orch = SelfOptimizationOrchestrator(
             state_dir=str(tmp_path / "state"),
             workspace_dir=str(tmp_path / "workspace"),
             agent_id="loopy-0",
+            config_path=str(config),
         )
-        # Config has loopy-0 and loopy-1
+        # Config normalizes loopy -> loopy-0 and loopy1 -> loopy-1
         assert "loopy-0" in orch._agent_ids
         assert "loopy-1" in orch._agent_ids
 
