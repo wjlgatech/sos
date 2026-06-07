@@ -16,6 +16,14 @@ Then the skills are available **namespaced** under `sos:` in every project on th
 `/sos:living-knowledge`, `/sos:copilotkit`, `/sos:future-self`. Update with
 `/plugin marketplace update wjlgatech-plugins`.
 
+To also get the **bare** `/goal-10x` (no `sos:` prefix) on every machine, run the bundled
+bootstrap — it does both commands above *and* symlinks `~/.claude/commands/goal-10x.md` to the
+live plugin command (idempotent; re-run per machine):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-goal-10x.sh | sh
+```
+
 > No Anthropic-cloud sync of `~/.claude` exists — this plugin (a git-backed marketplace) is
 > the supported way to get the same skills across machines.
 
@@ -31,8 +39,8 @@ Then the skills are available **namespaced** under `sos:` in every project on th
 | `skills/living-knowledge/`    | skill     | Explain a concept just in time, at the right depth — 4 layers (Sensation→Mechanism→Principle→Expression), real-time mode, name-the-seam, transfer-as-proof.                      |
 | `skills/copilotkit/`          | skill     | Integrate CopilotKit (in-app AI copilot UI) into a Next.js app — provider + runtime route + actions, version/bundling gotchas pre-solved.                                        |
 | `skills/future-self/`         | skill     | Hardy's "Be Your Future Self Now" framework, operationalized — emergent vs intended self + the gap.                                                                              |
+| `scripts/install-goal-10x.sh` | installer | one-command cross-machine setup: add marketplace + install plugin + symlink the bare `/goal-10x` name. Idempotent; re-run per machine.                                            |
 | `scripts/install-doc-sync.sh` | installer | (bundled util, run manually) drops a CHANGELOG + pre-commit docs-sync guard into any git repo.                                                                                   |
-| `workflows/goal-10x.js`       | workflow  | (reference, **not** auto-installed — Claude Code can't distribute workflows yet) multi-agent understand→verify→fix→judge→synthesize. Copy into a project's `.claude/workflows/`. |
 
 ## Provenance
 

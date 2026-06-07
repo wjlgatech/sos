@@ -393,6 +393,13 @@ See `tests/e2e_framework/README.md` for full documentation.
 #   /sos:living-knowledge  /sos:copilotkit  /sos:future-self   (every project, this machine)
 ```
 
+**Want the bare `/goal-10x` name too — on every machine?** One idempotent command does both steps above *and* symlinks `~/.claude/commands/goal-10x.md` to the live plugin command (so `/goal-10x` and `/sos:goal-10x` both work, and stay in sync). Re-run it on each new computer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-goal-10x.sh | sh
+# update later:  claude plugin marketplace update wjlgatech-plugins
+```
+
 Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
 
 **One loop, two gears.** `/sos:goal-10x` is the single front door. It drives work to green in a **sequential gear** by default, and shifts into a **parallel gear** — the `/sos:ship-loop` fan-out — when the work decomposes into many independent units. You pick the objective; `goal-10x` picks the gear (the size of the spec's independent set is the dial). The two share one verification-harness discovery and one self-improve tail, so there's a single mental model, not two competing loops.
@@ -417,8 +424,8 @@ Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop 
 | `skills/living-knowledge/`    | skill    | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                      |
 | `skills/copilotkit/`          | skill    | integrate CopilotKit into a Next.js app, gotchas pre-solved                                           |
 | `skills/future-self/`         | skill    | "Be Your Future Self Now" framework, operationalized                                                  |
+| `scripts/install-goal-10x.sh` | util     | one-command, idempotent cross-machine install: add marketplace + install plugin + symlink bare `/goal-10x` |
 | `scripts/install-doc-sync.sh` | util     | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                    |
-| `workflows/goal-10x.js`       | workflow | reference (workflows aren't plugin-distributable yet) — copy into a project's `.claude/workflows/`    |
 
 See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
