@@ -1,19 +1,33 @@
 # NEWS
 
+## 2026-06-07: Local LLM Fallback — survive a cloud outage
+
+**The gap:** Cloud LLMs fail at the worst time — credits deplete mid-session, a key rate-limits, the network drops, a region 500s. The whole app dies with it, even for a request a small local model could have handled.
+
+**The fix:** `src/local_llm_fallback.py` — a zero-dependency (stdlib `urllib`) pattern that wraps _any_ cloud LLM call and, **only** when the failure is an availability problem (not a bug in your request), transparently retries it against a local [Ollama](https://ollama.com) model.
+
+- `is_availability_error(exc)` — duck-typed across SDKs (reads `status_code`/`status` + message), so a 429/5xx/credit/quota/connection error falls back but a 400 bad-request re-raises (your bug, surfaced not hidden).
+- `with_local_fallback(primary_call, ...)` — run cloud first, local on availability failure.
+- `FallbackStats` — records failovers so a `/status` endpoint can show _"on backup"_ in real time.
+- `model_available()` — is the backup model actually pulled? (for health checks).
+
+11 tests (offline classification/routing + one opt-in live local-model call). Reference implementation in a real app — Anthropic SDK → Ollama, returning an Anthropic-shaped response so call sites need zero change — lives in DreamMakeTrue `apps/api/src/llm.py`.
+
 ## 2026-02-24: Self-Discovering, Self-Healing, Self-Evaluating (v0.9)
 
-**The gap:** The system could monitor services and detect idle agents, but couldn't evaluate *itself*. No CI/CD. No automated quality checks. No way to know if the codebase was degrading. "Self-improvement" was just incrementing a float — no real tools were run.
+**The gap:** The system could monitor services and detect idle agents, but couldn't evaluate _itself_. No CI/CD. No automated quality checks. No way to know if the codebase was degrading. "Self-improvement" was just incrementing a float — no real tools were run.
 
 **The fix:** Four closed loops that actually run real tools on the codebase:
 
-| Loop | What it does | Trigger |
-|------|-------------|---------|
-| **DISCOVER** | Finds services, git repos, config drift | On-demand / daily eval |
-| **HEAL** | Runs `ruff --fix`, `ruff format`, repairs corrupted state JSON | Weekly CI (auto-PR) |
-| **EVALUATE** | Runs ruff, mypy, pytest on itself — scores A-F with weighted composite | Daily CI + on-push |
-| **HUMAN** | Creates GitHub Issues when grade drops below B; auto-heal creates PRs | Automated via Actions |
+| Loop         | What it does                                                           | Trigger                |
+| ------------ | ---------------------------------------------------------------------- | ---------------------- |
+| **DISCOVER** | Finds services, git repos, config drift                                | On-demand / daily eval |
+| **HEAL**     | Runs `ruff --fix`, `ruff format`, repairs corrupted state JSON         | Weekly CI (auto-PR)    |
+| **EVALUATE** | Runs ruff, mypy, pytest on itself — scores A-F with weighted composite | Daily CI + on-push     |
+| **HUMAN**    | Creates GitHub Issues when grade drops below B; auto-heal creates PRs  | Automated via Actions  |
 
 **What changed:**
+
 - New `SelfEvalEngine` (`src/self_eval.py`) with discover, heal, eval, and report capabilities
 - `discover_services()` — TCP probes all 3 OpenClaw services
 - `discover_repos()` — finds git repos in workspace (recursive, depth 3)
@@ -43,6 +57,7 @@
 **The fix:** The watchdog now monitors all three OpenClaw services: base gateway (3000), enterprise gateway (18789), and web UI (5173). Each service is probed independently. The orchestrator's `idle_check()` and `status()` now include `service_health` — so every idle check also verifies all services are up.
 
 **What changed:**
+
 - `GatewayWatchdog` now supports multi-service monitoring via `services` list
 - Auto-detects all three services from config (gateway, enterprise, vite-ui)
 - `run_check()` probes all services, not just one port
@@ -61,11 +76,12 @@
 
 ## 2025-02-24: Idle Agents Now Fix Themselves (v0.7)
 
-**The gap:** The anti-idling system could *detect* when agents stopped working and *propose* emergency actions — but never actually *executed* them. `actions_taken` was a lie. The actions were logged and forgotten.
+**The gap:** The anti-idling system could _detect_ when agents stopped working and _propose_ emergency actions — but never actually _executed_ them. `actions_taken` was a lie. The actions were logged and forgotten.
 
 **The fix:** Emergency actions now dispatch through a handler registry directly into the self-improvement engine. When your agent goes idle, strategic analysis, skill development, and research sprints kick off automatically. No human needed.
 
 **What changed:**
+
 - `AntiIdlingSystem` gained `action_handlers` registry with `register_action_handler()`
 - `detect_and_interrupt_idle_state()` now dispatches actions and returns what was executed
 - Orchestrator registers 5 handlers at init (strategic_analysis, skill_development, research_sprint, experimental_prototype, feedback_loop)

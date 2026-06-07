@@ -412,6 +412,31 @@ See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
 ---
 
+## 9. Local LLM Fallback: Survive a Cloud Outage
+
+**The problem you're solving:** Your AI bill hits zero mid-session. Or the key rate-limits. Or the network drops at 2 AM. The cloud model goes dark and your whole app dies with it — even for a request a small local model could have answered fine.
+
+**With this:** Wrap any cloud LLM call. When — and _only_ when — it fails for an availability reason (429, 5xx, depleted credits, dropped connection), it transparently retries against a local [Ollama](https://ollama.com) model. A 400 bad-request (your bug) still re-raises, so failures you _should_ see aren't hidden.
+
+```python
+from local_llm_fallback import with_local_fallback, OllamaConfig
+
+answer = with_local_fallback(
+    cloud_call,                       # your Anthropic/OpenAI/etc. call; raises on failure
+    messages=[{"role": "user", "content": "..."}],
+    system="Be terse.",
+    ollama=OllamaConfig(model="qwen2.5:7b"),   # the local backup brain
+)
+```
+
+- **Zero external packages** — stdlib `urllib` to Ollama's OpenAI-compatible endpoint.
+- **Provider-agnostic** — duck-typed error classification (`is_availability_error`) works across SDKs without importing any of them.
+- **Observable** — `FallbackStats` records failovers so a `/status` endpoint can show _"on backup"_ live; `model_available()` checks the model is pulled.
+
+Setup: `ollama serve && ollama pull qwen2.5:7b`. Reference implementation (Anthropic SDK → Ollama, returning an Anthropic-shaped response so call sites need no change): DreamMakeTrue `apps/api/src/llm.py`.
+
+---
+
 ## Safety, Efficiency & Scalability
 
 Independent evaluation across 11 source modules (~3,200 lines):
