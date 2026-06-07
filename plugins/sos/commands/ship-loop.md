@@ -3,6 +3,12 @@ Kun Chen uses to ship at volume. Takes a rough idea and drives it to audited PRs
 three skills — `lavish` (Plan), `treehouse` (Code), `no-mistakes` (Validate). Project-agnostic
 and agent-agnostic: the work units run on Claude, Codex, Hermes, or OpenClaw.
 
+> **This is the parallel gear of `/sos:goal-10x`** (one loop, two gears). Normally you start
+> with `/sos:goal-10x`, which escalates here automatically when the work's independent set is
+> large. Invoke `/sos:ship-loop` directly only when you're *knowingly* doing bulk, decomposable
+> work and don't need the intake/coaching front-end. Both share the same verification-harness
+> discovery and the same self-improve tail.
+
 Raw input (a half-formed idea, notes, links, or an existing `specs/*.html`): $ARGUMENTS
 
 ---
