@@ -395,7 +395,10 @@ See `tests/e2e_framework/README.md` for full documentation.
 
 Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
 
-New: **`/sos:ship-loop`** — the **Plan → Code → Validate** lifecycle for high-velocity, *parallel* agentic shipping (distilled from Kun Chen's lavish/treehouse/no-mistakes). It composes three **agent-agnostic** skills — usable by Claude, Codex, Hermes, or OpenClaw — that compound:
+**One loop, two gears.** `/sos:goal-10x` is the single front door. It drives work to green in a **sequential gear** by default, and shifts into a **parallel gear** — the `/sos:ship-loop` fan-out — when the work decomposes into many independent units. You pick the objective; `goal-10x` picks the gear (the size of the spec's independent set is the dial). The two share one verification-harness discovery and one self-improve tail, so there's a single mental model, not two competing loops.
+
+- **Sequential gear** — start here for fuzzy, small, or coupled work (one PR's worth). `goal-10x` discovers the repo's own test/check harness and drives it green.
+- **Parallel gear — `/sos:ship-loop`** — the **Plan → Code → Validate** lifecycle for high-velocity, *parallel* shipping (distilled from Kun Chen's lavish/treehouse/no-mistakes). `goal-10x` escalates here automatically when the work is parallelizable; invoke it directly only for knowingly bulk, decomposable work. It composes three **agent-agnostic** skills — usable by Claude, Codex, Hermes, or OpenClaw — that compound:
 
 - **`/sos:lavish`** (Plan): turn a rough idea into an AI-ready **HTML** spec — a *queryable* contract (stable requirement ids, machine-checkable acceptance criteria, file maps, parallelization tags) that agents parse far more reliably than prose. HTML, not Markdown, because a spec is a typed tree, not a blob.
 - **`/sos:treehouse`** (Code): fan the spec out to many agents in **isolated git worktrees** — decompose by dependency into waves (with same-wave file-collision detection), one unit per agent per worktree per PR. Produces PRs, never self-merges.
@@ -406,8 +409,8 @@ New: **`/sos:ship-loop`** — the **Plan → Code → Validate** lifecycle for h
 
 | Component                     | Type     | What it does                                                                                          |
 | ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| `commands/goal-10x.md`        | command  | `/sos:goal-10x` — research + coach + drive-to-green + self-improve (discovers each project's harness) |
-| `commands/ship-loop.md`       | command  | `/sos:ship-loop` — Plan→Code→Validate lifecycle composing the three skills below (rough idea → audited PRs) |
+| `commands/goal-10x.md`        | command  | `/sos:goal-10x` — **the front door**: research + coach + drive-to-green + self-improve. Sequential gear by default; escalates to the parallel gear when work is decomposable |
+| `commands/ship-loop.md`       | command  | `/sos:ship-loop` — **the parallel gear of goal-10x**: Plan→Code→Validate fan-out composing the three skills below (rough idea → audited PRs at volume) |
 | `skills/lavish/`              | skill    | Plan: rough idea → AI-ready **HTML** spec (queryable, machine-checkable, parallelizable) + scaffold/validator |
 | `skills/treehouse/`           | skill    | Code: fan a spec out to parallel agents in isolated worktrees (dependency waves, collision detection) + planner |
 | `skills/no-mistakes/`         | skill    | Validate: audit AI code for AI-specific failure modes → merge/fix/reject (on top of unit tests, not instead) |
