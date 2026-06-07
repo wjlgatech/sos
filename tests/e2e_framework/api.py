@@ -9,7 +9,7 @@ poll_api_job() works with any backend that follows the pattern:
 from __future__ import annotations
 
 import time
-from typing import Callable
+from collections.abc import Callable
 
 import requests
 
@@ -160,7 +160,9 @@ def _print_job_summary(job: dict) -> None:
         lines = job.get("lines") or []
         err = job.get("error", "")
         # Show last 5 meaningful lines
-        meaningful = [l for l in lines if l.strip() and "Traceback" not in l and "File " not in l]
+        meaningful = [
+            ln for ln in lines if ln.strip() and "Traceback" not in ln and "File " not in ln
+        ]
         tail = meaningful[-5:] if meaningful else [err]
         for line in tail:
             print(f"    {line}")

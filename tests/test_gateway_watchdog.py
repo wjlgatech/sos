@@ -218,6 +218,9 @@ class TestRestartService:
         with (
             patch("subprocess.run", side_effect=[fail, success, success]),
             patch("gateway_watchdog.time.sleep"),
+            # The bootstrap fallback is gated on the plist existing; force it True so
+            # the test is hermetic (the developer's ~/Library plist is absent on CI/Linux).
+            patch("gateway_watchdog.os.path.isfile", return_value=True),
         ):
             result = watchdog.restart_service(svc)
         assert result["success"] is True
