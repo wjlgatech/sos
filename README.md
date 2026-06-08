@@ -51,7 +51,7 @@ Setup: `ollama serve && ollama pull qwen2.5:7b`. Reference implementation (Anthr
 /plugin marketplace add wjlgatech/sos
 /plugin install sos@wjlgatech-plugins
 # → /sos:goal-10x  /sos:ship-loop  /sos:lavish  /sos:treehouse  /sos:no-mistakes
-#   /sos:living-knowledge  /sos:copilotkit  /sos:future-self   (every project, this machine)
+#   /sos:freellmapi  /sos:living-knowledge  /sos:copilotkit  /sos:future-self   (this machine)
 ```
 
 **Want the bare `/goal-10x` name too — on every machine?** One idempotent command does both steps above *and* symlinks `~/.claude/commands/goal-10x.md` to the live plugin command (so `/goal-10x` and `/sos:goal-10x` both work, and stay in sync). Re-run it on each new computer:
@@ -60,6 +60,8 @@ Setup: `ollama serve && ollama pull qwen2.5:7b`. Reference implementation (Anthr
 curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-goal-10x.sh | sh
 # update later:  claude plugin marketplace update wjlgatech-plugins
 ```
+
+> **Other agents (Hermes, etc.) on any machine:** clone this repo and run `bash plugins/sos/scripts/install-skills-global.sh` — it symlinks the skills into Claude Code's (`~/.claude/skills`) and Hermes's (`$HERMES_SKILLS_DIR`) global skill dirs from the clone, so both agents discover them everywhere.
 
 Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
 
@@ -82,11 +84,13 @@ Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop 
 | `skills/lavish/`              | skill    | Plan: rough idea → AI-ready **HTML** spec (queryable, machine-checkable, parallelizable) + scaffold/validator |
 | `skills/treehouse/`           | skill    | Code: fan a spec out to parallel agents in isolated worktrees (dependency waves, collision detection) + planner |
 | `skills/no-mistakes/`         | skill    | Validate: audit AI code for AI-specific failure modes → merge/fix/reject (on top of unit tests, not instead) |
+| `skills/freellmapi/`          | skill    | stand up & use FreeLLMAPI — 16 free provider tiers behind one OpenAI-compatible endpoint; one base_url+key for every agent |
 | `skills/living-knowledge/`    | skill    | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                      |
 | `skills/copilotkit/`          | skill    | integrate CopilotKit into a Next.js app, gotchas pre-solved                                           |
 | `skills/future-self/`         | skill    | "Be Your Future Self Now" framework, operationalized                                                  |
 | `scripts/install-goal-10x.sh` | util     | one-command, idempotent cross-machine install: add marketplace + install plugin + symlink bare `/goal-10x` |
 | `scripts/install-doc-sync.sh` | util     | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                    |
+| `scripts/install-skills-global.sh` | util | symlink the skills into Claude Code + Hermes global skill dirs from a clone (cross-agent, cross-machine) |
 
 See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
