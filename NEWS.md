@@ -1,5 +1,13 @@
 # NEWS
 
+## 2026-06-08: knowledge-graph skill — turn many sources into a graph you can reason over
+
+**The gap:** Research tools (like the excellent `last30days`) gather what people are saying across Reddit/X/YouTube/GitHub and rank it by _real engagement_ — but they emit a prose brief that evaporates: no persistent graph, shallow entity linking, no typed relationships. Deep extractors produce structure but ignore what's _actually being engaged with right now_.
+
+**The skill:** `knowledge-graph` composes both. The agent gathers multi-source, engagement-ranked, recency-aware evidence (per the SKILL.md methodology), extracts into one of two schemas — **topic** (`concept → claim → evidence → principle`, living-knowledge style) or **persona** (`worldview · mental-models · decision-heuristics · honest-limits`, nuwa style) — and `scripts/kg.py` does the deterministic part with zero deps: dedups nodes by **entity-overlap** (ported from last30days `cluster.py`), computes **engagement-weighted confidence** per edge (`source_quality × freshness × engagement × corroboration`), and renders a self-contained dark-mode HTML graph. Every node is sourced or it's dropped; persona mode enforces the nuwa floor (≥3 mental-models w/ evidence+limitation, honest-limits required).
+
+Use: `/knowledge-graph <topic|person> --mode topic|persona`. Output is portable JSON — feed it to Neo4j/Graphiti or any KG store.
+
 ## 2026-06-07: Local LLM Fallback — survive a cloud outage
 
 **The gap:** Cloud LLMs fail at the worst time — credits deplete mid-session, a key rate-limits, the network drops, a region 500s. The whole app dies with it, even for a request a small local model could have handled.
