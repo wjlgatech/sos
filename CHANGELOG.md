@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Changed
+
+- `README.md` — reordered the nine feature sections newest-first (Local LLM Fallback → …
+  → Gateway Watchdog), matching `NEWS.md` and the git introduction dates, and corrected stale
+  facts surfaced by an accuracy audit: test count 377 → **430** (clean Python 3.12 collection),
+  "11 source modules (~3,200 lines)" → **13 modules (~5,600 lines)**, added `self_eval.py` and
+  `local_llm_fallback.py` to the architecture tree, and retitled §2 to "Reusable Skills &
+  Commands" (no workflow is distributed anymore). _Why:_ keep the README reflecting the
+  shipped situation, newest work first.
+
 ### Removed
 
 - `plugins/sos/workflows/goal-10x.js` — the old multi-agent goal-10x workflow. Once the `sos`
