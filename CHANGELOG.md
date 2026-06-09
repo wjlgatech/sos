@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Added
+
+- `plugins/sos/skills/dreammaketrue/` — **DreamMakeTrue as a cross-agent tool.** A skill +
+  zero-dependency CLI (`scripts/dmt.py`, stdlib urllib) that lets ANY agent (Claude Code,
+  Hermes, Codex, OpenClaw) drive the Participation Engine: `analyze` (any source → knowledge
+  map + grounded avatars → durable Room), `chat` (grounded avatar turns, folded back into the
+  room transcript), `express` (room → user-attributed LinkedIn post / essay / podcast script),
+  plus `ingest` / `rooms` / `library` / `status`. Self-heals when the engine is down (launchd →
+  uvicorn from a local clone → clear install instructions); `DMT_API_URL` targets a remote
+  engine. _Why:_ the engine was webapp-only — packaging the API (not the app) as a skill makes
+  every agent a client of the same engine, so the data moat (rooms, shared library) compounds
+  no matter which agent drives. Verified end-to-end live: status → rooms → library → a real
+  grounded Chamath chat turn (41s on local Ollama). Eval note: a hook that silently intercepts
+  was rejected — skills auto-trigger on intent, which is the right "without prompting" shape.
+
 ### Changed
 
 - `README.md` — reordered the nine feature sections newest-first (Local LLM Fallback → …
