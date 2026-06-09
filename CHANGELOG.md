@@ -7,6 +7,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill: **`view` command — visualize the living knowledge.** `dmt.py view
+  <room_id>` turns a room's topic map into ONE self-contained interactive HTML artifact
+  (zero deps, offline, shareable; auto-opens on macOS): force-directed canvas graph
+  (drag · zoom · click; concepts/claims/evidence color-typed, labeled edges) where clicking
+  a node opens its living-knowledge layers progressively — L1 jargon-free summary → L3
+  principle + transfer domains → L5 the surrounding web (typed edges + verbatim evidence).
+  `window.dmtSelect('name')` lets an agent driving a browser open a node's layers without
+  pointer math. _Why:_ the engine's visualization lived only in the webapp; agents (and
+  anyone the user shares the file with) needed a portable equivalent. Verified headless:
+  rendered 29-node Chamath room, programmatic select, full L1→L3→L5 panel content.
+  _Investigated/Rejected:_ first force model applied the spring along the full displacement
+  (`dx*f`) — velocities exploded and every node flew off-canvas within a second (blank
+  screenshot); fixed to unit-vector force with a ±4 clamp.
+- `install-skills-global.sh`: also **wires Codex** — appends an idempotent "sos skills
+  directory" section to `~/.codex/AGENTS.md` (Codex has no skills dir; its global AGENTS.md
+  is the discovery mechanism), so all three agents (Claude Code, Hermes, Codex) pick up
+  skills from one sos clone. `CODEX_AGENTS_MD` overrides the path; skipped if `~/.codex`
+  doesn't exist.
 - `plugins/sos/skills/dreammaketrue/` — **DreamMakeTrue as a cross-agent tool.** A skill +
   zero-dependency CLI (`scripts/dmt.py`, stdlib urllib) that lets ANY agent (Claude Code,
   Hermes, Codex, OpenClaw) drive the Participation Engine: `analyze` (any source → knowledge

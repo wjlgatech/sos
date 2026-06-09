@@ -1,6 +1,6 @@
 ---
 name: dreammaketrue
-description: "Drive the DreamMakeTrue Participation Engine: turn ANY source (YouTube/podcast/article/X/PDF/course/pasted text) into a knowledge map + grounded person-avatars, TALK to those avatars (they answer strictly from sourced evidence, refusing to hallucinate), and EXPRESS the conversation as a publishable, user-attributed artifact (LinkedIn post, essay, podcast script, video brief). Use when the user wants to deeply understand a source ('build a knowledge map of this video/PDF'), converse with a real person's grounded avatar ('what would Karpathy/Chamath say about X', 'let me ask the author'), ingest a whole course, or turn a discussion into a publishable artifact ('make this a LinkedIn post in my voice'). Triggers on 'knowledge map', 'talk to <person> about', 'ask <expert>', 'simulate a conversation with', 'turn this into a post/essay/podcast', 'ingest this course/video/PDF'. NOT for a quick factual lookup (just answer), a graph without avatars/conversation (use knowledge-graph), or a one-paragraph explainer (use living-knowledge)."
+description: "Drive the DreamMakeTrue Participation Engine: turn ANY source (YouTube/podcast/article/X/PDF/course/pasted text) into a knowledge map + grounded person-avatars, TALK to those avatars (they answer strictly from sourced evidence, refusing to hallucinate), EXPRESS the conversation as a publishable, user-attributed artifact (LinkedIn post, essay, podcast script, video brief), and VIEW the living knowledge as an interactive graph (self-contained HTML: force layout + click-to-deepen L1→L3→L5 layers). Use when the user wants to deeply understand a source ('build a knowledge map of this video/PDF'), converse with a real person's grounded avatar ('what would Karpathy/Chamath say about X', 'let me ask the author'), ingest a whole course, turn a discussion into a publishable artifact ('make this a LinkedIn post in my voice'), or SEE a knowledge map ('visualize/show me the graph of this room'). Triggers on 'knowledge map', 'talk to <person> about', 'ask <expert>', 'simulate a conversation with', 'turn this into a post/essay/podcast', 'ingest this course/video/PDF', 'visualize the knowledge/living knowledge graph'. NOT for a quick factual lookup (just answer), a graph without avatars/conversation (use knowledge-graph), or a one-paragraph explainer (use living-knowledge)."
 argument-hint: '[what you want — e.g. ''map this video'', ''chat <room> "question"'', ''express <room> as linkedin'']'
 allowed-tools: Bash, Read, Write, WebFetch
 metadata:
@@ -50,16 +50,33 @@ uvicorn from a local clone → clear install instructions. **No other setup.**
 
 3. **Express: the conversation → publishable artifact.** The user's verbatim words MUST
    appear in the artifact (attribution is sacred — pass them via `--contribution`):
+
    ```bash
    python3 $DMT express <room_id> --contribution "the user's exact words" \
        --format linkedin_post --user Paul
    # formats: linkedin_post · essay · podcast_script · video_brief · participation_brief
    ```
 
+4. **View: SEE the living knowledge.** One self-contained HTML file (zero deps, works
+   offline, shareable) — a force-directed graph (drag · zoom · click) where clicking a
+   node opens its living-knowledge layers **progressively**: L1 jargon-free summary →
+   L3 principle + transfer domains → L5 the web around it (typed edges + verbatim
+   evidence). Opens automatically on macOS; hand the file to the user either way:
+
+   ```bash
+   python3 $DMT view <room_id>          # → ~/Desktop/dmt-map-<id>.html (+ opens it)
+   python3 $DMT view <room_id> --out map.html
+   ```
+
+   In-page hook for agents driving a browser: `window.dmtSelect('node name')` opens
+   that node's layers without pointer math. The webapp (`http://localhost:3000`) has
+   the richer live view; this file is the portable artifact.
+
 ## Supporting commands
 
 | Command                            | Use                                                              |
 | ---------------------------------- | ---------------------------------------------------------------- |
+| `view <room_id> [--out f.html]`    | room → interactive living-knowledge graph (single HTML artifact) |
 | `ingest <url-or-text>`             | just normalize a source → document (provenance, warnings)        |
 | `rooms` / `room <id>`              | list / load saved rooms (resume any prior conversation)          |
 | `library [avatars\|topics\|stats]` | the shared cross-room knowledge base (reuse already-built minds) |

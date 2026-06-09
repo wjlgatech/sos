@@ -49,12 +49,36 @@ link_into() {
   echo "$agent: linked into $dest"
 }
 
+# Codex has no skills dir — it discovers tools via the global ~/.codex/AGENTS.md. Point it
+# at the symlinked skills directory (idempotent: skip if our marker section already exists).
+wire_codex() {
+  codex_md="${CODEX_AGENTS_MD:-$HOME/.codex/AGENTS.md}"
+  [ -d "$(dirname "$codex_md")" ] || { echo "Codex: ~/.codex not found — skipped"; return 0; }
+  if [ -f "$codex_md" ] && grep -q "sos skills directory" "$codex_md"; then
+    echo "Codex: $codex_md already wired"
+    return 0
+  fi
+  cat >> "$codex_md" <<EOF
+
+## sos skills directory (global agent tools)
+
+Reusable skills live at \`$claude_dir/\` (symlinks into a clone of
+https://github.com/wjlgatech/sos — \`git pull\` there updates them). Each skill is a
+directory with a \`SKILL.md\` (when to use + procedure) and optional \`scripts/\` (zero-dep,
+runnable directly). When a task matches a skill's description, read its SKILL.md and
+follow it.
+EOF
+  echo "Codex: wired via $codex_md"
+}
+
 echo "source skills: $src_skills"
 echo "installing: $SKILLS"
 echo
 link_into "Claude Code" "$claude_dir"
 echo
 link_into "Hermes" "$hermes_dir"
+echo
+wire_codex
 echo
 echo "Done. If your Hermes skills live elsewhere, re-run with:"
 echo "  HERMES_SKILLS_DIR=/path/to/hermes/skills bash $0"
