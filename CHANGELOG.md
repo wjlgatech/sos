@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill `view` v2 — **nodes are actually clickable now, and a click shows the
+  FULL details.** User-reported: nodes weren't clickable/expandable. Three real defects:
+  (1) the dpr factor was mixed into both the draw transform and the pointer math, so on a
+  Retina screen everything rendered half-size and hit-tests landed off the nodes; (2) the hit
+  zone was the small dot only — people click the label text, which started a pan instead;
+  (3) details were gated behind two "go deeper" clicks. Now: coordinates are CSS-px with dpr
+  isolated to the backing store; the hit zone covers dot + label; click-vs-drag discriminated
+  by a 5px movement threshold (pointer-captured); hover shows a pointer cursor + highlight;
+  and a single click opens the complete living-knowledge detail (L1 summary · L3 principle +
+  transfers · limitation · L5 typed-edge web · verbatim evidence). `window.dmtScreen('name')`
+  added for dispatching genuine pointer events in tests — which is how this was verified
+  (real `PointerEvent`s on the dot AND on the label, not just the programmatic hook that
+  masked the bug in v1).
 - `dreammaketrue` skill: **`view` command — visualize the living knowledge.** `dmt.py view
   <room_id>` turns a room's topic map into ONE self-contained interactive HTML artifact
   (zero deps, offline, shareable; auto-opens on macOS): force-directed canvas graph

@@ -316,50 +316,69 @@ button{background:#1d1d22;color:#bbb;border:1px solid #333;border-radius:6px;pad
 button:hover{color:#fff;border-color:#666}.link{color:#d4a574;cursor:pointer;display:block;padding:2px 0;font-size:12px}
 </style>
 <div id=wrap><canvas id=cv></canvas><div id=side>
-<h1>__TITLE__</h1><div class=meta>__META__ · drag nodes · scroll to zoom · click a node, then “deeper” — stop at the depth the moment needs</div>
-<div id=panel class=hint>Click a node to open its living-knowledge layers.</div></div></div>
+<h1>__TITLE__</h1><div class=meta>__META__ · click a node (dot or label) for its full details · drag to move · scroll to zoom</div>
+<div id=panel class=hint>Click a node to see its details.</div></div></div>
 <script type="application/json" id=g>__GRAPH__</script>
 <script>
 const G=JSON.parse(document.getElementById('g').textContent);
 const cv=document.getElementById('cv'),cx=cv.getContext('2d'),panel=document.getElementById('panel');
 const COLOR={concept:'#6ab0f3',claim:'#d4a574',evidence:'#7bd88f',question:'#c08af3'};
-let W,H;function rs(){W=cv.width=cv.clientWidth*devicePixelRatio;H=cv.height=cv.clientHeight*devicePixelRatio}
+// Coordinates: graph space → CSS px via (x*zoom + cw/2 + panX); the dpr factor lives ONLY in
+// the canvas backing store + draw transform, never in pointer math. (v1 mixed dpr into both,
+// so on Retina everything rendered half-size and the click hit-test landed off the nodes.)
+let W,H,cw,ch;function rs(){cw=cv.clientWidth;ch=cv.clientHeight;W=cv.width=cw*devicePixelRatio;H=cv.height=ch*devicePixelRatio}
 window.addEventListener('resize',rs);
 const N=G.nodes.map((n,i)=>({...n,x:Math.cos(i*2.4)*(120+i*6),y:Math.sin(i*2.4)*(120+i*6),vx:0,vy:0}));
 const byId=Object.fromEntries(N.map(n=>[n.id,n]));
 const E=G.edges.filter(e=>byId[e.source]&&byId[e.target]);
-let zoom=1.6,panX=0,panY=0,drag=null,sel=null,depth=1;
+let zoom=1.6,panX=0,panY=0,drag=null,sel=null,hov=null,depth=3;
 function step(){for(const a of N){for(const b of N){if(a===b)continue;const dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy+0.01,f=2200/d2;a.vx+=dx*f/Math.sqrt(d2);a.vy+=dy*f/Math.sqrt(d2)}a.vx-=a.x*0.0015;a.vy-=a.y*0.0015}
 for(const e of E){const s=byId[e.source],t=byId[e.target],dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy)+0.01,f=Math.max(-4,Math.min(4,(d-110)*0.01));s.vx+=dx/d*f;s.vy+=dy/d*f;t.vx-=dx/d*f;t.vy-=dy/d*f}
 for(const n of N){if(n===drag)continue;n.vx*=0.86;n.vy*=0.86;n.x+=n.vx;n.y+=n.vy}}
-function draw(){cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,W,H);cx.setTransform(zoom,0,0,zoom,W/2+panX,H/2+panY);
+const R=n=>n.type==='concept'?15:11;
+function draw(){const k=devicePixelRatio;cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,W,H);cx.setTransform(zoom*k,0,0,zoom*k,(cw/2+panX)*k,(ch/2+panY)*k);
 cx.strokeStyle='#2a2a30';cx.lineWidth=1;for(const e of E){const s=byId[e.source],t=byId[e.target];cx.beginPath();cx.moveTo(s.x,s.y);cx.lineTo(t.x,t.y);cx.stroke();
 cx.fillStyle='#555';cx.font='7px sans-serif';cx.fillText(e.type||'',(s.x+t.x)/2,(s.y+t.y)/2)}
-for(const n of N){const r=n.type==='concept'?13:9;cx.beginPath();cx.arc(n.x,n.y,r,0,7);cx.fillStyle=COLOR[n.type]||'#888';cx.globalAlpha=sel&&sel!==n?0.45:1;cx.fill();
-if(sel===n){cx.strokeStyle='#fff';cx.lineWidth=2;cx.stroke()}cx.globalAlpha=1;
-cx.fillStyle='#ddd';cx.font='9px sans-serif';cx.fillText((n.name||'').slice(0,26),n.x+r+3,n.y+3)}}
+for(const n of N){const r=R(n);cx.beginPath();cx.arc(n.x,n.y,r,0,7);cx.fillStyle=COLOR[n.type]||'#888';cx.globalAlpha=sel&&sel!==n&&hov!==n?0.45:1;cx.fill();
+if(sel===n||hov===n){cx.strokeStyle='#fff';cx.lineWidth=2;cx.stroke()}cx.globalAlpha=1;
+cx.fillStyle=hov===n?'#fff':'#ddd';cx.font='10px sans-serif';cx.fillText((n.name||'').slice(0,30),n.x+r+4,n.y+3)}}
 function loop(){step();draw();requestAnimationFrame(loop)}
-function pt(ev){const b=cv.getBoundingClientRect();return{x:((ev.clientX-b.left)*devicePixelRatio-W/2-panX)/zoom,y:((ev.clientY-b.top)*devicePixelRatio-H/2-panY)/zoom}}
-function hit(p){return N.find(n=>{const dx=n.x-p.x,dy=n.y-p.y;return dx*dx+dy*dy<200})}
-let panning=null;
-cv.addEventListener('pointerdown',ev=>{const p=pt(ev),n=hit(p);if(n){drag=n}else{panning={x:ev.clientX-panX/devicePixelRatio,y:ev.clientY-panY/devicePixelRatio}}});
-cv.addEventListener('pointermove',ev=>{if(drag){const p=pt(ev);drag.x=p.x;drag.y=p.y;drag.vx=drag.vy=0}else if(panning){panX=(ev.clientX-panning.x)*devicePixelRatio;panY=(ev.clientY-panning.y)*devicePixelRatio}});
-cv.addEventListener('pointerup',ev=>{const p=pt(ev),n=hit(p);if(drag===n&&n){sel=n;depth=1;inspect()}drag=null;panning=null});
+function pt(ev){const b=cv.getBoundingClientRect();return{x:((ev.clientX-b.left)-cw/2-panX)/zoom,y:((ev.clientY-b.top)-ch/2-panY)/zoom}}
+// Generous hit zone: the circle OR its label (people click the words, not the dot).
+function hit(p){return N.find(n=>{const dx=p.x-n.x,dy=p.y-n.y,r=R(n)+6;if(dx*dx+dy*dy<r*r)return true;
+const lw=Math.min(30,(n.name||'').length)*5.6;return p.x>n.x+R(n)&&p.x<n.x+R(n)+lw&&Math.abs(dy)<9})}
+let panning=null,down=null,moved=false;
+cv.addEventListener('pointerdown',ev=>{cv.setPointerCapture(ev.pointerId);down={x:ev.clientX,y:ev.clientY};moved=false;
+const n=hit(pt(ev));if(n){drag=n}else{panning={x:ev.clientX-panX,y:ev.clientY-panY}}});
+cv.addEventListener('pointermove',ev=>{if(down&&Math.hypot(ev.clientX-down.x,ev.clientY-down.y)>5)moved=true;
+if(drag&&moved){const p=pt(ev);drag.x=p.x;drag.y=p.y;drag.vx=drag.vy=0}
+else if(panning&&moved){panX=ev.clientX-panning.x;panY=ev.clientY-panning.y}
+else if(!down){hov=hit(pt(ev));cv.style.cursor=hov?'pointer':'grab'}});
+cv.addEventListener('pointerup',ev=>{
+// a CLICK is a press that barely moved — select (full details) or clear; a real drag isn't.
+if(!moved){const n=hit(pt(ev));sel=n||null;depth=3;inspect()}
+drag=null;panning=null;down=null});
 cv.addEventListener('wheel',ev=>{ev.preventDefault();zoom=Math.min(5,Math.max(0.3,zoom*(ev.deltaY<0?1.1:0.9)))},{passive:false});
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
-function inspect(){const n=sel;if(!n){panel.className='hint';panel.textContent='Click a node.';return}panel.className='';
+function inspect(){const n=sel;if(!n){panel.className='hint';panel.textContent='Click a node to see its details.';return}panel.className='';
+// Full living-knowledge detail on every click — L1 plain summary, L3 principle + transfers,
+// L5 the surrounding web + verbatim evidence. The layer headers keep the depth structure
+// legible without making the user click "deeper" to get what they came for.
 let h=`<span class="ty t-${esc(n.type)}">${esc(n.type)}</span> <b>${esc(n.name)}</b><div class=sum>${esc(n.summary||'')}</div>`;
-if(depth>=2&&n.principle)h+=`<div class=layer><h3>L3 · principle</h3><div class=principle>${esc(n.principle)}</div>${(n.transfer_domains||[]).map(t=>`<div class=hint>transfers → ${esc(t)}</div>`).join('')}</div>`;
-if(depth>=3){const nb=E.filter(e=>e.source===n.id||e.target===n.id).map(e=>{const o=byId[e.source===n.id?e.target:e.source];return `<span class=link data-id="${esc(o.id)}">${esc(e.type)} → ${esc(o.name)}</span>`}).join('');
+if(n.principle)h+=`<div class=layer><h3>L3 · principle</h3><div class=principle>${esc(n.principle)}</div>${(n.transfer_domains||[]).map(t=>`<div class=hint>transfers → ${esc(t)}</div>`).join('')}</div>`;
+if(n.limitation)h+=`<div class=layer><h3>limitation</h3>${esc(n.limitation)}</div>`;
+const nb=E.filter(e=>e.source===n.id||e.target===n.id).map(e=>{const o=byId[e.source===n.id?e.target:e.source];return `<span class=link data-id="${esc(o.id)}">${esc(e.type)} → ${esc(o.name)}</span>`}).join('');
 h+=`<div class=layer><h3>L5 · the web around it</h3>${nb||'<div class=hint>no edges</div>'}</div>`;
 const evs=N.filter(o=>o.type==='evidence'&&E.some(e=>(e.source===n.id&&e.target===o.id)||(e.target===n.id&&e.source===o.id)));
-if(evs.length)h+=`<div class=layer><h3>verbatim evidence</h3>${evs.map(o=>`<div class=ev>“${esc(o.summary)}”</div>`).join('')}</div>`}
-if(depth<3)h+=`<button id=deep>go deeper (L${depth===1?3:5})</button>`;
-panel.innerHTML=h;const d=document.getElementById('deep');if(d)d.onclick=()=>{depth++;inspect()};
-panel.querySelectorAll('.link').forEach(a=>a.onclick=()=>{sel=byId[a.dataset.id];depth=1;inspect()})}
+if(evs.length)h+=`<div class=layer><h3>verbatim evidence</h3>${evs.map(o=>`<div class=ev>“${esc(o.summary)}”</div>`).join('')}</div>`;
+panel.innerHTML=h;
+panel.querySelectorAll('.link').forEach(a=>a.onclick=()=>{sel=byId[a.dataset.id];inspect()})}
 // Programmatic hook so an agent (or test) can open a node's layers without pointer math:
 // dmtSelect('infinite games') → selects the first name-matching node at full depth.
 window.dmtSelect=q=>{const n=N.find(x=>(x.name||'').toLowerCase().includes(String(q).toLowerCase()));if(n){sel=n;depth=3;inspect()}return n?(n.name):null};
+// dmtScreen('name') → the node's center in viewport CSS px (for dispatching real clicks in tests).
+window.dmtScreen=q=>{const n=N.find(x=>(x.name||'').toLowerCase().includes(String(q).toLowerCase()));if(!n)return null;
+const b=cv.getBoundingClientRect();return{x:n.x*zoom+cw/2+panX+b.left,y:n.y*zoom+ch/2+panY+b.top,name:n.name}};
 rs();loop();
 </script>"""
 
