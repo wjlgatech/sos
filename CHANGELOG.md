@@ -5,6 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Added
+
+- `plugins/sos/skills/living-repo/` — **awesome-list → living knowledge system.**
+  `awesome_kg.py`: deterministic, stdlib-only compiler from README GFM tables to a typed
+  knowledge graph (paper/repo/person/lab/talk/benchmark nodes; authored_by/has_code/
+  member_of/part_of/builds_on edges; bold-mention person resolution "S. Hu" ≈ "Shengran
+  Hu"; log-scaled confidence from citations/stars) + a self-contained interactive
+  force-graph HTML (canvas, zero external scripts — works from file:// and GitHub Pages).
+  Optional `nim-enrich` proposes lineage edges via the free NVIDIA NIM API; a hand-written
+  `enrichments.json` overlay carries curator knowledge across regenerations.
+  `check_freshness.py`: concurrent link prober (HEAD→GET fallback, bot-walled domains are
+  WARN not DEAD) + a weekly GitHub Action template that opens an issue on dead links.
+  Why: deterministic parse = zero tokens, CI-safe, no hallucinated nodes — LLM extraction
+  via the engine's 7B backup was tried and rejected (hallucinated a "Karpathy" node).
+  First deployment: wjlgatech/awesome-auto-ai-research (139 nodes · 246 edges; the
+  freshness check found 5 dead links in its first run, incl. a placeholder
+  `acl-long.xxx` URL). Plugin bumped to 1.1.0; plugin README table also backfilled with
+  the previously-undocumented knowledge-graph / dreammaketrue / nvidia-free-llm rows.
+
 ### Changed
 
 - `nvidia-free-llm` skill: Hermes wiring upgraded from "Custom provider + base_url" to the

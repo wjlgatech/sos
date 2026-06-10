@@ -1,7 +1,7 @@
 {
   "name": "sos",
-  "description": "Reusable, agent-agnostic toolkit: the /goal-10x objective-driven dev loop, the /ship-loop Plan→Code→Validate lifecycle (lavish/treehouse/no-mistakes), the freellmapi free unified-LLM backend, plus skills for living-knowledge explanations, CopilotKit integration, and the future-self framework.",
-  "version": "1.0.0",
+  "description": "Reusable, agent-agnostic toolkit: the /goal-10x objective-driven dev loop, the /ship-loop Plan→Code→Validate lifecycle (lavish/treehouse/no-mistakes), the freellmapi free unified-LLM backend, the living-repo awesome-list→knowledge-graph compiler, plus skills for living-knowledge explanations, knowledge graphs, dreammaketrue, NVIDIA free NIM, CopilotKit integration, and the future-self framework.",
+  "version": "1.1.0",
   "author": {
     "name": "Paul Wu",
     "email": "wjlgatech@gmail.com"

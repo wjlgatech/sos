@@ -13,7 +13,8 @@ machine** (not just where they were built). Markdown skills + a command — no P
 
 Then the skills are available **namespaced** under `sos:` in every project on that machine:
 `/sos:goal-10x`, `/sos:ship-loop`, `/sos:lavish`, `/sos:treehouse`, `/sos:no-mistakes`,
-`/sos:freellmapi`, `/sos:living-knowledge`, `/sos:copilotkit`, `/sos:future-self`. Update with
+`/sos:freellmapi`, `/sos:living-knowledge`, `/sos:living-repo`, `/sos:knowledge-graph`,
+`/sos:dreammaketrue`, `/sos:nvidia-free-llm`, `/sos:copilotkit`, `/sos:future-self`. Update with
 `/plugin marketplace update wjlgatech-plugins`.
 
 To also get the **bare** `/goal-10x` (no `sos:` prefix) on every machine, run the bundled
@@ -45,6 +46,10 @@ clone, so both agents discover them everywhere. `git pull` updates them in place
 | `skills/living-knowledge/`    | skill     | Explain a concept just in time, at the right depth — 4 layers (Sensation→Mechanism→Principle→Expression), real-time mode, name-the-seam, transfer-as-proof.                      |
 | `skills/copilotkit/`          | skill     | Integrate CopilotKit (in-app AI copilot UI) into a Next.js app — provider + runtime route + actions, version/bundling gotchas pre-solved.                                        |
 | `skills/future-self/`         | skill     | Hardy's "Be Your Future Self Now" framework, operationalized — emergent vs intended self + the gap.                                                                              |
+| `skills/living-repo/`         | skill     | Transform a static awesome-list repo into a **living knowledge system**: deterministic README→typed-graph compiler (`awesome_kg.py`, stdlib-only, zero LLM tokens) + self-contained interactive force-graph HTML (GitHub Pages-ready) + weekly link-freshness GitHub Action (`check_freshness.py`). Optional NIM lineage enrichment. First deployment: [awesome-auto-ai-research](https://github.com/wjlgatech/awesome-auto-ai-research). |
+| `skills/knowledge-graph/`     | skill     | Build a TOPIC or PERSONA knowledge graph from multi-source evidence with engagement-weighted confidence edges; `kg.py` dedups + renders a self-contained HTML view.              |
+| `skills/dreammaketrue/`       | skill     | Drive the DreamMakeTrue Participation Engine via `dmt.py`: ingest any source, build knowledge maps + grounded avatars, `kgfy` one-shot living-knowledge artifacts.               |
+| `skills/nvidia-free-llm/`     | skill     | NVIDIA's free NIM API (120 frontier models, one OpenAI-compatible endpoint); `nim.py` lists/tests/picks verified model ids.                                                      |
 | `scripts/install-goal-10x.sh` | installer | one-command cross-machine setup: add marketplace + install plugin + symlink the bare `/goal-10x` name. Idempotent; re-run per machine.                                            |
 | `scripts/install-doc-sync.sh` | installer | (bundled util, run manually) drops a CHANGELOG + pre-commit docs-sync guard into any git repo.                                                                                   |
 | `scripts/install-skills-global.sh` | installer | (run once per machine) symlinks these skills into Claude Code + Hermes global skill dirs from a clone — cross-agent, cross-machine availability without the marketplace.        |
