@@ -522,7 +522,7 @@ if(sel)c+=`; selected node: "${sel.name}" (${sel.type}, inspector at depth L${de
 return c}
 /* ── voice input: tap mic to start, tap again to stop → engine faster-whisper → input ── */
 const mic=document.getElementById('mic');
-let mrec=null,mstream=null,mchunks=[];
+let mrec=null,mstream=null,mchunks=[],mstart=0;
 async function micToggle(){
 if(mrec){mrec.stop();return}
 if(!navigator.mediaDevices?.getUserMedia){
@@ -536,15 +536,20 @@ mrec.onstop=async()=>{
 mic.classList.remove('rec');mic.textContent='🎙';
 mstream.getTracks().forEach(t=>t.stop());mstream=null;
 const blob=new Blob(mchunks,{type:mrec.mimeType||'audio/webm'});mrec=null;
-if(blob.size<2048){add('bot','🎙 Heard nothing — tap, speak, tap again.');return}
+const secs=((Date.now()-mstart)/1000).toFixed(1),kb=(blob.size/1024).toFixed(1);
+if(blob.size<2048){add('bot','🎙 Heard nothing ('+kb+'KB in '+secs+'s — header-only). Tap, speak a full sentence, tap again.');return}
 q.placeholder='transcribing…';
 try{const fd=new FormData();fd.append('audio',blob,'voice.webm');
 const r=await fetch(API+'/v1/multimodal/stt',{method:'POST',body:fd});
 const out=await r.json();
-if(out.text){q.value=out.text;ask()}else{add('bot','🎙 Could not transcribe — try again closer to the mic.')}
+if(out.text){q.value=out.text;ask()}else{
+/* diagnose: opus compresses silence to ~1KB/s — a low KB/s ratio means the mic stream was
+   silent (often the wrong device picked per-site), not that you spoke too quietly */
+const rate=blob.size/1024/Math.max(1,secs);
+add('bot','🎙 Whisper heard no speech ('+kb+'KB over '+secs+'s'+(rate<3?' — that ratio means Chrome recorded SILENCE. Click the 🎙/🔒 icon in the address bar and make sure the microphone is "MacBook Pro Microphone", not BlackHole or another virtual device.':' — audio was captured but no words recognized; speak a full sentence.')+')')}
 }catch(e){add('bot','🎙 STT failed: '+e.message)}
 q.placeholder='Ask the graph — or ask it to create something…'};
-mrec.start(250);mic.classList.add('rec');mic.textContent='⏹'}
+mstart=Date.now();mrec.start(250);mic.classList.add('rec');mic.textContent='⏹'}
 mic.onclick=micToggle;
 send.onclick=ask;q.addEventListener('keydown',e=>{if(e.key==='Enter')ask()});
 window.dmtAsk=t=>{q.value=t;ask();return 'asked'};

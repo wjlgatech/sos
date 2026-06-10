@@ -7,6 +7,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` artifact voice: diagnostic failure messages. Investigated a "could not
+  transcribe" report: OS-level mic capture verified healthy (sounddevice RMS/peak test) and
+  whisper transcribed a live room recording — so empty transcripts mean the BROWSER stream
+  was silent or wordless. The failure message now reports KB + seconds and uses the opus
+  silence ratio (<3KB/s ≈ silent stream) to say either "Chrome recorded SILENCE — check the
+  address-bar mic device (BlackHole vs MacBook Pro Microphone)" or "audio captured, no words
+  recognized." 2048-byte header-only guard keeps its own message.
 - `dreammaketrue` artifact: **voice input** (tap 🎙 to record, tap ⏹ to stop → engine
   faster-whisper STT → auto-asks) and **screen-aware questions** — every ask now carries
   `viewContext()` (map vs infographic + selected node + depth), so "explain this idea" means
