@@ -409,7 +409,9 @@ nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflo
 </div>
 <script type="application/json" id=g>__GRAPH__</script>
 <script>
-const G=JSON.parse(document.getElementById('g').textContent), API="__API__";
+const G=JSON.parse(document.getElementById('g').textContent);
+/* served (engine/LAN/tunnel) → same-origin chat, no CORS; opened as a file → baked engine URL */
+const API=(location.protocol==='http:'||location.protocol==='https:')?location.origin:"__API__";
 /* ── tabs ── */
 function show(t){document.querySelectorAll('nav .t').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
 document.querySelectorAll('.tab').forEach(d=>d.classList.toggle('on',d.id==='tab-'+t));
@@ -595,15 +597,29 @@ def _render_view(graph: dict, title: str, meta: str, out_path: str, slug: str) -
     )
     with open(out_path, "w") as f:
         f.write(page)
-    if sys.platform == "darwin":  # best-effort: open it for the user
-        subprocess.run(["open", out_path], capture_output=True)
-    return {
+    out = {
         "html": out_path,
         "tabs": ["map (incremental)", "infographic", "ask (chat + agentic)"],
         "title": title,
         "nodes": len(graph["nodes"]),
         "edges": len(graph["edges"]),
     }
+    # Publish to the engine so it serves the page (same-origin Ask — works from a phone on
+    # the LAN / through a tunnel as a real link). Best-effort: a down engine skips this.
+    try:
+        pub = _req(
+            "POST",
+            "/v1/engine/artifacts",
+            {"name": f"{slug or 'kgfy'}.html", "html": page},
+            timeout=60,
+        )
+        out["served_url"] = pub.get("local_url")
+        out["phone_url"] = pub.get("lan_url")
+    except Exception:
+        out["served_url"] = None
+    if sys.platform == "darwin":  # best-effort: open it for the user
+        subprocess.run(["open", out_path], capture_output=True)
+    return out
 
 
 def cmd_view(args: list[str]) -> dict:

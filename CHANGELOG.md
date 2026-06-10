@@ -7,6 +7,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill: kgfy/view artifacts **auto-publish to the engine** after render
+  (best-effort POST /v1/engine/artifacts) and report `served_url` + `phone_url` (LAN). The
+  page JS prefers `location.origin` when served over http(s) — same-origin Ask tab, no CORS,
+  tunnel-churn-proof — and falls back to the baked engine URL only for file:// opens. This is
+  how a phone gets the conversational experience: open the LAN link, not the attachment.
 - `dreammaketrue` skill artifact v3 — **one tabbed page that you can talk to** (Paul's 4-part
   ask, /goal-10x run). Map · Infographic · Ask in a single self-contained HTML (was 2 files):
   (1) **incremental display** — the map starts at the concepts (30/79 on the test graph),
