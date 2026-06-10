@@ -7,6 +7,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `skillfy` skill: compress ANY source/expertise into a bounded, verifiable skill —
+  atomic Skill schema with honest `not_good_at` edges, masked by-hand worksheet,
+  mechanical checker, discernment check, teach-back. Two modes: served (drives a
+  running super-u API, incl. `POST /skillfy/extract` and the dreammaketrue
+  `POST /creator/skillfy` bridge; free via NVIDIA NIM) or standalone (any agent —
+  Claude, Hermes, Codex — applies the method and emits super-u-compatible
+  `skill.yaml`). Mirrors super-u's Skillify→Skillfy rename.
+
+### Added
+
 - `living-repo` skill: **"✨ Ask the field"** — the generated graph webapp is now
   conversational, powered by NVIDIA's free NIM API. Client-side retrieval (token-overlap
   scoring over nodes, top-10 + 1-hop edges) builds a grounded context; the answer must
