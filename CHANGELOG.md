@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill artifact v3 — **one tabbed page that you can talk to** (Paul's 4-part
+  ask, /goal-10x run). Map · Infographic · Ask in a single self-contained HTML (was 2 files):
+  (1) **incremental display** — the map starts at the concepts (30/79 on the test graph),
+  each tap reveals that node's web (+N badges show hidden neighbors) and the inspector
+  deepens progressively L1→L3→L5 — the living-knowledge contract, restored after the
+  full-dump version; (2) **Ask tab** — graph-grounded chat → new engine `POST /v1/engine/
+  kg/chat` (BFS paths between question-matched nodes, bridge detection, explicit no-path
+  findings), cited nodes render as chips that jump to the Map tab and select the node;
+  (3) **agentic** — creation intents return a full grounded artifact in-chat (verified: a
+  LinkedIn post citing graph nodes, 30s on local Ollama); (4) mobile viewport + stacked
+  layout for phones. Eval calls: Kumo stays on the relational moat (semantic graphs want
+  traversal + LLM, not RFM); CopilotKit is right for the webapp, wrong for a portable
+  single-file artifact (vanilla chat panel instead). `window.dmtAsk()` test hook.
 - `dreammaketrue` skill: **infographic one-pager** (à la Google NotebookLM) emitted alongside
   every `kgfy`/`view` map — `…-infographic.html`: designed single page with a stat band
   (ideas/claims/quotes/connections), Big Ideas cards with ⚡principle callouts + transfer

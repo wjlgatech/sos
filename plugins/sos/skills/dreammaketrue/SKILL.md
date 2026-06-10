@@ -57,11 +57,15 @@ uvicorn from a local clone → clear install instructions. **No other setup.**
    # formats: linkedin_post · essay · podcast_script · video_brief · participation_brief
    ```
 
-4. **View: SEE the living knowledge.** One self-contained HTML file (zero deps, works
-   offline, shareable) — a force-directed graph (drag · zoom · click) where clicking a
-   node opens its living-knowledge layers **progressively**: L1 jargon-free summary →
-   L3 principle + transfer domains → L5 the web around it (typed edges + verbatim
-   evidence). Opens automatically on macOS; hand the file to the user either way:
+4. **View: SEE + ASK the living knowledge.** ONE self-contained tabbed HTML file:
+   **Map** — incremental force graph: starts at the concepts, each tap expands that
+   node's web (+N badges = hidden neighbors), inspector deepens L1 → L3 → L5;
+   **Infographic** — the NotebookLM-style one-pager;
+   **Ask** — graph-grounded chat (engine `/kg/chat`: BFS paths between question topics,
+   bridge nodes, no-path findings) that is also **agentic** — "draft a LinkedIn post…"
+   returns the full grounded piece in-chat. Engine URL is baked at generation
+   (`DMT_API_URL`); Map+Infographic work offline, Ask needs the engine reachable.
+   Opens automatically on macOS; hand the file to the user either way:
 
    ```bash
    python3 $DMT view <room_id>          # → ~/Desktop/dmt-map-<id>.html (+ opens it)

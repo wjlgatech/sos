@@ -23,12 +23,16 @@ Commands:
                                       room + your verbatim contribution → artifact
                                       F: linkedin_post|essay|podcast_script|video_brief|participation_brief
   library [avatars|topics|stats]      the shared cross-room knowledge base
-  kgfy <repo|url|file|dir>            ANY source → detailed living-knowledge map in one
-                                      shot (no room needed): GitHub repo/article URL via
-                                      engine ingestion, or local file/dir (README+docs)
-  view <room_id> [--out map.html]     room → self-contained INTERACTIVE living-knowledge
-                                      graph (force layout + click-to-deepen L1→L3→L5);
-                                      one HTML file, zero deps, opens automatically
+  kgfy <repo|url|file|dir>            ANY source → ONE tabbed living-knowledge artifact
+                                      (no room needed): GitHub repo/article/YouTube/podcast
+                                      URL, local file (PDF·a/v via engine), or folder
+  view <room_id> [--out map.html]     room → the same ONE tabbed artifact. Tabs:
+                                      Map (INCREMENTAL — starts at concepts, each tap
+                                      expands that node's web, inspector deepens L1→L3→L5)
+                                      · Infographic (NotebookLM-style one-pager)
+                                      · Ask (graph-grounded chat → engine /kg/chat: real
+                                      paths + bridge nodes; "draft a post…" returns a full
+                                      grounded artifact — agentic). Engine URL baked in.
 """
 
 from __future__ import annotations
@@ -300,55 +304,151 @@ def cmd_library(args: list[str]) -> dict:
     return _req("GET", "/v1/engine/library/avatars")
 
 
-# ── view: room → self-contained interactive living-knowledge graph (HTML) ───────
-# Force-directed canvas + click-to-deepen inspector — the webapp's KnowledgeGraph,
-# portable: one file, zero dependencies, works offline, shareable.
+# ── view: graph → ONE self-contained tabbed artifact (Map · Infographic · Ask) ──
+# Tab 1 Map: force-directed canvas with INCREMENTAL display — starts at the concepts,
+#   each click reveals that node's web (+N badges show what's hidden), and the inspector
+#   deepens progressively (L1 → L3 → L5), the living-knowledge way.
+# Tab 2 Infographic: the NotebookLM-style designed one-pager (light theme, scoped CSS).
+# Tab 3 Ask: graph-grounded chat → engine /kg/chat (paths + bridge nodes computed
+#   server-side); creation intents ("draft a post…") return a full artifact — agentic.
+# One file, zero dependencies; chat needs the engine reachable (URL baked at generation).
 
-_VIEW_HTML = """<!doctype html><meta charset=utf-8><title>__TITLE__ — living knowledge</title>
+_VIEW_HTML = """<!doctype html><html><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>__TITLE__ — living knowledge</title>
 <style>
-:root{color-scheme:dark}body{margin:0;background:#0d0d0f;color:#e8e8e8;font:13px/1.5 -apple-system,Inter,system-ui;overflow:hidden}
-#wrap{display:flex;height:100vh}#cv{flex:1;cursor:grab}
-#side{width:340px;border-left:1px solid #26262b;padding:16px;overflow-y:auto;background:#121215}
-h1{font-size:15px;margin:0 0 4px}.meta{color:#888;font-size:11px;margin-bottom:10px}
-.hint{color:#666;font-size:12px}.ty{font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:4px;color:#0d0d0f;font-weight:700}
+:root{color-scheme:dark}
+body{margin:0;background:#0d0d0f;color:#e8e8e8;font:14px/1.5 -apple-system,Inter,system-ui;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+nav{display:flex;gap:6px;padding:9px 12px;border-bottom:1px solid #26262b;background:#121215;align-items:center;flex-shrink:0}
+nav .t{background:none;border:1px solid #333;border-radius:8px;color:#aaa;padding:6px 16px;font-size:13px;cursor:pointer}
+nav .t.on{background:#e8e8e8;color:#0d0d0f;border-color:#e8e8e8;font-weight:600}
+nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
+.tab{flex:1;display:none;overflow:hidden;position:relative}.tab.on{display:flex}
+/* ── map tab ── */
+#tab-map{flex-direction:row}
+#cv{flex:1;cursor:grab;touch-action:none}
+#side{width:340px;border-left:1px solid #26262b;padding:14px;overflow-y:auto;background:#121215}
+.meta{color:#888;font-size:11px;margin-bottom:10px}
+.meta button{background:#1d1d22;color:#bbb;border:1px solid #333;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer}
+.hint{color:#666;font-size:12px}
+.ty{font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:4px;color:#0d0d0f;font-weight:700}
 .t-concept{background:#6ab0f3}.t-claim{background:#d4a574}.t-evidence{background:#7bd88f}.t-question{background:#c08af3}
-.sum{color:#ccc;margin:8px 0}.layer{border:1px solid #26262b;border-radius:8px;padding:8px 10px;margin:8px 0;background:#16161a}
+.sum{color:#ccc;margin:8px 0}
+.layer{border:1px solid #26262b;border-radius:8px;padding:8px 10px;margin:8px 0;background:#16161a}
 .layer h3{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#9a8}
 .ev{color:#7bd88f;font-style:italic;font-size:12px;margin:4px 0}.principle{color:#6ab0f3}
-button{background:#1d1d22;color:#bbb;border:1px solid #333;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;margin-top:6px}
-button:hover{color:#fff;border-color:#666}.link{color:#d4a574;cursor:pointer;display:block;padding:2px 0;font-size:12px}
-</style>
-<div id=wrap><canvas id=cv></canvas><div id=side>
-<h1>__TITLE__</h1><div class=meta>__META__ · click a node (dot or label) for its full details · drag to move · scroll to zoom</div>
-<div id=panel class=hint>Click a node to see its details.</div></div></div>
+#panel button,.deep{background:#1d1d22;color:#bbb;border:1px solid #333;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;margin-top:6px}
+#panel button:hover{color:#fff;border-color:#666}
+.link{color:#d4a574;cursor:pointer;display:block;padding:2px 0;font-size:12px}
+/* ── infographic tab (light, scoped) ── */
+#tab-info{overflow-y:auto;background:#f4f2ec;color:#1c1f26;display:none}
+#tab-info.on{display:block}
+#tab-info *{box-sizing:border-box}
+#tab-info .page{max-width:880px;margin:0 auto;padding:0 20px 48px;font-size:15px;line-height:1.55}
+#tab-info header{background:linear-gradient(135deg,#1d2742,#3b2f63 60%,#7c4d2e);color:#fff;border-radius:0 0 26px 26px;padding:42px 34px 32px;margin:0 -20px}
+#tab-info .kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.75}
+#tab-info h1{font-size:clamp(24px,4.4vw,38px);line-height:1.15;margin:10px 0 6px;font-weight:800}
+#tab-info .sub{opacity:.8;font-size:13px}
+#tab-info .stats{display:flex;gap:12px;flex-wrap:wrap;margin:-26px 0 30px}
+#tab-info .stat{flex:1;min-width:120px;background:#fff;border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(25,28,40,.10)}
+#tab-info .stat b{display:block;font-size:30px;font-weight:800;color:#3b2f63}
+#tab-info .stat span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8377}
+#tab-info h2{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#7c4d2e;margin:36px 0 14px;display:flex;align-items:center;gap:10px}
+#tab-info h2:after{content:"";flex:1;height:1px;background:#ded8ca}
+#tab-info .ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+#tab-info .idea{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(25,28,40,.07);position:relative}
+#tab-info .idea-n{position:absolute;top:14px;right:16px;font-size:26px;font-weight:800;color:#ece7db}
+#tab-info .idea h3{margin:0 38px 6px 0;font-size:16px;line-height:1.3;color:#1d2742}
+#tab-info .idea p{margin:0 0 10px;font-size:13.5px;color:#4a4f5b}
+#tab-info .principle{background:#f4efff;border-left:3px solid #6b4fd8;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#3b2f63;margin-bottom:10px;font-weight:600}
+#tab-info .chip{display:inline-block;background:#ece7db;color:#6b6354;border-radius:99px;padding:2px 10px;font-size:11px;margin:2px 4px 0 0}
+#tab-info .chip.big{background:#fff;font-size:12.5px;padding:6px 14px;box-shadow:0 2px 8px rgba(25,28,40,.08);color:#3b2f63;font-weight:600}
+#tab-info ol.claims{margin:0;padding:0;list-style:none;counter-reset:cl;columns:2;column-gap:18px}
+#tab-info ol.claims li{counter-increment:cl;background:#fff;border-radius:12px;padding:13px 14px 13px 46px;margin:0 0 10px;font-size:13.5px;position:relative;break-inside:avoid;box-shadow:0 3px 12px rgba(25,28,40,.06)}
+#tab-info ol.claims li:before{content:counter(cl,decimal-leading-zero);position:absolute;left:13px;top:12px;font-weight:800;color:#b3503f;font-size:13px}
+#tab-info .quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+#tab-info .quote{background:#1d2742;color:#e9e5da;border-radius:14px;padding:16px 18px;font-size:13.5px;font-style:italic;line-height:1.6}
+#tab-info footer{margin-top:42px;font-size:11px;color:#9a9385;text-align:center}
+@media(max-width:640px){#tab-info ol.claims{columns:1}}
+/* ── ask tab ── */
+#tab-ask{flex-direction:column;background:#0f0f12}
+#log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:780px;border-radius:14px;padding:10px 14px;font-size:14px;white-space:pre-wrap;line-height:1.55}
+.me{align-self:flex-end;background:#2b3a55}
+.bot{align-self:flex-start;background:#1a1a1f;border:1px solid #26262b}
+.bot.thinking{color:#888;font-style:italic}
+.cite{display:inline-block;background:#26324a;color:#9cc0ff;border-radius:99px;padding:2px 10px;font-size:11px;margin:6px 6px 0 0;cursor:pointer;font-style:normal}
+#askrow{display:flex;gap:8px;padding:12px;border-top:1px solid #26262b;flex-shrink:0}
+#q{flex:1;background:#16161a;border:1px solid #333;border-radius:10px;color:#eee;padding:10px 12px;font-size:14px;outline:none}
+#q:focus{border-color:#6ab0f3}
+#send{background:#6ab0f3;color:#0d0d0f;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer}
+#send:disabled{opacity:.4}
+@media(max-width:700px){#tab-map{flex-direction:column}#side{width:auto;max-height:45%;border-left:none;border-top:1px solid #26262b}}
+</style></head><body>
+<nav>
+<button class="t on" data-tab=map>🕸 Map</button>
+<button class=t data-tab=info>📊 Infographic</button>
+<button class=t data-tab=ask>💬 Ask</button>
+<span class=title>__TITLE__</span>
+</nav>
+<div id=tab-map class="tab on">
+<canvas id=cv></canvas>
+<div id=side>
+<div class=meta>__META__ · tap a node to expand its web (+N = hidden neighbors) · <span id=visinfo></span> <button id=showall>show all</button></div>
+<div id=panel class=hint>Tap a concept to begin. The map grows as you explore — and the inspector deepens layer by layer.</div>
+</div>
+</div>
+<div id=tab-info class=tab>__INFO__</div>
+<div id=tab-ask class=tab>
+<div id=log><div class="msg bot">Ask this knowledge graph anything.
+• "How does X connect to Y?" — answered with the real path through the graph
+• "What are the hidden patterns here?" — bridge nodes, disconnected regions
+• Agentic: "draft a LinkedIn post about the big idea" — returns the full piece, grounded
+(engine: __API__)</div></div>
+<div id=askrow><input id=q placeholder="Ask the graph — or ask it to create something…"><button id=send>Ask</button></div>
+</div>
 <script type="application/json" id=g>__GRAPH__</script>
 <script>
-const G=JSON.parse(document.getElementById('g').textContent);
-const cv=document.getElementById('cv'),cx=cv.getContext('2d'),panel=document.getElementById('panel');
+const G=JSON.parse(document.getElementById('g').textContent), API="__API__";
+/* ── tabs ── */
+function show(t){document.querySelectorAll('nav .t').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+document.querySelectorAll('.tab').forEach(d=>d.classList.toggle('on',d.id==='tab-'+t));
+if(t==='map')rs()}
+document.querySelectorAll('nav .t').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+/* ── map: incremental force graph ── */
+const cv=document.getElementById('cv'),cx=cv.getContext('2d'),panel=document.getElementById('panel'),visinfo=document.getElementById('visinfo');
 const COLOR={concept:'#6ab0f3',claim:'#d4a574',evidence:'#7bd88f',question:'#c08af3'};
-// Coordinates: graph space → CSS px via (x*zoom + cw/2 + panX); the dpr factor lives ONLY in
-// the canvas backing store + draw transform, never in pointer math. (v1 mixed dpr into both,
-// so on Retina everything rendered half-size and the click hit-test landed off the nodes.)
 let W,H,cw,ch;function rs(){cw=cv.clientWidth;ch=cv.clientHeight;W=cv.width=cw*devicePixelRatio;H=cv.height=ch*devicePixelRatio}
 window.addEventListener('resize',rs);
 const N=G.nodes.map((n,i)=>({...n,x:Math.cos(i*2.4)*(120+i*6),y:Math.sin(i*2.4)*(120+i*6),vx:0,vy:0}));
 const byId=Object.fromEntries(N.map(n=>[n.id,n]));
 const E=G.edges.filter(e=>byId[e.source]&&byId[e.target]);
-let zoom=1.6,panX=0,panY=0,drag=null,sel=null,hov=null,depth=3;
-function step(){for(const a of N){for(const b of N){if(a===b)continue;const dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy+0.01,f=2200/d2;a.vx+=dx*f/Math.sqrt(d2);a.vy+=dy*f/Math.sqrt(d2)}a.vx-=a.x*0.0015;a.vy-=a.y*0.0015}
-for(const e of E){const s=byId[e.source],t=byId[e.target],dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy)+0.01,f=Math.max(-4,Math.min(4,(d-110)*0.01));s.vx+=dx/d*f;s.vy+=dy/d*f;t.vx-=dx/d*f;t.vy-=dy/d*f}
-for(const n of N){if(n===drag)continue;n.vx*=0.86;n.vy*=0.86;n.x+=n.vx;n.y+=n.vy}}
+const adj={};for(const e of E){(adj[e.source]=adj[e.source]||[]).push(e.target);(adj[e.target]=adj[e.target]||[]).push(e.source)}
+/* INCREMENTAL: start with the concepts (the L1 skeleton); everything else appears as you explore */
+const vis=new Set(N.filter(n=>n.type==='concept').map(n=>n.id));
+if(!vis.size)N.forEach(n=>vis.add(n.id));
+function reveal(n){(adj[n.id]||[]).forEach(i=>vis.add(i));updVis()}
+function updVis(){visinfo.textContent=vis.size+'/'+N.length+' nodes shown'}
+updVis();
+document.getElementById('showall').onclick=()=>{N.forEach(n=>vis.add(n.id));updVis()};
+let zoom=1.5,panX=0,panY=0,drag=null,sel=null,hov=null,depth=1;
+function step(){const V=N.filter(n=>vis.has(n.id));
+for(const a of V){for(const b of V){if(a===b)continue;const dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy+0.01,f=2200/d2;a.vx+=dx*f/Math.sqrt(d2);a.vy+=dy*f/Math.sqrt(d2)}a.vx-=a.x*0.0015;a.vy-=a.y*0.0015}
+for(const e of E){if(!vis.has(e.source)||!vis.has(e.target))continue;const s=byId[e.source],t=byId[e.target],dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy)+0.01,f=Math.max(-4,Math.min(4,(d-110)*0.01));s.vx+=dx/d*f;s.vy+=dy/d*f;t.vx-=dx/d*f;t.vy-=dy/d*f}
+for(const n of V){if(n===drag)continue;n.vx*=0.86;n.vy*=0.86;n.x+=n.vx;n.y+=n.vy}}
 const R=n=>n.type==='concept'?15:11;
 function draw(){const k=devicePixelRatio;cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,W,H);cx.setTransform(zoom*k,0,0,zoom*k,(cw/2+panX)*k,(ch/2+panY)*k);
-cx.strokeStyle='#2a2a30';cx.lineWidth=1;for(const e of E){const s=byId[e.source],t=byId[e.target];cx.beginPath();cx.moveTo(s.x,s.y);cx.lineTo(t.x,t.y);cx.stroke();
+cx.strokeStyle='#2a2a30';cx.lineWidth=1;
+for(const e of E){if(!vis.has(e.source)||!vis.has(e.target))continue;const s=byId[e.source],t=byId[e.target];cx.beginPath();cx.moveTo(s.x,s.y);cx.lineTo(t.x,t.y);cx.stroke();
 cx.fillStyle='#555';cx.font='7px sans-serif';cx.fillText(e.type||'',(s.x+t.x)/2,(s.y+t.y)/2)}
-for(const n of N){const r=R(n);cx.beginPath();cx.arc(n.x,n.y,r,0,7);cx.fillStyle=COLOR[n.type]||'#888';cx.globalAlpha=sel&&sel!==n&&hov!==n?0.45:1;cx.fill();
+for(const n of N){if(!vis.has(n.id))continue;const r=R(n);cx.beginPath();cx.arc(n.x,n.y,r,0,7);cx.fillStyle=COLOR[n.type]||'#888';cx.globalAlpha=sel&&sel!==n&&hov!==n?0.45:1;cx.fill();
 if(sel===n||hov===n){cx.strokeStyle='#fff';cx.lineWidth=2;cx.stroke()}cx.globalAlpha=1;
+const hid=(adj[n.id]||[]).filter(i=>!vis.has(i)).length;
+if(hid){cx.fillStyle='#e8b04a';cx.font='bold 9px sans-serif';cx.fillText('+'+hid,n.x-r-14,n.y+3)}
 cx.fillStyle=hov===n?'#fff':'#ddd';cx.font='10px sans-serif';cx.fillText((n.name||'').slice(0,30),n.x+r+4,n.y+3)}}
 function loop(){step();draw();requestAnimationFrame(loop)}
 function pt(ev){const b=cv.getBoundingClientRect();return{x:((ev.clientX-b.left)-cw/2-panX)/zoom,y:((ev.clientY-b.top)-ch/2-panY)/zoom}}
-// Generous hit zone: the circle OR its label (people click the words, not the dot).
-function hit(p){return N.find(n=>{const dx=p.x-n.x,dy=p.y-n.y,r=R(n)+6;if(dx*dx+dy*dy<r*r)return true;
+function hit(p){return N.find(n=>{if(!vis.has(n.id))return false;const dx=p.x-n.x,dy=p.y-n.y,r=R(n)+6;if(dx*dx+dy*dy<r*r)return true;
 const lw=Math.min(30,(n.name||'').length)*5.6;return p.x>n.x+R(n)&&p.x<n.x+R(n)+lw&&Math.abs(dy)<9})}
 let panning=null,down=null,moved=false;
 cv.addEventListener('pointerdown',ev=>{cv.setPointerCapture(ev.pointerId);down={x:ev.clientX,y:ev.clientY};moved=false;
@@ -358,66 +458,58 @@ if(drag&&moved){const p=pt(ev);drag.x=p.x;drag.y=p.y;drag.vx=drag.vy=0}
 else if(panning&&moved){panX=ev.clientX-panning.x;panY=ev.clientY-panning.y}
 else if(!down){hov=hit(pt(ev));cv.style.cursor=hov?'pointer':'grab'}});
 cv.addEventListener('pointerup',ev=>{
-// a CLICK is a press that barely moved — select (full details) or clear; a real drag isn't.
-if(!moved){const n=hit(pt(ev));sel=n||null;depth=3;inspect()}
+if(!moved){const n=hit(pt(ev));if(n){selNode(n,1)}else{sel=null;inspect()}}
 drag=null;panning=null;down=null});
 cv.addEventListener('wheel',ev=>{ev.preventDefault();zoom=Math.min(5,Math.max(0.3,zoom*(ev.deltaY<0?1.1:0.9)))},{passive:false});
+function selNode(n,d){sel=n;depth=d;reveal(n);inspect()}
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
-function inspect(){const n=sel;if(!n){panel.className='hint';panel.textContent='Click a node to see its details.';return}panel.className='';
-// Full living-knowledge detail on every click — L1 plain summary, L3 principle + transfers,
-// L5 the surrounding web + verbatim evidence. The layer headers keep the depth structure
-// legible without making the user click "deeper" to get what they came for.
+/* INCREMENTAL inspector: L1 → (deeper) → L3 → (deeper) → L5 — stop at the depth the moment needs */
+function inspect(){const n=sel;if(!n){panel.className='hint';panel.textContent='Tap a node.';return}panel.className='';
 let h=`<span class="ty t-${esc(n.type)}">${esc(n.type)}</span> <b>${esc(n.name)}</b><div class=sum>${esc(n.summary||'')}</div>`;
+if(depth>=2){
 if(n.principle)h+=`<div class=layer><h3>L3 · principle</h3><div class=principle>${esc(n.principle)}</div>${(n.transfer_domains||[]).map(t=>`<div class=hint>transfers → ${esc(t)}</div>`).join('')}</div>`;
 if(n.limitation)h+=`<div class=layer><h3>limitation</h3>${esc(n.limitation)}</div>`;
-const nb=E.filter(e=>e.source===n.id||e.target===n.id).map(e=>{const o=byId[e.source===n.id?e.target:e.source];return `<span class=link data-id="${esc(o.id)}">${esc(e.type)} → ${esc(o.name)}</span>`}).join('');
+if(!n.principle&&!n.limitation)h+=`<div class=layer><h3>L3</h3><div class=hint>no deeper layer recorded for this node</div></div>`}
+if(depth>=3){const nb=E.filter(e=>e.source===n.id||e.target===n.id).map(e=>{const o=byId[e.source===n.id?e.target:e.source];return `<span class=link data-id="${esc(o.id)}">${esc(e.type)} → ${esc(o.name)}</span>`}).join('');
 h+=`<div class=layer><h3>L5 · the web around it</h3>${nb||'<div class=hint>no edges</div>'}</div>`;
 const evs=N.filter(o=>o.type==='evidence'&&E.some(e=>(e.source===n.id&&e.target===o.id)||(e.target===n.id&&e.source===o.id)));
-if(evs.length)h+=`<div class=layer><h3>verbatim evidence</h3>${evs.map(o=>`<div class=ev>“${esc(o.summary)}”</div>`).join('')}</div>`;
+if(evs.length)h+=`<div class=layer><h3>verbatim evidence</h3>${evs.map(o=>`<div class=ev>“${esc(o.summary)}”</div>`).join('')}</div>`}
+if(depth<3)h+=`<button class=deep id=deep>go deeper → ${depth===1?'L3 (principle)':'L5 (the web + evidence)'}</button>`;
 panel.innerHTML=h;
-panel.querySelectorAll('.link').forEach(a=>a.onclick=()=>{sel=byId[a.dataset.id];inspect()})}
-// Programmatic hook so an agent (or test) can open a node's layers without pointer math:
-// dmtSelect('infinite games') → selects the first name-matching node at full depth.
-window.dmtSelect=q=>{const n=N.find(x=>(x.name||'').toLowerCase().includes(String(q).toLowerCase()));if(n){sel=n;depth=3;inspect()}return n?(n.name):null};
-// dmtScreen('name') → the node's center in viewport CSS px (for dispatching real clicks in tests).
+const d=document.getElementById('deep');if(d)d.onclick=()=>{depth++;inspect()};
+panel.querySelectorAll('.link').forEach(a=>a.onclick=()=>{const o=byId[a.dataset.id];if(o){vis.add(o.id);selNode(o,1)}})}
+window.dmtSelect=q=>{const n=N.find(x=>(x.name||'').toLowerCase().includes(String(q).toLowerCase()));if(n){vis.add(n.id);selNode(n,3)}return n?n.name:null};
 window.dmtScreen=q=>{const n=N.find(x=>(x.name||'').toLowerCase().includes(String(q).toLowerCase()));if(!n)return null;
 const b=cv.getBoundingClientRect();return{x:n.x*zoom+cw/2+panX+b.left,y:n.y*zoom+ch/2+panY+b.top,name:n.name}};
 rs();loop();
-</script>"""
+/* ── ask: graph-grounded chat → engine /kg/chat ── */
+const log=document.getElementById('log'),q=document.getElementById('q'),send=document.getElementById('send');
+const hist=[];
+function add(cls,text){const d=document.createElement('div');d.className='msg '+cls;d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+async function ask(){const question=q.value.trim();if(!question)return;q.value='';send.disabled=true;
+add('me',question);hist.push({role:'user',content:question});
+const t=add('bot thinking','thinking — walking the graph…');
+try{
+const r=await fetch(API+'/v1/engine/kg/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({graph:{nodes:G.nodes,edges:G.edges},question,history:hist.slice(-8),user_name:'You'})});
+if(!r.ok)throw new Error('engine '+r.status);
+const out=await r.json();
+t.className='msg bot';t.textContent=out.answer||'(no answer)';
+hist.push({role:'assistant',content:out.answer||''});
+for(const id of out.cited_node_ids||[]){const n=byId[id];if(!n)continue;
+const c=document.createElement('span');c.className='cite';c.textContent='🕸 '+n.name;
+c.onclick=()=>{vis.add(n.id);selNode(n,3);show('map')};t.appendChild(c)}
+}catch(e){t.className='msg bot';
+t.textContent='Engine unreachable at '+API+' — start DreamMakeTrue (dmt.py start) or regenerate this file with DMT_API_URL pointing at a reachable engine. ('+e.message+')'}
+send.disabled=false;q.focus()}
+send.onclick=ask;q.addEventListener('keydown',e=>{if(e.key==='Enter')ask()});
+window.dmtAsk=t=>{q.value=t;ask();return 'asked'};
+</script></body></html>"""
 
 
-def _render_view(graph: dict, title: str, meta: str, out_path: str, slug: str) -> dict:
-    page = (
-        _VIEW_HTML.replace("__TITLE__", title.replace("<", "&lt;")[:120])
-        .replace("__META__", meta)
-        .replace("__GRAPH__", json.dumps(graph, ensure_ascii=False).replace("</", "<\\/"))
-    )
-    out_path = out_path or os.path.join(
-        os.path.expanduser("~/Desktop") if os.path.isdir(os.path.expanduser("~/Desktop")) else ".",
-        f"dmt-map-{slug}.html",
-    )
-    with open(out_path, "w") as f:
-        f.write(page)
-    # NotebookLM-style companion: same knowledge, as a designed one-page infographic.
-    info_path = out_path.rsplit(".", 1)[0] + "-infographic.html"
-    with open(info_path, "w") as f:
-        f.write(_render_infographic(graph, title))
-    if sys.platform == "darwin":  # best-effort: open them for the user
-        subprocess.run(["open", out_path], capture_output=True)
-        subprocess.run(["open", info_path], capture_output=True)
-    return {
-        "html": out_path,
-        "infographic": info_path,
-        "title": title,
-        "nodes": len(graph["nodes"]),
-        "edges": len(graph["edges"]),
-    }
-
-
-def _render_infographic(graph: dict, title: str) -> str:
-    """The knowledge base as a designed ONE-PAGER (à la NotebookLM's infographic): big ideas
-    with principles, key claims, verbatim quotes, transfer domains. Deterministic — built
-    straight from the graph, no extra LLM call. Print-friendly (save as PDF to share)."""
+def _infographic_body(graph: dict, title: str) -> str:
+    """The infographic tab's inner HTML (styles live scoped in _VIEW_HTML). Deterministic —
+    built straight from the graph, no extra LLM call. Print-friendly via the page CSS."""
     import html as _h
 
     e = _h.escape
@@ -435,67 +527,83 @@ def _render_infographic(graph: dict, title: str) -> str:
         principle = c.get("principle") or ""
         p_html = f"<div class=principle>⚡ {e(principle)}</div>" if principle else ""
         t_html = "".join(
-            f"<span class=chip>{e(t)}</span>" for t in (c.get("transfer_domains") or [])[:3]
+            f"<span class=chip>{e(t)}</span>"
+            for t in (c.get("transfer_domains") or [])[:3]
         )
         cards.append(
             f"<div class=idea><div class=idea-n>{i + 1:02d}</div><h3>{name}</h3>"
             f"<p>{summary}</p>{p_html}{t_html}</div>"
         )
     idea_cards = "".join(cards)
-    claim_rows = "".join(f"<li>{e(c.get('summary') or c.get('name', ''))}</li>" for c in claims[:8])
+    claim_rows = "".join(
+        f"<li>{e(c.get('summary') or c.get('name', ''))}</li>" for c in claims[:8]
+    )
     quote_cards = "".join(
-        f"<div class=quote>“{e((q.get('summary') or '')[:280])}”</div>" for q in evidence[:6]
+        f"<div class=quote>“{e((q.get('summary') or '')[:280])}”</div>"
+        for q in evidence[:6]
     )
     chips = "".join(f"<span class='chip big'>{e(t)}</span>" for t in transfers[:14])
 
-    return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>{e(title[:120])} — infographic</title>
-<style>
-*{{box-sizing:border-box}}body{{margin:0;font:15px/1.55 -apple-system,Inter,system-ui;color:#1c1f26;background:#f4f2ec}}
-.page{{max-width:880px;margin:0 auto;padding:0 20px 48px}}
-header{{background:linear-gradient(135deg,#1d2742,#3b2f63 60%,#7c4d2e);color:#fff;border-radius:0 0 26px 26px;padding:46px 34px 34px;margin:0 -20px}}
-header .kicker{{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.75}}
-header h1{{font-size:clamp(24px,4.4vw,40px);line-height:1.15;margin:10px 0 6px;font-weight:800}}
-header .sub{{opacity:.8;font-size:13px}}
-.stats{{display:flex;gap:12px;flex-wrap:wrap;margin:-26px 0 30px}}
-.stat{{flex:1;min-width:120px;background:#fff;border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(25,28,40,.10)}}
-.stat b{{display:block;font-size:30px;font-weight:800;color:#3b2f63}}
-.stat span{{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8377}}
-h2{{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#7c4d2e;margin:36px 0 14px;display:flex;align-items:center;gap:10px}}
-h2:after{{content:"";flex:1;height:1px;background:#ded8ca}}
-.ideas{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}}
-.idea{{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(25,28,40,.07);position:relative}}
-.idea-n{{position:absolute;top:14px;right:16px;font-size:26px;font-weight:800;color:#ece7db}}
-.idea h3{{margin:0 38px 6px 0;font-size:16px;line-height:1.3;color:#1d2742}}
-.idea p{{margin:0 0 10px;font-size:13.5px;color:#4a4f5b}}
-.principle{{background:#f4efff;border-left:3px solid #6b4fd8;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#3b2f63;margin-bottom:10px;font-weight:600}}
-.chip{{display:inline-block;background:#ece7db;color:#6b6354;border-radius:99px;padding:2px 10px;font-size:11px;margin:2px 4px 0 0}}
-.chip.big{{background:#fff;font-size:12.5px;padding:6px 14px;box-shadow:0 2px 8px rgba(25,28,40,.08);color:#3b2f63;font-weight:600}}
-ol.claims{{margin:0;padding:0;list-style:none;counter-reset:cl;columns:2;column-gap:18px}}
-ol.claims li{{counter-increment:cl;background:#fff;border-radius:12px;padding:13px 14px 13px 46px;margin:0 0 10px;font-size:13.5px;position:relative;break-inside:avoid;box-shadow:0 3px 12px rgba(25,28,40,.06)}}
-ol.claims li:before{{content:counter(cl,decimal-leading-zero);position:absolute;left:13px;top:12px;font-weight:800;color:#b3503f;font-size:13px}}
-.quotes{{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}}
-.quote{{background:#1d2742;color:#e9e5da;border-radius:14px;padding:16px 18px;font-size:13.5px;font-style:italic;line-height:1.6}}
-footer{{margin-top:42px;font-size:11px;color:#9a9385;text-align:center}}
-@media(max-width:640px){{ol.claims{{columns:1}}}}
-@media print{{body{{background:#fff}}.stat,.idea,ol.claims li{{box-shadow:none;border:1px solid #e5e0d3}}}}
-</style>
-<div class=page>
-<header><div class=kicker>Living Knowledge · Infographic</div>
-<h1>{e(title[:140])}</h1>
-<div class=sub>compressed from the source by the DreamMakeTrue engine — every claim grounded, every quote verbatim</div></header>
-<div class=stats>
-<div class=stat><b>{len(concepts)}</b><span>big ideas</span></div>
-<div class=stat><b>{len(claims)}</b><span>key claims</span></div>
-<div class=stat><b>{len(evidence)}</b><span>verbatim quotes</span></div>
-<div class=stat><b>{len(graph["edges"])}</b><span>connections</span></div>
-</div>
-{f"<h2>The Big Ideas</h2><div class=ideas>{idea_cards}</div>" if idea_cards else ""}
-{f"<h2>Key Claims</h2><ol class=claims>{claim_rows}</ol>" if claim_rows else ""}
-{f"<h2>In Their Own Words</h2><div class=quotes>{quote_cards}</div>" if quote_cards else ""}
-{f"<h2>Where These Ideas Transfer</h2><div>{chips}</div>" if chips else ""}
-<footer>generated by DreamMakeTrue · kgfy — pair with the interactive map for full depth</footer>
-</div>"""
+    ideas_sec = (
+        f"<h2>The Big Ideas</h2><div class=ideas>{idea_cards}</div>"
+        if idea_cards
+        else ""
+    )
+    claims_sec = (
+        f"<h2>Key Claims</h2><ol class=claims>{claim_rows}</ol>" if claim_rows else ""
+    )
+    quotes_sec = (
+        f"<h2>In Their Own Words</h2><div class=quotes>{quote_cards}</div>"
+        if quote_cards
+        else ""
+    )
+    chips_sec = (
+        f"<h2>Where These Ideas Transfer</h2><div>{chips}</div>" if chips else ""
+    )
+    return (
+        f"<div class=page><header><div class=kicker>Living Knowledge · Infographic</div>"
+        f"<h1>{e(title[:140])}</h1>"
+        f"<div class=sub>compressed from the source by the DreamMakeTrue engine — "
+        f"every claim grounded, every quote verbatim</div></header>"
+        f"<div class=stats>"
+        f"<div class=stat><b>{len(concepts)}</b><span>big ideas</span></div>"
+        f"<div class=stat><b>{len(claims)}</b><span>key claims</span></div>"
+        f"<div class=stat><b>{len(evidence)}</b><span>verbatim quotes</span></div>"
+        f"<div class=stat><b>{len(graph['edges'])}</b><span>connections</span></div>"
+        f"</div>{ideas_sec}{claims_sec}{quotes_sec}{chips_sec}"
+        f"<footer>generated by DreamMakeTrue · kgfy — Map tab for full depth · "
+        f"Ask tab to converse with this knowledge</footer></div>"
+    )
+
+
+def _render_view(graph: dict, title: str, meta: str, out_path: str, slug: str) -> dict:
+    """ONE self-contained tabbed artifact: Map (incremental) · Infographic · Ask (chat)."""
+    page = (
+        _VIEW_HTML.replace("__TITLE__", title.replace("<", "&lt;")[:120])
+        .replace("__META__", meta)
+        .replace("__API__", API)
+        .replace("__INFO__", _infographic_body(graph, title))
+        .replace(
+            "__GRAPH__", json.dumps(graph, ensure_ascii=False).replace("</", "<\\/")
+        )
+    )
+    out_path = out_path or os.path.join(
+        os.path.expanduser("~/Desktop")
+        if os.path.isdir(os.path.expanduser("~/Desktop"))
+        else ".",
+        f"dmt-map-{slug}.html",
+    )
+    with open(out_path, "w") as f:
+        f.write(page)
+    if sys.platform == "darwin":  # best-effort: open it for the user
+        subprocess.run(["open", out_path], capture_output=True)
+    return {
+        "html": out_path,
+        "tabs": ["map (incremental)", "infographic", "ask (chat + agentic)"],
+        "title": title,
+        "nodes": len(graph["nodes"]),
+        "edges": len(graph["edges"]),
+    }
 
 
 def cmd_view(args: list[str]) -> dict:
