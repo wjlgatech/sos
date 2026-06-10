@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `plugins/sos/skills/nvidia-free-llm/` — **NVIDIA's free NIM API as a skill.** 120 hosted
+  frontier models behind one OpenAI-compatible endpoint, free key from build.nvidia.com
+  (~40 req/min, ~1yr). SKILL.md documents verified model ids — the viral post's GLM/Kimi ids
+  were WRONG (`zhipuai/glm-5.1` → `z-ai/glm-5.1`, `moonshot-ai/kimi-2.5` →
+  `moonshotai/kimi-k2.6`; catalog listable without a key, fact-checked live) — plus wiring
+  for Hermes / Cursor / OpenCode / DreamMakeTrue (which gained a one-click "NVIDIA NIM
+  (free)" Settings preset). `scripts/nim.py` (zero-dep): `list [filter]` (live catalog),
+  `test <model>` (one tiny completion), `pick` (recommended id per role). Guidance: verify
+  ids before wiring (they churn), respect 40 req/min, keep a fallback.
 - `dreammaketrue` artifact voice: diagnostic failure messages. Investigated a "could not
   transcribe" report: OS-level mic capture verified healthy (sounddevice RMS/peak test) and
   whisper transcribed a live room recording — so empty transcripts mean the BROWSER stream
