@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Fixed
+
+- `nvidia-free-llm` `nim.py test`: no longer crashes on reasoning-style replies —
+  gpt-oss/nemotron-class models put output in `reasoning_content` (with `content` None or
+  absent when the token budget is eaten by thinking). Now falls back
+  content→reasoning_content and bumps max_tokens 40→200. Found live: gpt-oss-120b answered
+  in 0.6s but `test` raised TypeError/KeyError on its shape.
+
 ### Added
 
 - `plugins/sos/skills/living-repo/` — **awesome-list → living knowledge system.**

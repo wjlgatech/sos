@@ -72,13 +72,16 @@ def cmd_test(args: list[str]) -> None:
         key,
         {
             "model": model,
-            "max_tokens": 40,
+            # reasoning models (gpt-oss, nemotron) spend tokens thinking before any
+            # content appears — too small a budget yields content=None
+            "max_tokens": 200,
             "messages": [{"role": "user", "content": "Say 'ready' and today's weekday."}],
         },
     )
     ms = int((time.time() - t0) * 1000)
-    txt = out["choices"][0]["message"]["content"]
-    print(json.dumps({"ok": True, "model": model, "latency_ms": ms, "reply": txt[:120]}))
+    msg = out["choices"][0]["message"]
+    txt = msg.get("content") or msg.get("reasoning_content") or ""
+    print(json.dumps({"ok": bool(txt), "model": model, "latency_ms": ms, "reply": txt[:120]}))
 
 
 def cmd_pick(_: list[str]) -> None:
