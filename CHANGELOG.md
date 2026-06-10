@@ -7,6 +7,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill: after publish, the FILE copy of an artifact is re-baked with the
+  engine's **LAN url** (not localhost) — a downloaded artifact opened on a phone now reaches
+  the engine over Wi-Fi (pairs with the engine's null-origin CORS fix). The served copy is
+  untouched (always same-origin). `file_engine` reported in the result.
 - `dreammaketrue` artifact: **the chat is now a persistent Ask dock beside the content**, not
   a third tab — you converse with the knowledge WHILE looking at the Map or the Infographic
   (Paul: "I can not ask questions [from the infographic]"). `#workspace` = content + 380px

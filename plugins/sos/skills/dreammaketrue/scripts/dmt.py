@@ -623,6 +623,16 @@ def _render_view(graph: dict, title: str, meta: str, out_path: str, slug: str) -
         )
         out["served_url"] = pub.get("local_url")
         out["phone_url"] = pub.get("lan_url")
+        # Re-bake the FILE copy with the LAN engine URL: a downloaded artifact opened on a
+        # phone (file://, Origin: null) can then still reach the engine over Wi-Fi. The
+        # SERVED copy is unaffected — it always talks to its own origin.
+        lan = pub.get("lan_url") or ""
+        if lan.startswith("http"):
+            lan_origin = lan.split("/artifacts/")[0]
+            if lan_origin != API:
+                with open(out_path, "w") as f:
+                    f.write(page.replace(API, lan_origin))
+                out["file_engine"] = lan_origin
     except Exception:
         out["served_url"] = None
     if sys.platform == "darwin":  # best-effort: open it for the user
