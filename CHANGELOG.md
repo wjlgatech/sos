@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill: **`kgfy` — one word, any source → living-knowledge map.** Paul's
+  spoken UX ("I give you a repo and say kg-fy it"): `dmt.py kgfy <anything>` handles a GitHub
+  repo / website / YouTube / podcast URL (engine's tiered ingestion), a local file — PDF,
+  audio, video, notebook routed through the engine's `/upload` extractors (pypdf·vision·
+  whisper) via a stdlib multipart client, text read directly — or a folder (README + docs +
+  up to 5 binaries). Straight to the chunked topic-map extractor and the interactive HTML;
+  no room/avatars required. Generic "user-provided text" topic label replaced by the real
+  source name. Verified live on free local Ollama: GitHub repo URL → 29 nodes (3min);
+  9.7MB PDF → 38 nodes (4.6min).
 - `dreammaketrue` skill `view` v2 — **nodes are actually clickable now, and a click shows the
   FULL details.** User-reported: nodes weren't clickable/expandable. Three real defects:
   (1) the dpr factor was mixed into both the draw transform and the pointer math, so on a

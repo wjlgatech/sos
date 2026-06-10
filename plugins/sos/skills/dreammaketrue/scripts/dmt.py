@@ -23,6 +23,9 @@ Commands:
                                       room + your verbatim contribution → artifact
                                       F: linkedin_post|essay|podcast_script|video_brief|participation_brief
   library [avatars|topics|stats]      the shared cross-room knowledge base
+  kgfy <repo|url|file|dir>            ANY source → detailed living-knowledge map in one
+                                      shot (no room needed): GitHub repo/article URL via
+                                      engine ingestion, or local file/dir (README+docs)
   view <room_id> [--out map.html]     room → self-contained INTERACTIVE living-knowledge
                                       graph (force layout + click-to-deepen L1→L3→L5);
                                       one HTML file, zero deps, opens automatically
@@ -383,6 +386,28 @@ rs();loop();
 </script>"""
 
 
+def _render_view(graph: dict, title: str, meta: str, out_path: str, slug: str) -> dict:
+    page = (
+        _VIEW_HTML.replace("__TITLE__", title.replace("<", "&lt;")[:120])
+        .replace("__META__", meta)
+        .replace("__GRAPH__", json.dumps(graph, ensure_ascii=False).replace("</", "<\\/"))
+    )
+    out_path = out_path or os.path.join(
+        os.path.expanduser("~/Desktop") if os.path.isdir(os.path.expanduser("~/Desktop")) else ".",
+        f"dmt-map-{slug}.html",
+    )
+    with open(out_path, "w") as f:
+        f.write(page)
+    if sys.platform == "darwin":  # best-effort: open it for the user
+        subprocess.run(["open", out_path], capture_output=True)
+    return {
+        "html": out_path,
+        "title": title,
+        "nodes": len(graph["nodes"]),
+        "edges": len(graph["edges"]),
+    }
+
+
 def cmd_view(args: list[str]) -> dict:
     out_path = ""
     if "--out" in args:
@@ -400,26 +425,147 @@ def cmd_view(args: list[str]) -> dict:
     graph = {"nodes": nodes, "edges": tm.get("edges") or []}
     title = tm.get("topic") or room.get("topic") or args[0]
     meta = f"{len(nodes)} nodes · {len(graph['edges'])} edges · room {room['id']}"
-    page = (
-        _VIEW_HTML.replace("__TITLE__", title.replace("<", "&lt;")[:120])
-        .replace("__META__", meta)
-        .replace("__GRAPH__", json.dumps(graph, ensure_ascii=False).replace("</", "<\\/"))
+    out = _render_view(graph, title, meta, out_path, room["id"][:8])
+    out["webapp"] = "http://localhost:3000 (richer, live view — open the room there)"
+    return out
+
+
+# Extensions the engine's /upload extractor handles better than a raw read (modality parsers:
+# pypdf · vision · whisper). Everything else text-ish is read directly.
+_BINARY_EXT = (
+    ".pdf",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".mp3",
+    ".m4a",
+    ".wav",
+    ".mp4",
+    ".mov",
+    ".webm",
+    ".ipynb",
+    ".docx",
+    ".pptx",
+)
+
+
+def _upload(paths: list[str]) -> str:
+    """Local binary files → extracted text via the engine's /upload (stdlib multipart)."""
+    boundary = "----dmtboundary7f9c2a"
+    body = bytearray()
+    for p in paths:
+        with open(p, "rb") as f:
+            data = f.read()
+        name = os.path.basename(p)
+        body += (
+            f'--{boundary}\r\nContent-Disposition: form-data; name="files"; '
+            f'filename="{name}"\r\nContent-Type: application/octet-stream\r\n\r\n'
+        ).encode()
+        body += data + b"\r\n"
+    body += f"--{boundary}--\r\n".encode()
+    r = urllib.request.Request(
+        API + "/v1/engine/upload",
+        data=bytes(body),
+        method="POST",
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
     )
-    out_path = out_path or os.path.join(
-        os.path.expanduser("~/Desktop") if os.path.isdir(os.path.expanduser("~/Desktop")) else ".",
-        f"dmt-map-{room['id'][:8]}.html",
-    )
-    with open(out_path, "w") as f:
-        f.write(page)
-    if sys.platform == "darwin":  # best-effort: open it for the user
-        subprocess.run(["open", out_path], capture_output=True)
-    return {
-        "html": out_path,
-        "title": title,
-        "nodes": len(nodes),
-        "edges": len(graph["edges"]),
-        "webapp": "http://localhost:3000 (richer, live view — open the room there)",
-    }
+    with urllib.request.urlopen(r, timeout=1800) as resp:
+        out = json.loads(resp.read().decode())
+    parts = []
+    for f in out.get("files") or out.get("results") or (out if isinstance(out, list) else []):
+        if f.get("text"):
+            parts.append(f"\n\n===== {f.get('filename')} =====\n{f['text']}")
+    return "".join(parts)
+
+
+def _gather_repo(path: str, cap: int = 90_000) -> str:
+    """A local repo/dir → one corpus: README first, then docs/markdown/txt, then up to 5
+    binary docs (PDF etc.) through the engine's extractors."""
+    parts: list[str] = []
+    take: list[str] = []
+    binaries: list[str] = []
+    for name in sorted(os.listdir(path)):
+        if name.lower().startswith("readme"):
+            take.append(os.path.join(path, name))
+    for root, dirs, files in os.walk(path):
+        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "node_modules"]
+        for f in sorted(files):
+            full = os.path.join(root, f)
+            if f.endswith((".md", ".mdx", ".rst", ".txt")) and not f.lower().startswith("readme"):
+                take.append(full)
+            elif f.lower().endswith(_BINARY_EXT) and len(binaries) < 5:
+                binaries.append(full)
+    total = 0
+    for p in take:
+        try:
+            t = open(p, encoding="utf-8", errors="ignore").read()
+        except OSError:
+            continue
+        rel = os.path.relpath(p, path)
+        chunk = f"\n\n===== {rel} =====\n{t}"
+        parts.append(chunk)
+        total += len(chunk)
+        if total > cap:
+            break
+    if binaries and total < cap:
+        try:
+            parts.append(_upload(binaries))
+        except Exception as e:  # noqa: BLE001 — binaries are best-effort extras
+            print(f"kgfy: binary extraction skipped ({e})", file=sys.stderr)
+    return "".join(parts)[:cap]
+
+
+def cmd_kgfy(args: list[str]) -> dict:
+    """kgfy: ANY source → detailed living-knowledge map, one command. No room/avatars —
+    straight to the topic-map engine (chunked extraction) and the interactive HTML."""
+    out_path, title = "", ""
+    it, rest = iter(args), []
+    for a in it:
+        if a == "--out":
+            out_path = next(it, "")
+        elif a == "--title":
+            title = next(it, "")
+        else:
+            rest.append(a)
+    if not rest:
+        sys.exit("usage: dmt.py kgfy <github-url | url | file | dir> [--out map.html] [--title T]")
+    src = rest[0]
+    ensure_api()
+
+    if os.path.isdir(src):  # local repo / folder → README + docs corpus (+ a few binaries)
+        text = _gather_repo(src)
+        title = title or os.path.basename(os.path.abspath(src))
+    elif os.path.isfile(src):
+        title = title or os.path.basename(src)
+        if src.lower().endswith(_BINARY_EXT):  # PDF / image / audio / video / notebook …
+            print(f"kgfy: extracting text from {title} via engine…", file=sys.stderr)
+            text = _upload([src])[:90_000]
+        else:  # plain text-ish: md, txt, html, code, …
+            text = open(src, encoding="utf-8", errors="ignore").read()[:90_000]
+        if not text.strip():
+            sys.exit(f"no text could be extracted from {src}")
+    else:  # URL (github repo / article / YouTube / podcast …) → engine ingestion (tiered)
+        doc = _req("POST", "/v1/engine/ingest", {"source": src}, timeout=1800)
+        text = (doc.get("text") or "")[:90_000]
+        title = title or doc.get("title") or src
+        if not text:
+            sys.exit(f"ingestion returned no text for {src} (warnings: {doc.get('warnings')})")
+
+    print(f"kgfy: extracting living-knowledge map from {len(text)} chars…", file=sys.stderr)
+    tm = _req("POST", "/v1/engine/topic-map", {"source_text": text}, timeout=1800)
+    nodes = tm.get("nodes") or []
+    if not nodes:
+        sys.exit(f"extraction produced no nodes (engine said: {str(tm)[:300]})")
+    graph = {"nodes": nodes, "edges": tm.get("edges") or []}
+    slug = "".join(c if c.isalnum() else "-" for c in title.lower())[:32].strip("-")
+    meta = f"{len(nodes)} nodes · {len(graph['edges'])} edges · kgfy of {title[:60]}"
+    # The engine labels pasted text "user-provided text" — prefer the real source's name then.
+    topic = tm.get("topic") or ""
+    if not topic or topic.lower().startswith("user-provided"):
+        topic = title
+    return _render_view(graph, topic, meta, out_path, slug or "kgfy")
 
 
 COMMANDS = {
@@ -433,6 +579,7 @@ COMMANDS = {
     "express": cmd_express,
     "library": cmd_library,
     "view": cmd_view,
+    "kgfy": cmd_kgfy,
 }
 
 
