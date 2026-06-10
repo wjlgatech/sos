@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Added
+
+- `living-repo` skill: **"✨ Ask the field"** — the generated graph webapp is now
+  conversational, powered by NVIDIA's free NIM API. Client-side retrieval (token-overlap
+  scoring over nodes, top-10 + 1-hop edges) builds a grounded context; the answer must
+  cite node names, rendered as chips that jump-select the node on the map. BYO free key
+  (build.nvidia.com), stored only in the visitor's localStorage; calls go through
+  `free-llm/nim-bridge/` (deployed: https://nim-bridge.vercel.app — keyless, stores
+  nothing) because integrate.api.nvidia.com only allows CORS from build.nvidia.com
+  (verified via preflight probe). Model picker: GLM 5.1 / DeepSeek v4 flash / Kimi K2.6.
+  Error paths verified live in-browser: bad key → "NVIDIA rejected the key", 429 → wait
+  message. First deployment: the awesome-auto-ai-research map.
+
 ### Changed
 
 - **`nvidia-free-llm` skill renamed to `free-llm`** and upgraded with THE FALLBACK-CHAIN
