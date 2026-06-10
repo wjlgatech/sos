@@ -7,6 +7,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` skill: **infographic one-pager** (à la Google NotebookLM) emitted alongside
+  every `kgfy`/`view` map — `…-infographic.html`: designed single page with a stat band
+  (ideas/claims/quotes/connections), Big Ideas cards with ⚡principle callouts + transfer
+  chips, two-column numbered Key Claims, dark verbatim-quote cards, and a transfer-domain
+  cloud. Deterministic (built straight from the graph JSON — zero extra LLM cost), mobile
+  viewport + print CSS (save-as-PDF to share). Gotcha fixed en route: same-quote nesting
+  inside f-strings is Python 3.12+ only and auto-formatters normalize quotes INTO that form —
+  build HTML fragments with explicit locals to stay 3.9-compatible.
 - `dreammaketrue` skill: **`kgfy` — one word, any source → living-knowledge map.** Paul's
   spoken UX ("I give you a repo and say kg-fy it"): `dmt.py kgfy <anything>` handles a GitHub
   repo / website / YouTube / podcast URL (engine's tiered ingestion), a local file — PDF,

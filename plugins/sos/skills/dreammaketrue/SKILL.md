@@ -68,6 +68,11 @@ uvicorn from a local clone → clear install instructions. **No other setup.**
    python3 $DMT view <room_id> --out map.html
    ```
 
+   Both `view` and `kgfy` ALSO emit a **NotebookLM-style infographic** alongside the map
+   (`…-infographic.html`): a designed one-pager — big ideas with principle callouts, key
+   claims, verbatim quotes, transfer domains, stat band — built deterministically from the
+   graph (no extra LLM call), mobile + print friendly (save as PDF to share).
+
    In-page hook for agents driving a browser: `window.dmtSelect('node name')` opens
    that node's layers without pointer math. The webapp (`http://localhost:3000`) has
    the richer live view; this file is the portable artifact.
@@ -76,7 +81,7 @@ uvicorn from a local clone → clear install instructions. **No other setup.**
 
 | Command                            | Use                                                              |
 | ---------------------------------- | ---------------------------------------------------------------- |
-| `kgfy <anything>`                  | ONE-SHOT: any source → interactive living-knowledge map (HTML). Takes a GitHub repo / website / YouTube video / podcast URL, a local file (PDF·audio·video·notebook via engine extractors; text read directly), or a folder (README+docs+binaries). No room or avatars needed. |
+| `kgfy <anything>`                  | ONE-SHOT: any source → interactive living-knowledge map (HTML). Takes a GitHub repo / website / YouTube video / podcast URL, a local file (PDF·audio·video·notebook via engine extractors; text read directly), or a folder (README+docs+binaries). No room or avatars needed. Emits the interactive map AND a NotebookLM-style infographic one-pager. |
 | `view <room_id> [--out f.html]`    | room → interactive living-knowledge graph (single HTML artifact) |
 | `ingest <url-or-text>`             | just normalize a source → document (provenance, warnings)        |
 | `rooms` / `room <id>`              | list / load saved rooms (resume any prior conversation)          |

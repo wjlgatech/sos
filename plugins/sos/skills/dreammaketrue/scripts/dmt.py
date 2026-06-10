@@ -398,14 +398,104 @@ def _render_view(graph: dict, title: str, meta: str, out_path: str, slug: str) -
     )
     with open(out_path, "w") as f:
         f.write(page)
-    if sys.platform == "darwin":  # best-effort: open it for the user
+    # NotebookLM-style companion: same knowledge, as a designed one-page infographic.
+    info_path = out_path.rsplit(".", 1)[0] + "-infographic.html"
+    with open(info_path, "w") as f:
+        f.write(_render_infographic(graph, title))
+    if sys.platform == "darwin":  # best-effort: open them for the user
         subprocess.run(["open", out_path], capture_output=True)
+        subprocess.run(["open", info_path], capture_output=True)
     return {
         "html": out_path,
+        "infographic": info_path,
         "title": title,
         "nodes": len(graph["nodes"]),
         "edges": len(graph["edges"]),
     }
+
+
+def _render_infographic(graph: dict, title: str) -> str:
+    """The knowledge base as a designed ONE-PAGER (à la NotebookLM's infographic): big ideas
+    with principles, key claims, verbatim quotes, transfer domains. Deterministic — built
+    straight from the graph, no extra LLM call. Print-friendly (save as PDF to share)."""
+    import html as _h
+
+    e = _h.escape
+    nodes = graph["nodes"]
+    concepts = [n for n in nodes if n.get("type") == "concept"]
+    claims = [n for n in nodes if n.get("type") == "claim"]
+    evidence = [n for n in nodes if n.get("type") == "evidence"]
+    transfers = sorted({t for c in concepts for t in (c.get("transfer_domains") or [])})
+
+    # Built with explicit locals (not nested f-string lookups) — auto-formatters normalize
+    # quote styles, and same-quote nesting inside an f-string is Python 3.12+ only.
+    cards = []
+    for i, c in enumerate(concepts[:6]):
+        name, summary = e(c.get("name", "")), e(c.get("summary", ""))
+        principle = c.get("principle") or ""
+        p_html = f"<div class=principle>⚡ {e(principle)}</div>" if principle else ""
+        t_html = "".join(
+            f"<span class=chip>{e(t)}</span>" for t in (c.get("transfer_domains") or [])[:3]
+        )
+        cards.append(
+            f"<div class=idea><div class=idea-n>{i + 1:02d}</div><h3>{name}</h3>"
+            f"<p>{summary}</p>{p_html}{t_html}</div>"
+        )
+    idea_cards = "".join(cards)
+    claim_rows = "".join(f"<li>{e(c.get('summary') or c.get('name', ''))}</li>" for c in claims[:8])
+    quote_cards = "".join(
+        f"<div class=quote>“{e((q.get('summary') or '')[:280])}”</div>" for q in evidence[:6]
+    )
+    chips = "".join(f"<span class='chip big'>{e(t)}</span>" for t in transfers[:14])
+
+    return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>{e(title[:120])} — infographic</title>
+<style>
+*{{box-sizing:border-box}}body{{margin:0;font:15px/1.55 -apple-system,Inter,system-ui;color:#1c1f26;background:#f4f2ec}}
+.page{{max-width:880px;margin:0 auto;padding:0 20px 48px}}
+header{{background:linear-gradient(135deg,#1d2742,#3b2f63 60%,#7c4d2e);color:#fff;border-radius:0 0 26px 26px;padding:46px 34px 34px;margin:0 -20px}}
+header .kicker{{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.75}}
+header h1{{font-size:clamp(24px,4.4vw,40px);line-height:1.15;margin:10px 0 6px;font-weight:800}}
+header .sub{{opacity:.8;font-size:13px}}
+.stats{{display:flex;gap:12px;flex-wrap:wrap;margin:-26px 0 30px}}
+.stat{{flex:1;min-width:120px;background:#fff;border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(25,28,40,.10)}}
+.stat b{{display:block;font-size:30px;font-weight:800;color:#3b2f63}}
+.stat span{{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8377}}
+h2{{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#7c4d2e;margin:36px 0 14px;display:flex;align-items:center;gap:10px}}
+h2:after{{content:"";flex:1;height:1px;background:#ded8ca}}
+.ideas{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}}
+.idea{{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(25,28,40,.07);position:relative}}
+.idea-n{{position:absolute;top:14px;right:16px;font-size:26px;font-weight:800;color:#ece7db}}
+.idea h3{{margin:0 38px 6px 0;font-size:16px;line-height:1.3;color:#1d2742}}
+.idea p{{margin:0 0 10px;font-size:13.5px;color:#4a4f5b}}
+.principle{{background:#f4efff;border-left:3px solid #6b4fd8;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#3b2f63;margin-bottom:10px;font-weight:600}}
+.chip{{display:inline-block;background:#ece7db;color:#6b6354;border-radius:99px;padding:2px 10px;font-size:11px;margin:2px 4px 0 0}}
+.chip.big{{background:#fff;font-size:12.5px;padding:6px 14px;box-shadow:0 2px 8px rgba(25,28,40,.08);color:#3b2f63;font-weight:600}}
+ol.claims{{margin:0;padding:0;list-style:none;counter-reset:cl;columns:2;column-gap:18px}}
+ol.claims li{{counter-increment:cl;background:#fff;border-radius:12px;padding:13px 14px 13px 46px;margin:0 0 10px;font-size:13.5px;position:relative;break-inside:avoid;box-shadow:0 3px 12px rgba(25,28,40,.06)}}
+ol.claims li:before{{content:counter(cl,decimal-leading-zero);position:absolute;left:13px;top:12px;font-weight:800;color:#b3503f;font-size:13px}}
+.quotes{{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}}
+.quote{{background:#1d2742;color:#e9e5da;border-radius:14px;padding:16px 18px;font-size:13.5px;font-style:italic;line-height:1.6}}
+footer{{margin-top:42px;font-size:11px;color:#9a9385;text-align:center}}
+@media(max-width:640px){{ol.claims{{columns:1}}}}
+@media print{{body{{background:#fff}}.stat,.idea,ol.claims li{{box-shadow:none;border:1px solid #e5e0d3}}}}
+</style>
+<div class=page>
+<header><div class=kicker>Living Knowledge · Infographic</div>
+<h1>{e(title[:140])}</h1>
+<div class=sub>compressed from the source by the DreamMakeTrue engine — every claim grounded, every quote verbatim</div></header>
+<div class=stats>
+<div class=stat><b>{len(concepts)}</b><span>big ideas</span></div>
+<div class=stat><b>{len(claims)}</b><span>key claims</span></div>
+<div class=stat><b>{len(evidence)}</b><span>verbatim quotes</span></div>
+<div class=stat><b>{len(graph["edges"])}</b><span>connections</span></div>
+</div>
+{f"<h2>The Big Ideas</h2><div class=ideas>{idea_cards}</div>" if idea_cards else ""}
+{f"<h2>Key Claims</h2><ol class=claims>{claim_rows}</ol>" if claim_rows else ""}
+{f"<h2>In Their Own Words</h2><div class=quotes>{quote_cards}</div>" if quote_cards else ""}
+{f"<h2>Where These Ideas Transfer</h2><div>{chips}</div>" if chips else ""}
+<footer>generated by DreamMakeTrue · kgfy — pair with the interactive map for full depth</footer>
+</div>"""
 
 
 def cmd_view(args: list[str]) -> dict:
