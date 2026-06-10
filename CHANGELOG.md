@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Changed
+
+- `nvidia-free-llm` skill: Hermes wiring upgraded from "Custom provider + base_url" to the
+  verified NATIVE path — Hermes ships a `nvidia` provider (`agent/models_dev.py`: env
+  `NVIDIA_API_KEY`, base URL pre-baked, 94 NIM models in its models.dev registry), so setup
+  is just key-in-env + `model.provider: nvidia`. Why: fact-checked against the Hermes
+  codebase; the Custom route was unnecessary indirection.
+
 ### Added
 
 - `plugins/sos/skills/nvidia-free-llm/` — **NVIDIA's free NIM API as a skill.** 120 hosted

@@ -56,8 +56,11 @@ CHEAP_API_KEY=nvapi-…
 MODEL_CHEAP=deepseek-ai/deepseek-v4-flash
 ```
 
-**Hermes:** Settings → Model Provider → Custom → base_url + key as above (Hermes speaks
-OpenAI shape natively). **Cursor / OpenCode:** same two fields in their model settings.
+**Hermes:** has a NATIVE `nvidia` provider (verified in `agent/models_dev.py` — env
+`NVIDIA_API_KEY`, base URL pre-baked, 94 NIM models in its registry incl. `z-ai/glm-5.1`,
+`moonshotai/kimi-k2.6`). So: add `NVIDIA_API_KEY=nvapi-…` to `~/.hermes/.env` (Desktop app:
+`Env` tab → Set → Save), then `Config` tab → `model.provider: nvidia` + `model` id — no
+Custom/base_url needed. **Cursor / OpenCode:** Custom provider → the two fields above.
 **Any OpenAI SDK:** `OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key="nvapi-…")`.
 
 ## Agent guidance
