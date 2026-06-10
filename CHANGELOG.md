@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ## [Unreleased]
 
+### Changed
+
+- **`nvidia-free-llm` skill renamed to `free-llm`** and upgraded with THE FALLBACK-CHAIN
+  RULE (Paul's standing policy): any agent wired to a free LLM gets the survival chain
+  **NIM → local Ollama → OpenRouter → Anthropic/OpenAI**, with probe commands per tier
+  (dead links in a chain are theater), the exact verified Hermes `fallback_providers`
+  YAML (local Ollama via `provider: custom` + explicit base_url — confirmed honored by
+  `try_activate_fallback`), and the hard-won Hermes gotchas (dict-form entries only;
+  gateway loads the chain at startup → restart; `provider: auto`/None aux+cron follow the
+  main provider — pin them). Why: a live 429 from NIM's 40 req/min ceiling killed a
+  desktop chat mid-turn; the chain makes throttling survivable. `nim-bridge/` (Vercel
+  CORS proxy for browser apps, from the living-repo work) now ships inside the skill.
+
 ### Fixed
 
 - `nvidia-free-llm` `nim.py test`: no longer crashes on reasoning-style replies —

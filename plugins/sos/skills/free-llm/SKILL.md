@@ -1,6 +1,6 @@
 ---
-name: nvidia-free-llm
-description: "Use NVIDIA's free NIM API (integrate.api.nvidia.com) — 120 hosted frontier models (GLM 5.1, Kimi K2.6, DeepSeek-v4, MiniMax M2.7, GPT-OSS-120B, Nemotron-3 Ultra, Qwen3 coder…) behind ONE OpenAI-compatible endpoint, free with a build.nvidia.com key (40 req/min, ~1 year). Use when an agent or app needs a free/cheap cloud LLM backend: out of credits, avoiding $50-200/mo API bills, wiring Hermes/Cursor/OpenCode/DreamMakeTrue to a no-cost provider, or wanting frontier-class quality without paying. Triggers on 'free LLM API', 'NVIDIA NIM / build.nvidia.com', 'out of credits', 'free GLM/Kimi/DeepSeek', 'point my agent at a free model'. NOT for production SLAs (rate-limited free tier) and NOT a local/offline option (that's Ollama — see freellmapi for the multi-provider aggregator)."
+name: free-llm
+description: "Free LLMs for any agent, with a survival chain (formerly nvidia-free-llm). Primary: NVIDIA's free NIM API (integrate.api.nvidia.com) — 120 hosted frontier models (GLM 5.1, Kimi K2.6, DeepSeek-v4, MiniMax M2.7, GPT-OSS-120B…) behind ONE OpenAI-compatible endpoint, free with a build.nvidia.com key (40 req/min, ~1 year). PLUS the standing fallback-chain rule: NIM → local Ollama → OpenRouter → Anthropic/OpenAI, so an agent never dies when a free tier throttles. Use when an agent or app needs a free/cheap cloud LLM backend: out of credits, hit a 429/rate limit, avoiding $50-200/mo API bills, wiring Hermes/Cursor/OpenCode/DreamMakeTrue to a no-cost provider. Triggers on 'free LLM API', 'NVIDIA NIM / build.nvidia.com', 'out of credits', 'rate limited / 429', 'free GLM/Kimi/DeepSeek', 'point my agent at a free model', 'fallback chain'. NOT for production SLAs (rate-limited free tier); see freellmapi for the multi-provider aggregator."
 argument-hint: "[what you want — e.g. 'set up the key', 'wire DreamMakeTrue to it', 'which model for code?']"
 allowed-tools: Bash, Read, Write, WebFetch
 metadata:
@@ -10,7 +10,9 @@ metadata:
   source: "https://build.nvidia.com/models"
 ---
 
-# Skill: NVIDIA free NIM API — 120 frontier models, one free OpenAI-compatible endpoint
+# Skill: free-llm — free frontier LLMs + the fallback chain that keeps agents alive
+
+*(formerly `nvidia-free-llm`)*
 
 NVIDIA hosts **120 models** (verified live 2026-06-10 via the public `/v1/models` — no key
 needed to list) behind one OpenAI-compatible API, free with a registered key:
@@ -38,7 +40,7 @@ OpenAI-compatible client here for $0. The catch: rate-limited, no SLA, and model
 | open weights     | `openai/gpt-oss-120b` ✓                 | and `gpt-oss-20b`                  |
 
 ```bash
-NIM=~/.claude/skills/nvidia-free-llm/scripts/nim.py
+NIM=~/.claude/skills/free-llm/scripts/nim.py
 python3 $NIM list kimi        # live catalog, filtered (no key needed)
 python3 $NIM pick             # recommended id per role
 NVIDIA_API_KEY=nvapi-… python3 $NIM test z-ai/glm-5.1   # one tiny completion → ok/latency
@@ -62,6 +64,56 @@ MODEL_CHEAP=deepseek-ai/deepseek-v4-flash
 `Env` tab → Set → Save), then `Config` tab → `model.provider: nvidia` + `model` id — no
 Custom/base_url needed. **Cursor / OpenCode:** Custom provider → the two fields above.
 **Any OpenAI SDK:** `OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key="nvapi-…")`.
+
+## THE FALLBACK-CHAIN RULE (standing policy — activate whenever you wire a free LLM)
+
+Free tiers die mid-conversation: NIM throttles at 40 req/min, OpenRouter keys run dry,
+local daemons stop. **Any agent wired to NIM must also get this chain, in this order:**
+
+```
+1. NVIDIA NIM        (primary, $0, frontier-class)
+2. local Ollama      (http://localhost:11434/v1 — $0, offline-proof, last-resort quality)
+3. OpenRouter        (paid credits; cheap models)
+4. Anthropic / OpenAI (paid API keys / ChatGPT-sub OAuth)
+```
+
+**Probe each tier before trusting it** (a chain of dead links is theater):
+- NIM: `python3 $NIM test moonshotai/kimi-k2.6`
+- Ollama: `curl -s localhost:11434/api/tags` → pick an INSTALLED model
+- OpenRouter: `curl -s https://openrouter.ai/api/v1/credits -H "Authorization: Bearer $OPENROUTER_API_KEY"`
+  → if `total_usage >= total_credits` it will 402; wire it anyway, flag for top-up
+- Anthropic/OpenAI: key exists + has balance
+
+**Hermes** — the exact working config (verified live 2026-06-10), in `~/.hermes/config.yaml`:
+
+```yaml
+fallback_providers:
+- provider: custom              # local Ollama — explicit base_url/api_key are honored
+  model: qwen2.5:7b             # ← whatever `ollama list` shows on THIS machine
+  base_url: http://localhost:11434/v1
+  api_key: ollama
+- provider: openrouter
+  model: openai/gpt-5-mini
+- provider: anthropic
+  model: claude-sonnet-4-6
+- provider: openai-codex        # the "OpenAI" leg — ChatGPT-sub OAuth, $0
+  model: gpt-5.5
+```
+
+Hermes gotchas (hard-won): entries MUST be dicts with both `provider` and `model` (bare
+strings are silently dropped, `agent_init.py`); the gateway loads the chain at startup →
+**restart after editing** (`launchctl kickstart -k gui/$UID/sh.hermes.gateway` + reopen the
+desktop app); 429/billing failures auto-advance the chain (`try_activate_fallback`,
+`chat_completion_helpers.py`); aux tasks + cron jobs with `provider: auto`/None FOLLOW the
+main provider — pin them explicitly or a provider flip breaks them.
+
+**Claude Code / Codex / any OpenAI-SDK agent:** same chain as a try-order wrapper —
+attempt NIM, on 429/5xx retry once, then construct the next client in the list
+(`OpenAI(base_url=…, api_key=…)` for NIM/Ollama/OpenRouter; native SDK for Anthropic/OpenAI).
+Reference implementation: DreamMakeTrue's `llm.py` `_OllamaFallbackClient`.
+
+**Browser apps:** NIM blocks third-party CORS — deploy `nim-bridge/` (in this skill dir),
+a one-function Vercel proxy where every caller brings their own key.
 
 ## Agent guidance
 
