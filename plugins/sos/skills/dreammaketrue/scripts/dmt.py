@@ -324,6 +324,13 @@ nav .t{background:none;border:1px solid #333;border-radius:8px;color:#aaa;paddin
 nav .t.on{background:#e8e8e8;color:#0d0d0f;border-color:#e8e8e8;font-weight:600}
 nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
 .tab{flex:1;display:none;overflow:hidden;position:relative}.tab.on{display:flex}
+/* ── workspace: content (map/info) + a persistent Ask dock beside it ── */
+#workspace{flex:1;display:flex;min-height:0}
+#main{flex:1;display:flex;position:relative;min-width:0}
+#ask-dock{width:380px;flex-shrink:0;display:flex;flex-direction:column;background:#0f0f12;border-left:1px solid #26262b;min-height:0}
+.askhdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #26262b;font-size:13px;color:#bbb;flex-shrink:0}
+.askhdr .badge{font-size:10px;color:#7bd88f;border:1px solid #2f4a36;border-radius:999px;padding:1px 8px}
+@media(max-width:760px){#workspace{flex-direction:column}#ask-dock{width:auto;height:46vh;border-left:none;border-top:1px solid #26262b}#side{width:42%}}
 /* ── map tab ── */
 #tab-map{flex-direction:row}
 #cv{flex:1;cursor:grab;touch-action:none}
@@ -388,9 +395,9 @@ nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflo
 <nav>
 <button class="t on" data-tab=map>🕸 Map</button>
 <button class=t data-tab=info>📊 Infographic</button>
-<button class=t data-tab=ask>💬 Ask</button>
 <span class=title>__TITLE__</span>
 </nav>
+<div id=workspace><div id=main>
 <div id=tab-map class="tab on">
 <canvas id=cv></canvas>
 <div id=side>
@@ -399,14 +406,15 @@ nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflo
 </div>
 </div>
 <div id=tab-info class=tab>__INFO__</div>
-<div id=tab-ask class=tab>
+</div><aside id=ask-dock>
+<div class=askhdr><span>💬 Ask the graph</span><span class=badge>local · Ollama</span></div>
 <div id=log><div class="msg bot">Ask this knowledge graph anything.
 • "How does X connect to Y?" — answered with the real path through the graph
 • "What are the hidden patterns here?" — bridge nodes, disconnected regions
 • Agentic: "draft a LinkedIn post about the big idea" — returns the full piece, grounded
 (engine: __API__)</div></div>
 <div id=askrow><input id=q placeholder="Ask the graph — or ask it to create something…"><button id=send>Ask</button></div>
-</div>
+</aside></div>
 <script type="application/json" id=g>__GRAPH__</script>
 <script>
 const G=JSON.parse(document.getElementById('g').textContent);

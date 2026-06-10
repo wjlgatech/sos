@@ -7,6 +7,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` artifact: **the chat is now a persistent Ask dock beside the content**, not
+  a third tab — you converse with the knowledge WHILE looking at the Map or the Infographic
+  (Paul: "I can not ask questions [from the infographic]"). `#workspace` = content + 380px
+  `aside#ask-dock` (header badge shows the serving tier); phones stack the dock below at
+  46vh. Cited-node chips still jump-select on the Map. Republished the served artifact —
+  a published page does NOT update itself when the template changes; regenerate + republish.
 - `dreammaketrue` skill: kgfy/view artifacts **auto-publish to the engine** after render
   (best-effort POST /v1/engine/artifacts) and report `served_url` + `phone_url` (LAN). The
   page JS prefers `location.origin` when served over http(s) — same-origin Ask tab, no CORS,
