@@ -7,6 +7,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `dreammaketrue` artifact: **voice input** (tap 🎙 to record, tap ⏹ to stop → engine
+  faster-whisper STT → auto-asks) and **screen-aware questions** — every ask now carries
+  `viewContext()` (map vs infographic + selected node + depth), so "explain this idea" means
+  the visible one. Mic limits surfaced honestly in-UI: browsers allow the mic only on
+  HTTPS/localhost, so the plain-http LAN link offers text-only on the phone (the message
+  points at the tunnel option); iOS Safari records mp4/aac — whisper decodes it fine.
 - `dreammaketrue` skill: after publish, the FILE copy of an artifact is re-baked with the
   engine's **LAN url** (not localhost) — a downloaded artifact opened on a phone now reaches
   the engine over Wi-Fi (pairs with the engine's null-origin CORS fix). The served copy is

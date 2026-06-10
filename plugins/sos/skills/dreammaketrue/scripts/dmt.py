@@ -390,6 +390,9 @@ nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflo
 #q:focus{border-color:#6ab0f3}
 #send{background:#6ab0f3;color:#0d0d0f;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer}
 #send:disabled{opacity:.4}
+#mic{background:#16161a;color:#bbb;border:1px solid #333;border-radius:10px;padding:10px 13px;font-size:14px;cursor:pointer}
+#mic.rec{background:#b3503f;color:#fff;border-color:#b3503f;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.6}}
 @media(max-width:700px){#tab-map{flex-direction:column}#side{width:auto;max-height:45%;border-left:none;border-top:1px solid #26262b}}
 </style></head><body>
 <nav>
@@ -413,7 +416,7 @@ nav .title{margin-left:auto;font-size:12px;color:#777;white-space:nowrap;overflo
 • "What are the hidden patterns here?" — bridge nodes, disconnected regions
 • Agentic: "draft a LinkedIn post about the big idea" — returns the full piece, grounded
 (engine: __API__)</div></div>
-<div id=askrow><input id=q placeholder="Ask the graph — or ask it to create something…"><button id=send>Ask</button></div>
+<div id=askrow><button id=mic title="Voice input — tap to start, tap again to stop">🎙</button><input id=q placeholder="Ask the graph — or ask it to create something…"><button id=send>Ask</button></div>
 </aside></div>
 <script type="application/json" id=g>__GRAPH__</script>
 <script>
@@ -501,7 +504,7 @@ add('me',question);hist.push({role:'user',content:question});
 const t=add('bot thinking','thinking — walking the graph…');
 try{
 const r=await fetch(API+'/v1/engine/kg/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({graph:{nodes:G.nodes,edges:G.edges},question,history:hist.slice(-8),user_name:'You'})});
+body:JSON.stringify({graph:{nodes:G.nodes,edges:G.edges},question,history:hist.slice(-8),user_name:'You',context:viewContext()})});
 if(!r.ok)throw new Error('engine '+r.status);
 const out=await r.json();
 t.className='msg bot';t.textContent=out.answer||'(no answer)';
@@ -512,6 +515,37 @@ c.onclick=()=>{vis.add(n.id);selNode(n,3);show('map')};t.appendChild(c)}
 }catch(e){t.className='msg bot';
 t.textContent='Engine unreachable at '+API+' — start DreamMakeTrue (dmt.py start) or regenerate this file with DMT_API_URL pointing at a reachable engine. ('+e.message+')'}
 send.disabled=false;q.focus()}
+/* what the user is looking at — sent with every question so "this card" resolves */
+function viewContext(){const tab=document.querySelector('nav .t.on')?.dataset.tab||'map';
+let c=tab==='info'?'the INFOGRAPHIC one-pager (big ideas, key claims, quotes)':'the interactive MAP';
+if(sel)c+=`; selected node: "${sel.name}" (${sel.type}, inspector at depth L${depth===1?1:depth===2?3:5})`;
+return c}
+/* ── voice input: tap mic to start, tap again to stop → engine faster-whisper → input ── */
+const mic=document.getElementById('mic');
+let mrec=null,mstream=null,mchunks=[];
+async function micToggle(){
+if(mrec){mrec.stop();return}
+if(!navigator.mediaDevices?.getUserMedia){
+add('bot','🎙 Voice needs HTTPS or localhost — this page is on plain http. Open it on the Mac, or ask me to set up a tunnel (cloudflared) for a secure phone link.');return}
+try{mstream=await navigator.mediaDevices.getUserMedia({audio:true})}
+catch(e){add('bot','🎙 Mic permission denied: '+e.message);return}
+const mime=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':(MediaRecorder.isTypeSupported('audio/mp4')?'audio/mp4':'');
+mrec=new MediaRecorder(mstream,mime?{mimeType:mime}:undefined);mchunks=[];
+mrec.ondataavailable=e=>{if(e.data.size)mchunks.push(e.data)};
+mrec.onstop=async()=>{
+mic.classList.remove('rec');mic.textContent='🎙';
+mstream.getTracks().forEach(t=>t.stop());mstream=null;
+const blob=new Blob(mchunks,{type:mrec.mimeType||'audio/webm'});mrec=null;
+if(blob.size<2048){add('bot','🎙 Heard nothing — tap, speak, tap again.');return}
+q.placeholder='transcribing…';
+try{const fd=new FormData();fd.append('audio',blob,'voice.webm');
+const r=await fetch(API+'/v1/multimodal/stt',{method:'POST',body:fd});
+const out=await r.json();
+if(out.text){q.value=out.text;ask()}else{add('bot','🎙 Could not transcribe — try again closer to the mic.')}
+}catch(e){add('bot','🎙 STT failed: '+e.message)}
+q.placeholder='Ask the graph — or ask it to create something…'};
+mrec.start(250);mic.classList.add('rec');mic.textContent='⏹'}
+mic.onclick=micToggle;
 send.onclick=ask;q.addEventListener('keydown',e=>{if(e.key==='Enter')ask()});
 window.dmtAsk=t=>{q.value=t;ask();return 'asked'};
 </script></body></html>"""
