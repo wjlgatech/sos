@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linkedin-publisher"
+version = "0.1.0"
+description = "Turn a markdown article into a LinkedIn-ready publishing bundle: cleaned body, thumbnail, infographic, and a Tiptap console publish script."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["Pillow>=10.0"]
+
+[project.scripts]
+linkedin-publish = "linkedin_publisher.cli:main"
+
+[tool.setuptools]
+packages = ["linkedin_publisher"]
