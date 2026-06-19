@@ -2,7 +2,8 @@
        install-watchdog uninstall-watchdog watchdog-status \
        cost-audit cost-status cost-govern \
        marketing-eval marketing-discover marketing-status \
-       pre-commit
+       pre-commit \
+       verify verify-full
 
 # ── Setup ────────────────────────────────────────────────────────────────
 
@@ -71,3 +72,11 @@ marketing-discover:
 
 marketing-status:
 	.venv/bin/python src/__main__.py marketing-status
+
+# ── Verify (Observe → Analyze → Evaluate) ────────────────────────────────────
+
+verify:
+	PYTHONPATH=. python tools/verify.py
+
+verify-full:
+	PYTHONPATH=. python tools/verify.py --full

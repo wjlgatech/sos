@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "description": "CLI command contracts for the SOS self-optimization system. Every command listed here is verified by tools/verify.py.",
+  "python_bin": ".venv/bin/python",
+  "entry": "src/__main__.py",
+  "commands": [
+    {
+      "id": "status",
+      "command": "status",
+      "expected_exit": 0,
+      "required_keys": ["agent_id", "registered_agents", "llm_available"],
+      "description": "Show current system status — JSON output with agent identity, agent registry, and LLM availability"
+    },
+    {
+      "id": "cost_status",
+      "command": "cost-status",
+      "expected_exit": 0,
+      "required_keys": [],
+      "description": "Cost governance status — keys are dynamic (baseline vs current)"
+    },
+    {
+      "id": "marketing_status",
+      "command": "marketing-status",
+      "expected_exit": 0,
+      "required_keys": ["total", "published", "draft", "content"],
+      "description": "Content inventory summary — total/published/draft counts + content list"
+    },
+    {
+      "id": "marketing_discover",
+      "command": "marketing-discover",
+      "expected_exit": 0,
+      "required_keys": ["total", "content"],
+      "description": "Scan marketing/ for content items — returns count + content array"
+    }
+  ]
+}

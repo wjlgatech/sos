@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "description": "Python module import contracts for SOS src/. Verified by tools/verify.py.",
+  "src_dir": "src",
+  "modules": [
+    {
+      "id": "orchestrator",
+      "module": "orchestrator",
+      "class": "SelfOptimizationOrchestrator",
+      "description": "Core orchestrator — must import and instantiate with default args"
+    },
+    {
+      "id": "self_eval",
+      "module": "self_eval",
+      "class": "SelfEvalEngine",
+      "description": "Self-evaluation engine — must import and instantiate with default args"
+    },
+    {
+      "id": "cost_governor",
+      "module": "cost_governor",
+      "class": "CostGovernor",
+      "description": "Cost governor — must import and instantiate with default args"
+    },
+    {
+      "id": "marketing_eval",
+      "module": "marketing_eval",
+      "class": "MarketingEvalEngine",
+      "description": "Marketing eval engine — must import and instantiate with default args"
+    },
+    {
+      "id": "gateway_watchdog",
+      "module": "gateway_watchdog",
+      "class": "GatewayWatchdog",
+      "description": "Gateway watchdog — must import cleanly"
+    },
+    {
+      "id": "config_loader",
+      "module": "config_loader",
+      "class": null,
+      "description": "Config loader — must import cleanly (no class to instantiate)"
+    }
+  ]
+}
