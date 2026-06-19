@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "description": "TCP service port definitions for the OpenClaw ecosystem monitored by SOS. These are soft checks — DOWN means SOS has work to do, not a SOS code failure.",
+  "services": [
+    {
+      "id": "openclaw_gateway",
+      "host": "localhost",
+      "port": 3000,
+      "required": false,
+      "description": "OpenClaw gateway API — primary monitored service. DOWN triggers gateway-watchdog."
+    },
+    {
+      "id": "enterprise_gateway",
+      "host": "localhost",
+      "port": 18789,
+      "required": false,
+      "description": "Enterprise OpenClaw gateway — secondary monitored service."
+    },
+    {
+      "id": "vite_ui",
+      "host": "localhost",
+      "port": 5173,
+      "required": false,
+      "description": "Vite dev server for OpenClaw UI — optional, not required for SOS to function."
+    }
+  ]
+}
