@@ -7,6 +7,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `knowledgefy` skill: a focused, explicit `/knowledgefy <source>` one-shot — turn ANY single
+  source (GitHub repo · website · YouTube/podcast · PDF/audio/video/notebook · folder · pasted
+  text) into a self-contained interactive living-knowledge web page (Map · Infographic · Ask)
+  and print its shareable URL. A thin wrapper over the `dreammaketrue` skill's `dmt.py kgfy`
+  (no pipeline reimplementation; resolves dmt.py from the sibling skill; engine self-heals).
+  Deliberately narrow + slash-first so it doesn't double-fire with `dreammaketrue`'s kgfy
+  trigger; NOT-for points conversation/express → `dreammaketrue`, ranked research →
+  `knowledge-graph`, awesome-lists → `living-repo`. Verified end-to-end via
+  `skills/knowledgefy/scripts/knowledgefy_smoke.sh`.
+
 - `skillfy` skill: compress ANY source/expertise into a bounded, verifiable skill —
   atomic Skill schema with honest `not_good_at` edges, masked by-hand worksheet,
   mechanical checker, discernment check, teach-back. Two modes: served (drives a
@@ -121,7 +131,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
   each tap reveals that node's web (+N badges show hidden neighbors) and the inspector
   deepens progressively L1→L3→L5 — the living-knowledge contract, restored after the
   full-dump version; (2) **Ask tab** — graph-grounded chat → new engine `POST /v1/engine/
-  kg/chat` (BFS paths between question-matched nodes, bridge detection, explicit no-path
+kg/chat` (BFS paths between question-matched nodes, bridge detection, explicit no-path
   findings), cited nodes render as chips that jump to the Map tab and select the node;
   (3) **agentic** — creation intents return a full grounded artifact in-chat (verified: a
   LinkedIn post citing graph nodes, 30s on local Ollama); (4) mobile viewport + stacked
@@ -159,7 +169,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
   (real `PointerEvent`s on the dot AND on the label, not just the programmatic hook that
   masked the bug in v1).
 - `dreammaketrue` skill: **`view` command — visualize the living knowledge.** `dmt.py view
-  <room_id>` turns a room's topic map into ONE self-contained interactive HTML artifact
+<room_id>` turns a room's topic map into ONE self-contained interactive HTML artifact
   (zero deps, offline, shareable; auto-opens on macOS): force-directed canvas graph
   (drag · zoom · click; concepts/claims/evidence color-typed, labeled edges) where clicking
   a node opens its living-knowledge layers progressively — L1 jargon-free summary → L3

@@ -54,7 +54,7 @@ Setup: `ollama serve && ollama pull qwen2.5:7b`. Reference implementation (Anthr
 #   /sos:freellmapi  /sos:living-knowledge  /sos:copilotkit  /sos:future-self   (this machine)
 ```
 
-**Want the bare `/goal-10x` name too — on every machine?** One idempotent command does both steps above *and* symlinks `~/.claude/commands/goal-10x.md` to the live plugin command (so `/goal-10x` and `/sos:goal-10x` both work, and stay in sync). Re-run it on each new computer:
+**Want the bare `/goal-10x` name too — on every machine?** One idempotent command does both steps above _and_ symlinks `~/.claude/commands/goal-10x.md` to the live plugin command (so `/goal-10x` and `/sos:goal-10x` both work, and stay in sync). Re-run it on each new computer:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-goal-10x.sh | sh
@@ -68,29 +68,30 @@ Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop 
 **One loop, two gears.** `/sos:goal-10x` is the single front door. It drives work to green in a **sequential gear** by default, and shifts into a **parallel gear** — the `/sos:ship-loop` fan-out — when the work decomposes into many independent units. You pick the objective; `goal-10x` picks the gear (the size of the spec's independent set is the dial). The two share one verification-harness discovery and one self-improve tail, so there's a single mental model, not two competing loops.
 
 - **Sequential gear** — start here for fuzzy, small, or coupled work (one PR's worth). `goal-10x` discovers the repo's own test/check harness and drives it green.
-- **Parallel gear — `/sos:ship-loop`** — the **Plan → Code → Validate** lifecycle for high-velocity, *parallel* shipping (distilled from Kun Chen's lavish/treehouse/no-mistakes). `goal-10x` escalates here automatically when the work is parallelizable; invoke it directly only for knowingly bulk, decomposable work. It composes three **agent-agnostic** skills — usable by Claude, Codex, Hermes, or OpenClaw — that compound:
+- **Parallel gear — `/sos:ship-loop`** — the **Plan → Code → Validate** lifecycle for high-velocity, _parallel_ shipping (distilled from Kun Chen's lavish/treehouse/no-mistakes). `goal-10x` escalates here automatically when the work is parallelizable; invoke it directly only for knowingly bulk, decomposable work. It composes three **agent-agnostic** skills — usable by Claude, Codex, Hermes, or OpenClaw — that compound:
 
-- **`/sos:lavish`** (Plan): turn a rough idea into an AI-ready **HTML** spec — a *queryable* contract (stable requirement ids, machine-checkable acceptance criteria, file maps, parallelization tags) that agents parse far more reliably than prose. HTML, not Markdown, because a spec is a typed tree, not a blob.
+- **`/sos:lavish`** (Plan): turn a rough idea into an AI-ready **HTML** spec — a _queryable_ contract (stable requirement ids, machine-checkable acceptance criteria, file maps, parallelization tags) that agents parse far more reliably than prose. HTML, not Markdown, because a spec is a typed tree, not a blob.
 - **`/sos:treehouse`** (Code): fan the spec out to many agents in **isolated git worktrees** — decompose by dependency into waves (with same-wave file-collision detection), one unit per agent per worktree per PR. Produces PRs, never self-merges.
-- **`/sos:no-mistakes`** (Validate): audit each PR for the mistakes *AI* makes — hallucinated APIs, silent scope creep, theater tests, security naivety — into a merge/fix/reject verdict. Runs **on top of** unit tests as the final gate, not instead of them.
+- **`/sos:no-mistakes`** (Validate): audit each PR for the mistakes _AI_ makes — hallucinated APIs, silent scope creep, theater tests, security naivety — into a merge/fix/reject verdict. Runs **on top of** unit tests as the final gate, not instead of them.
 
 <details>
 <summary><b>What's included (plugin <code>sos</code>)</b></summary>
 
-| Component                     | Type     | What it does                                                                                          |
-| ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| `commands/goal-10x.md`        | command  | `/sos:goal-10x` — **the front door**: research + coach + drive-to-green + self-improve. Sequential gear by default; escalates to the parallel gear when work is decomposable |
-| `commands/ship-loop.md`       | command  | `/sos:ship-loop` — **the parallel gear of goal-10x**: Plan→Code→Validate fan-out composing the three skills below (rough idea → audited PRs at volume) |
-| `skills/lavish/`              | skill    | Plan: rough idea → AI-ready **HTML** spec (queryable, machine-checkable, parallelizable) + scaffold/validator |
-| `skills/treehouse/`           | skill    | Code: fan a spec out to parallel agents in isolated worktrees (dependency waves, collision detection) + planner |
-| `skills/no-mistakes/`         | skill    | Validate: audit AI code for AI-specific failure modes → merge/fix/reject (on top of unit tests, not instead) |
-| `skills/freellmapi/`          | skill    | stand up & use FreeLLMAPI — 16 free provider tiers behind one OpenAI-compatible endpoint; one base_url+key for every agent |
-| `skills/living-knowledge/`    | skill    | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                      |
-| `skills/copilotkit/`          | skill    | integrate CopilotKit into a Next.js app, gotchas pre-solved                                           |
-| `skills/future-self/`         | skill    | "Be Your Future Self Now" framework, operationalized                                                  |
-| `scripts/install-goal-10x.sh` | util     | one-command, idempotent cross-machine install: add marketplace + install plugin + symlink bare `/goal-10x` |
-| `scripts/install-doc-sync.sh` | util     | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                    |
-| `scripts/install-skills-global.sh` | util | symlink the skills into Claude Code + Hermes global skill dirs from a clone (cross-agent, cross-machine) |
+| Component                          | Type    | What it does                                                                                                                                                                   |
+| ---------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `commands/goal-10x.md`             | command | `/sos:goal-10x` — **the front door**: research + coach + drive-to-green + self-improve. Sequential gear by default; escalates to the parallel gear when work is decomposable   |
+| `commands/ship-loop.md`            | command | `/sos:ship-loop` — **the parallel gear of goal-10x**: Plan→Code→Validate fan-out composing the three skills below (rough idea → audited PRs at volume)                         |
+| `skills/lavish/`                   | skill   | Plan: rough idea → AI-ready **HTML** spec (queryable, machine-checkable, parallelizable) + scaffold/validator                                                                  |
+| `skills/treehouse/`                | skill   | Code: fan a spec out to parallel agents in isolated worktrees (dependency waves, collision detection) + planner                                                                |
+| `skills/no-mistakes/`              | skill   | Validate: audit AI code for AI-specific failure modes → merge/fix/reject (on top of unit tests, not instead)                                                                   |
+| `skills/freellmapi/`               | skill   | stand up & use FreeLLMAPI — 16 free provider tiers behind one OpenAI-compatible endpoint; one base_url+key for every agent                                                     |
+| `skills/living-knowledge/`         | skill   | explain a concept just in time, at the right depth (4 layers, transfer-as-proof)                                                                                               |
+| `skills/knowledgefy/`              | skill   | `/knowledgefy <source>` — any single source → an interactive living-knowledge web page (Map · Infographic · Ask) in one shot (thin wrapper over dreammaketrue's `dmt.py kgfy`) |
+| `skills/copilotkit/`               | skill   | integrate CopilotKit into a Next.js app, gotchas pre-solved                                                                                                                    |
+| `skills/future-self/`              | skill   | "Be Your Future Self Now" framework, operationalized                                                                                                                           |
+| `scripts/install-goal-10x.sh`      | util    | one-command, idempotent cross-machine install: add marketplace + install plugin + symlink bare `/goal-10x`                                                                     |
+| `scripts/install-doc-sync.sh`      | util    | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                                                                                             |
+| `scripts/install-skills-global.sh` | util    | symlink the skills into Claude Code + Hermes global skill dirs from a clone (cross-agent, cross-machine)                                                                       |
 
 See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
