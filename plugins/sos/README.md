@@ -33,6 +33,10 @@ clone, so both agents discover them everywhere. `git pull` updates them in place
 > No Anthropic-cloud sync of `~/.claude` exists — this plugin (a git-backed marketplace) is
 > the supported way to get the same skills across machines.
 
+📖 **`/goal-10x` deep dive:** [`docs/goal-10x.md`](../../docs/goal-10x.md) — what it is/isn't,
+when (not) to use it, correct-vs-wrong usage with examples, the first-principles mechanism,
+and installing it across projects **and** computers.
+
 ## What's inside
 
 | Component                     | Type      | What it does                                                                                                                                                                     |

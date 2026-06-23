@@ -7,7 +7,10 @@ that overrides this with project-specific wiring — e.g. dreammaketrue's autodr
 **One loop, two gears.** This is the single front door. It drives work to green in a
 **sequential gear** by default, and shifts into a **parallel gear** — the `/sos:ship-loop`
 fan-out (`lavish` → `treehouse` → `no-mistakes`) — when the work decomposes into many
-independent units. You pick the objective; step 3 picks the gear.
+independent units. You pick the objective; step 3 picks the gear. Orthogonally, within
+either gear it can drive **inline** or delegate to the **`/ce-plan` → `/ce-work` engine**
+when a durable, traceable decision artifact pays off (step 3) — keeping this loop's
+coaching (step 2) and self-improve (step 4) wrapper around it.
 
 Raw user input (may be a wall of text, links, half-formed goals): $ARGUMENTS
 
@@ -55,7 +58,22 @@ it back in ≤6 lines so the user can correct in one reply. Never silently drop 
   through `no-mistakes`. If everything turns out coupled, fall back to the sequential gear.
   The full procedure lives in `/sos:ship-loop` — invoke it as the CODE stage here.
 
-**The verification source is the same in both gears — discover it, DO NOT hardcode one:**
+**Then pick the engine — drive inline, or delegate to a plan+execute engine when rigor pays off:**
+
+- **Inline (default).** Drive the loop yourself in this repo/branch. Right for small,
+  coupled, or fuzzy work where a durable plan document would be ceremony.
+- **`/ce-plan` → `/ce-work` engine.** When the work is non-trivial AND benefits from a
+  durable, traceable decision artifact — team handoff, multi-agent execution, long-lived
+  work, or anything you'll cross-reference in PRs/issues — hand your step 0–2 research to
+  **`/ce-plan`** as origin input. It produces guardrails (decisions, scope, atomic units
+  with stable **U-IDs**, per-unit test scenarios, risks) without pre-writing the code; then
+  **`/ce-work`** executes against them — idempotent (no silent reimplementation),
+  worktree-isolated, gated through tests + review to a reviewed PR. This composes with
+  either gear: run one coupled unit inline-style, or fan its U-IDs out through the parallel
+  gear. The engine owns plan+execute; you keep the coaching (step 2) and self-improve
+  (step 4) wrapper. Don't reach for it on small/non-software work — that's what inline is for.
+
+**The verification source is the same across gears and engines — discover it, DO NOT hardcode one:**
 
 1. **A project objective registry + runner** — e.g. `docs/OBJECTIVES.md` + a harness script,
    or a project-local `/goal` command. Use it as the source of truth.
@@ -81,7 +99,10 @@ Both gears converge here — this is the shared self-improve tail. After the run
 improvement and apply with consent — a new objective + check, a tuned threshold, a recurring
 fix saved to `memory/`, or an edit to this command itself. In the parallel gear, also fold in
 what the fan-out taught (which `no-mistakes` checks caught the most, which agent/harness
-scored best) and record it via `multi_agent_performance` / `self_eval`. If you changed feature
+scored best) and record it via `multi_agent_performance` / `self_eval`. If you ran the
+`/ce-plan` → `/ce-work` engine, also run **`/ce-compound`** to capture reusable learnings
+(bugs hit, patterns set, conventions adopted) into `docs/solutions/`, then fold the headline
+lesson into `memory/` so the next `goal-10x` run benefits too. If you changed feature
 code and the repo enforces it, update CHANGELOG + docs.
 
 End every run with: **objective status · what you taught · the one improvement you made or

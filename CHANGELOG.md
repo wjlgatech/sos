@@ -201,6 +201,16 @@ kg/chat` (BFS paths between question-matched nodes, bridge detection, explicit n
 
 ### Changed
 
+- `plugins/sos/commands/goal-10x.md` — added a third **engine** axis to step 3, orthogonal to
+  the two gears: drive **inline** (default) or delegate to the **`/ce-plan` → `/ce-work`**
+  plan+execute engine when the work benefits from a durable, traceable decision artifact
+  (team handoff, multi-agent execution, long-lived work, PR/issue cross-references). Step 0–2
+  research feeds `/ce-plan` as origin; `/ce-work` executes against the guardrails; the
+  self-improve tail (step 4) now routes through **`/ce-compound`** when the engine ran.
+  goal-10x keeps its coaching + self-improve wrapper around the engine. _Why:_ compose with
+  compound-engineering's rigor where it pays off without forcing planning ceremony onto
+  small/non-software work — keeping goal-10x as the single front door rather than merging two
+  independently-versioned plugins into one command.
 - `README.md` — reordered the nine feature sections newest-first (Local LLM Fallback → …
   → Gateway Watchdog), matching `NEWS.md` and the git introduction dates, and corrected stale
   facts surfaced by an accuracy audit: test count 377 → **430** (clean Python 3.12 collection),
@@ -220,6 +230,13 @@ kg/chat` (BFS paths between question-matched nodes, bridge detection, explicit n
 
 ### Added
 
+- `docs/goal-10x.md` — comprehensive deep-dive for `/goal-10x`, linked from both `README.md`
+  and `plugins/sos/README.md`: what it is / is not, when (not) to use it, correct-vs-wrong
+  usage with examples and an antipattern table, a first-principles account of the mechanism
+  (the 5-stage loop, two gears, optional `ce-*` engine), a pattern/antipattern story, and
+  full install instructions across projects **and** computers (plugin install, bare-alias
+  bootstrap, and the dotfiles portable-manifest method). _Why:_ the command file is terse by
+  design; new users needed a narrative reference that explains the *why*, not just the *what*.
 - `plugins/sos/scripts/install-goal-10x.sh` — one-command, idempotent cross-machine
   installer for `/goal-10x`. Registers the `wjlgatech/sos` marketplace, installs the `sos`
   plugin at user scope, and symlinks `~/.claude/commands/goal-10x.md` to the live plugin
