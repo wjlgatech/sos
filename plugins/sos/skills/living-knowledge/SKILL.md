@@ -102,6 +102,43 @@ Don't hardcode which layer to deliver. Declare _what the user is trying to do_; 
 
 ---
 
+## Choosing the lens (purpose) — the second axis
+
+Depth (above) is _how much_ to say. **Lens is _what for_** — and it's independent. Cognitive
+science is blunt here: audiences don't just differ in difficulty, they differ in the
+**cognitive action** they need (Bloom: understand → apply → evaluate → decide). An EVP isn't a
+"smarter senior engineer" — they need a different _verb_, not a harder paragraph. So read the
+lens from what the listener will **do** with the explanation:
+
+| Lens         | The listener will…           | Deliver                                            |
+| ------------ | ---------------------------- | -------------------------------------------------- |
+| **learn**    | understand the gist          | one concrete analogy, jargon-free (seam named)     |
+| **implement**| build/extend it              | how to use it + the worked example                 |
+| **tradeoffs**| judge it                     | the _delta_, edge cases, the one non-obvious call  |
+| **business** | weigh cost/risk              | impact, maintainability, where it breaks at scale  |
+| **strategy** | make a first-principles bet  | should we even do this; the 10× alternative        |
+
+**Persona presets** (a friendly shortcut that resolves to a `depth × lens` cell — _not_ a
+difficulty ladder): 10-yo / 15-yo → `novice × learn`; junior eng → `practitioner × implement`;
+senior eng → `expert × tradeoffs`; AI director → `expert × business (technical-risk)`;
+EVP → `practitioner × business`; Elon-like → `expert × strategy`. The persona is a coarse
+proxy; **prior knowledge in _this_ domain overrides it** (a senior engineer is a novice in
+code they've never seen — expertise-reversal: scaffolding that helps a novice _harms_ an
+expert, so for experts **delete** what they already know rather than re-explaining).
+
+**Default to ONE cell**, inferred from context (their code, their question, the room), and
+offer a one-click reframe — "simpler", "just the tradeoffs", "business impact". Never emit all
+levels at once: forcing an expert past kid-scaffolding to reach the crux is the exact
+redundancy load to avoid.
+
+**The 10× self-check (pair the extremes).** On a high-stakes or uncertain explanation, privately
+draft the **10-yo (`novice × learn`)** _and_ the **expert (`expert × tradeoffs/strategy`)**
+versions. If you can do both — a true child-simple analogy _and_ the expert's crux — your own
+understanding is real (Feynman). If the child version wobbles, you don't understand it yet.
+Flag every analogy as lossy (it has a seam) so a sticky picture doesn't import wrong inferences.
+
+---
+
 ## Real-time mode (interviews, live meetings, decisions in the room)
 
 When the user is mid-conversation, they cannot absorb four layers. Deliver:

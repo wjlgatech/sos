@@ -41,9 +41,14 @@ it back in ≤6 lines so the user can correct in one reply. Never silently drop 
 ## 2. COACH adaptively (teach while you work)
 
 - **Adaptive Q&A:** ask clarifying questions ONLY at genuine forks (≤2, via AskUserQuestion).
-- **ADEPT explanations** per stage so the user learns the system — invoke the
-  **`living-knowledge`** skill (global): Analogy → Diagram → concrete Example → Plain → Tech;
-  name the analogy's breaking point. Compress when they move fast; go deep when they ask why.
+- **Leveled explanations** per stage so the user learns the system — invoke the
+  **`living-knowledge`** skill (global), which pitches to **prior-knowledge × purpose**
+  (depth: novice→expert × lens: learn / implement / tradeoffs / business / strategy), *not* a
+  fixed difficulty ladder. Default to ONE level inferred from the user (their code, their
+  question) + a one-click reframe ("simpler" / "just the tradeoffs" / "business impact"); for an
+  expert give the **delta + crux**, not a re-explanation (more detail *harms* experts —
+  expertise reversal). Pair the extremes (10-yo ↔ expert) as a Feynman self-check on high-stakes
+  points, and name each analogy's breaking point.
 
 ## 3. DRIVE to green — pick the gear, then drive
 
@@ -83,21 +88,61 @@ it back in ≤6 lines so the user can correct in one reply. Never silently drop 
 3. **Else co-define 3–7 verifiable objectives with the user**, then check them.
 
 **Sequential gear loop:** run → read each failure → fix the named file → re-run → repeat
-until green, OR stop after the **same failure 3×** and escalate with what you tried.
+until green, OR after the **same failure 3×** hand off to **`/ce-debug`** (root-cause
+investigation — its Iron Law: no fix without a found cause) and then escalate to the user with
+what you tried.
 
 **Parallel gear loop:** merge `merge`-verdict PRs in dependency order, re-wave `fix`/`failed`
 units with tighter scope. Here `no-mistakes` runs **on top of** the discovered test harness
 (not instead of it) — tests must be green before the audit.
+
+**Architecture lens (when the work touches code).** Before calling a code change green,
+apply the **`swappable-seams`** skill (global): did each *external* dependency the change
+touches (model/LLM, storage, retrieval, transport, telemetry, payment) go through an injected
+**seam** (Protocol/ABC/callback + config-keyed factory + a test fake) — or get hardcoded into
+its callers? This is the OOP-swappability + closed-loop discipline HarnessX demonstrates
+(`agent = model.agentic(harness)`; behavior as composable, swappable Processors that
+observe→adapt→evolve). Add a seam **only at a real volatility boundary with a second body
+(fake or alternative)** — not everywhere: a premature seam is dead cost, and a recorded
+YAGNI/ADR that defers a seam is *correct*, not debt. Then **close the loop**: the change
+ships *with the check that scores it*, against a named ground truth (mechanical /
+expert-judged / real-world). Seams are what make step 4's evolve possible — you can't improve
+what you can't swap or measure. (Skip for genuine one-offs / non-software work.)
+
+**Verify gate (code).** Tests green is necessary, not sufficient — also run **`/ce-code-review`**
+on the diff and fix what it surfaces before declaring green. (This is the inline/sequential
+reviewer; the parallel gear already gates every PR through `no-mistakes` — don't double-run both.)
+
+**Beyond the core, discover — don't enumerate.** The skills wired in here —
+`/ce-plan`→`/ce-work`, `/ce-code-review`, `/ce-debug`, `/ce-compound`, `living-knowledge`,
+`swappable-seams` — are the common path, kept deliberately small. For anything else, match the
+task to a skill's own description and activate it on demand (e.g. `ce-brainstorm` to scope a
+fuzzy idea, `ce-ideate` to generate options, `ce-optimize` for a metric-driven tuning loop,
+`ce-commit-push-pr` / `/sos:ship-loop` to ship) rather than bloating this file. New skills become
+available automatically — this list stays a short on-ramp, not a registry.
 
 Either way: never fake a green; an honest ❌ beats a bad fix. Surface human-judgment gates
 (the things a check can't score) to the user with the real artifact — don't self-answer them.
 
 ## 4. SELF-IMPROVE (the system is sharper after this run)
 
-Both gears converge here — this is the shared self-improve tail. After the run: flag anything
-**flaky** (passes some runs, fails others — a threshold/prompt problem). Propose ONE concrete
-improvement and apply with consent — a new objective + check, a tuned threshold, a recurring
-fix saved to `memory/`, or an edit to this command itself. In the parallel gear, also fold in
+Both gears converge here — this is the shared self-improve tail, and the **evolve** half of
+the `swappable-seams` loop from step 3: the run's measured outcome feeds the next
+configuration. After the run: flag anything
+**flaky** (passes some runs, fails others — a threshold/prompt problem). Then capture the run's
+lesson as a **dual upgrade** — one compression, two beneficiaries (super-u's "silicon upgrade +
+carbon upgrade"); apply with consent:
+
+- **Reusable agent asset (silicon).** Turn the lesson into the *right* artifact from the spectrum
+  so the next agent run starts ahead — a **skill** (bounded, transferable heuristic), a
+  **plugin/MCP** (tool access), a **dynamic workflow** (multi-step orchestration), a **hook**
+  (event-triggered reflex), a **subagent**, or a tuned objective+check / `memory/` note. Pick by
+  what the lesson *is*; don't default to "a memory note". (Match to a skill on demand —
+  e.g. `skillfy` to mint a skill — rather than hand-rolling.)
+- **Human capability (carbon).** Teach the lesson back via **`living-knowledge`** at the user's
+  level (depth × lens) so the *person* levels up too, not just the agent.
+
+In the parallel gear, also fold in
 what the fan-out taught (which `no-mistakes` checks caught the most, which agent/harness
 scored best) and record it via `multi_agent_performance` / `self_eval`. If you ran the
 `/ce-plan` → `/ce-work` engine, also run **`/ce-compound`** to capture reusable learnings

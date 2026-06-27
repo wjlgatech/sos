@@ -7,6 +7,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `swappable-seams` skill: the OOP-swappability + closed-loop engineering discipline HarnessX
+  demonstrates (`agent = model.agentic(harness)`; behavior as composable, swappable Processors
+  that observe→adapt→evolve). A dependency you can replace without editing its callers is a
+  *seam*; seams are what make the build→measure→feedback loop possible. Discernment-graded:
+  its honest edges say **when NOT to add a seam** (no second body / no volatility boundary / a
+  recorded YAGNI-ADR already deferred it), so it resists premature-abstraction sprawl.
+
+### Changed
+
+- `goal-10x`: wired the build spine end-to-end and kept the file lean.
+  - **Step 3 (DRIVE):** added `/ce-code-review` as the inline verify gate, `/ce-debug` for the
+    3-strikes escalation, and a **`swappable-seams`** architecture lens before declaring green;
+    plus a "discover, don't enumerate" rule so the rest of the `ce-*` fleet activates on demand
+    instead of bloating the command (on-ramp, not a registry).
+  - **Step 2 (COACH):** explanations are now **leveled** — `living-knowledge` pitches to
+    *prior-knowledge × purpose* (depth: novice→expert × lens: learn/implement/tradeoffs/
+    business/strategy), default one inferred level + 1-click reframe, with a 10-yo↔expert
+    Feynman self-check. Aligned to cognitive science (expertise-reversal, Bloom, ZPD).
+  - **Step 4 (SELF-IMPROVE):** "learn" is now a **dual upgrade** — every lesson becomes both a
+    *reusable agent asset* (skill / plugin / dynamic workflow / hook / subagent / memory) **and**
+    a *human-capability* upgrade taught back via `living-knowledge` at the user's level.
+- `living-knowledge`: added the **lens (purpose) axis** beside depth — audiences differ in the
+  cognitive *action* they need (Bloom verb), not just difficulty; personas (10-yo … Elon-like)
+  become presets that resolve to a `depth × lens` cell; prior knowledge overrides the persona;
+  added the pair-the-extremes (10-yo↔expert) Feynman self-check.
+
 - `knowledgefy` skill: a focused, explicit `/knowledgefy <source>` one-shot — turn ANY single
   source (GitHub repo · website · YouTube/podcast · PDF/audio/video/notebook · folder · pasted
   text) into a self-contained interactive living-knowledge web page (Map · Infographic · Ask)
