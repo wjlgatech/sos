@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- `viral-loop` skill: **closed-loop viral marketing** — loop engineering applied to media
+  content (MAKE → AUTO-REVIEW rubric ≥4/5 → 🔑 HUMAN GATE → PUBLISH+ENGAGE with
+  drafted-never-sent comment replies → MEASURE → LEARN). Self-aware (scores its own output),
+  self-healing (below-bar drafts iterate or die honestly), self-improving (rules banked only on
+  ≥3 posts of evidence, hypotheses named with a next test). Wires MEASURE/LEARN to the existing
+  `marketing_eval` engine when present (`marketing-score/-metrics/-eval/-recommend` — composite
+  computed in code, never vibes); ledger-file fallback in plain repos. Hard rule: no
+  auto-posting/auto-DM/auto-reply anywhere (platform ToS) — a human always owns Send. Reference
+  deployment: agentic-portfolio `docs/marketing/`. Plugin bumped to 1.3.0.
 - `swappable-seams` skill: the OOP-swappability + closed-loop engineering discipline HarnessX
   demonstrates (`agent = model.agentic(harness)`; behavior as composable, swappable Processors
   that observe→adapt→evolve). A dependency you can replace without editing its callers is a
