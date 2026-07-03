@@ -1,6 +1,6 @@
 ---
 name: free-llm
-description: "Free LLMs for any agent, with a survival chain (formerly nvidia-free-llm). Primary: NVIDIA's free NIM API (integrate.api.nvidia.com) — 120 hosted frontier models (GLM 5.1, Kimi K2.6, DeepSeek-v4, MiniMax M2.7, GPT-OSS-120B…) behind ONE OpenAI-compatible endpoint, free with a build.nvidia.com key (40 req/min, ~1 year). PLUS the standing fallback-chain rule: NIM → local Ollama → OpenRouter → Anthropic/OpenAI, so an agent never dies when a free tier throttles. Use when an agent or app needs a free/cheap cloud LLM backend: out of credits, hit a 429/rate limit, avoiding $50-200/mo API bills, wiring Hermes/Cursor/OpenCode/DreamMakeTrue to a no-cost provider. Triggers on 'free LLM API', 'NVIDIA NIM / build.nvidia.com', 'out of credits', 'rate limited / 429', 'free GLM/Kimi/DeepSeek', 'point my agent at a free model', 'fallback chain'. NOT for production SLAs (rate-limited free tier); see freellmapi for the multi-provider aggregator."
+description: "Free LLMs for any agent, with a survival chain (formerly nvidia-free-llm). Primary: NVIDIA's free NIM API (integrate.api.nvidia.com) — 120 hosted frontier models (GLM 5.1, Kimi K2.6, DeepSeek-v4, MiniMax M2.7, GPT-OSS-120B…) behind ONE OpenAI-compatible endpoint, free with a build.nvidia.com key (40 req/min, ~1 year). ALSO: Groq (api.groq.com/openai/v1, fastest inference, ~30 req/min free) and Google Gemini (generativelanguage.googleapis.com/v1beta/openai/, ~1,500 req/day free, no card) — verified 2026-06-11. PLUS the standing fallback-chain rule: NIM → Groq/Gemini → local Ollama → OpenRouter → Anthropic/OpenAI, so an agent never dies when a free tier throttles. Use when an agent or app needs a free/cheap cloud LLM backend: out of credits, hit a 429/rate limit, avoiding $50-200/mo API bills, wiring Hermes/Cursor/OpenCode/DreamMakeTrue to a no-cost provider. Triggers on 'free LLM API', 'NVIDIA NIM / build.nvidia.com', 'out of credits', 'rate limited / 429', 'free GLM/Kimi/DeepSeek', 'free Groq/Gemini tier', 'point my agent at a free model', 'fallback chain'. NOT for production SLAs (rate-limited free tier); see freellmapi for the multi-provider aggregator."
 argument-hint: "[what you want — e.g. 'set up the key', 'wire DreamMakeTrue to it', 'which model for code?']"
 allowed-tools: Bash, Read, Write, WebFetch
 metadata:
@@ -46,7 +46,27 @@ python3 $NIM pick             # recommended id per role
 NVIDIA_API_KEY=nvapi-… python3 $NIM test z-ai/glm-5.1   # one tiny completion → ok/latency
 ```
 
+## Other free providers (verified against official docs 2026-06-11)
+
+All OpenAI-compatible — same SDK, different `base_url` + key. Loop (the call overlay)
+ships all three as presets: Settings → LLM → "Free cloud LLM" → NVIDIA / Groq / Gemini.
+
+| Provider | base_url | Key (free signup) | Free limits | Best model ids |
+| --- | --- | --- | --- | --- |
+| **Groq** (fastest inference) | `https://api.groq.com/openai/v1` | `gsk_…` console.groq.com | ~30 req/min · 14.4k req/day, varies per model | `llama-3.3-70b-versatile` (280 t/s), `openai/gpt-oss-120b` (500 t/s), `openai/gpt-oss-20b` (1000 t/s), `llama-3.1-8b-instant` |
+| **Google Gemini** (biggest free quota, no card) | `https://generativelanguage.googleapis.com/v1beta/openai/` | `AIza…` aistudio.google.com | ~1,500 req/day · 1M tok/min on flash tiers; 2.5-pro only 50 req/day | `gemini-3.5-flash` (docs default), `gemini-2.5-flash`, `gemini-2.5-flash-lite` |
+
+Gotchas: Groq compatibility is "mostly OpenAI" (some params unsupported); Gemini's free
+tier may train on your data (don't send confidential transcripts); both deprecate model
+ids on their own clocks — probe with one tiny completion before trusting a wiring.
+Picking: **Groq** for latency-critical overlays, **Gemini** for volume, **NIM** for
+frontier-model variety. They also slot into the fallback chain below as extra free rungs
+between NIM and Ollama.
+
 ## Wire it into…
+
+**Loop:** Settings → LLM → "Free cloud LLM" card → pick NVIDIA / Groq / Gemini → paste
+key → Use. (Presets fill the OpenAI-compatible slot; one active at a time.)
 
 **DreamMakeTrue** (best fit: the cheap/fast tier — keeps Anthropic/quality where it matters):
 Settings ⚙ → Model Provider → the **NVIDIA (free)** preset (or Custom) → paste key → Save.
@@ -72,9 +92,10 @@ local daemons stop. **Any agent wired to NIM must also get this chain, in this o
 
 ```
 1. NVIDIA NIM        (primary, $0, frontier-class)
-2. local Ollama      (http://localhost:11434/v1 — $0, offline-proof, last-resort quality)
-3. OpenRouter        (paid credits; cheap models)
-4. Anthropic / OpenAI (paid API keys / ChatGPT-sub OAuth)
+2. Groq / Gemini     ($0 extra free rungs — Groq for speed, Gemini for daily volume)
+3. local Ollama      (http://localhost:11434/v1 — $0, offline-proof, last-resort quality)
+4. OpenRouter        (paid credits; cheap models)
+5. Anthropic / OpenAI (paid API keys / ChatGPT-sub OAuth)
 ```
 
 **Probe each tier before trusting it** (a chain of dead links is theater):
