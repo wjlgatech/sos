@@ -25,6 +25,18 @@ live plugin command (idempotent; re-run per machine):
 curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-goal-10x.sh | sh
 ```
 
+**Personal operating instructions, every session:** the plugin also carries
+[`instructions/claude-instructions.md`](instructions/claude-instructions.md) — how Claude
+should work *with Paul* (voice, two-rail output contract, focus protocol, hard mode), as
+opposed to the skills, which teach it tasks. `install-claude-instructions.sh` copies it to
+`~/.claude/instructions-paul-wu.md` and adds the `@~/.claude/instructions-paul-wu.md` import
+to `~/.claude/CLAUDE.md`, which Claude Code loads at the start of every session in every
+project. Idempotent; re-run per machine and after edits (edit the repo file, not the copy):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-claude-instructions.sh | sh
+```
+
 **Other agents (Hermes, etc.), any machine:** clone this repo and run
 `bash plugins/sos/scripts/install-skills-global.sh` — it symlinks these skills into Claude
 Code's (`~/.claude/skills`) and Hermes's (`$HERMES_SKILLS_DIR`) global skill dirs from the
@@ -58,6 +70,8 @@ and installing it across projects **and** computers.
 | `scripts/install-goal-10x.sh` | installer | one-command cross-machine setup: add marketplace + install plugin + symlink the bare `/goal-10x` name. Idempotent; re-run per machine.                                            |
 | `scripts/install-doc-sync.sh` | installer | (bundled util, run manually) drops a CHANGELOG + pre-commit docs-sync guard into any git repo.                                                                                   |
 | `scripts/install-skills-global.sh` | installer | (run once per machine) symlinks these skills into Claude Code + Hermes global skill dirs from a clone — cross-agent, cross-machine availability without the marketplace.        |
+| `instructions/claude-instructions.md` | config | Paul's personal operating instructions — the canonical copy of how Claude should work with him (voice, two-rail contract, focus protocol, hard mode, debug doctrine).       |
+| `scripts/install-claude-instructions.sh` | installer | per-machine: copy the instructions to `~/.claude/instructions-paul-wu.md` + add the `@` import line to `~/.claude/CLAUDE.md` so every session loads them. Idempotent.  |
 
 ## Provenance
 

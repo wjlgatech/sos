@@ -7,6 +7,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- Personal operating instructions, distributed cross-machine: `plugins/sos/instructions/claude-instructions.md`
+  is the canonical "Instructions for Claude — Paul Wu" (voice, two-rail output contract, focus
+  protocol, hard mode, debug doctrine), and `plugins/sos/scripts/install-claude-instructions.sh`
+  installs it per machine — copies it to `~/.claude/instructions-paul-wu.md` and appends the
+  `@~/.claude/instructions-paul-wu.md` import to `~/.claude/CLAUDE.md`, which Claude Code loads
+  at the start of every session in every project. Why: skills teach Claude *tasks*; nothing
+  previously synced *how to work with Paul* across sessions and computers. Idempotent (grep-guarded
+  append; local-clone copy with GitHub-raw fallback). Plugin bumped to 1.3.1.
 - `viral-loop` skill: **closed-loop viral marketing** — loop engineering applied to media
   content (MAKE → AUTO-REVIEW rubric ≥4/5 → 🔑 HUMAN GATE → PUBLISH+ENGAGE with
   drafted-never-sent comment replies → MEASURE → LEARN). Self-aware (scores its own output),

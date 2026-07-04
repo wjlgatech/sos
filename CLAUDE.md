@@ -37,6 +37,12 @@ tests/
 state/                                # Runtime state (gitignored)
 skills/                               # Public-ecosystem skills (own README/CLI/tests)
 └── email-reader/                     # Read Gmail over IMAP (stdlib, connector-free)
+plugins/sos/                          # Claude Code plugin (marketplace root: .claude-plugin/)
+├── commands/  skills/  scripts/      # /sos:* commands, skills, per-machine installers
+└── instructions/                     # claude-instructions.md — Paul's personal operating
+                                      # instructions; install-claude-instructions.sh copies it
+                                      # to ~/.claude/instructions-paul-wu.md + adds an @import
+                                      # to ~/.claude/CLAUDE.md (loads every session/machine)
 ```
 
 ## Orchestrator Architecture
