@@ -50,6 +50,31 @@ Read the learnings file FIRST — active rules constrain the draft. Draft the ar
 per-platform copy (X ≤280 chars, URLs billed at 23; LinkedIn long-form or feed post;
 YouTube description; IG caption): ONE hook in line 1, ONE ask, real links, grounded in
 the actual repo/product — read it, don't remember it.
+**Embed every visual inline in the draft itself** — cover thumbnail right under the
+title block, each infographic at the exact section it illustrates (relative
+`media/*.png` links) — so the human never hand-inserts images at publish time.
+
+**Visuals wear the brand** — see §Brand & visuals below; never reach for a neutral
+"reference" palette when the property has a brand.
+
+### Brand & visuals (the setting that travels with this skill)
+
+Thumbnails (1200×627) and infographics are HTML **art-boards** rendered to PNG:
+
+- **Tokens:** [`references/brand-tokens.css`](references/brand-tokens.css) — Paul's
+  default marketing style: **bright-orange-led Anthropic editorial** (warm cream ground,
+  ink text, lead accent `#e0764a` / deep `#b8532a` on topbars · part chips · hero numbers ·
+  rule boxes · quote bars; muted supports blue/green/kraft/ink for identity chips; serif
+  display over system-sans body). Copy it next to the boards as `shared.css`.
+- **Renderer:** [`references/render.mjs`](references/render.mjs) — Playwright, every
+  `.board` → PNG at 2×. Convention: boards in `docs/marketing/media/src/`, PNGs in
+  `docs/marketing/media/`.
+- **Color discipline:** keep the token file's chip ORDER (CVD-validated, worst adjacent
+  ΔE 55); every colored mark carries a direct text label (identity never by color alone);
+  deep steps for text-on-cream and white-on-fill. The hues are intentionally muted — if a
+  strict chart validator flags low chroma, that's the accepted brand trade-off, not a bug.
+- If the property defines its own theme (e.g. a `[data-theme]` block, `anyagent brand`),
+  that wins — these tokens are the default, not a cage.
 
 ### 2 · AUTO-REVIEW (auto — iterate until ≥4.0/5, max 3 revisions)
 Score 1–5 each, average: **Hook** (would a scroller stop at line 1?) · **Specificity**

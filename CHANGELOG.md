@@ -7,6 +7,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **viral-loop brand kit — the marketing skill now carries its visual setting (plugin v1.4.0).**
+  `plugins/sos/skills/viral-loop/references/brand-tokens.css` (Paul's default marketing style:
+  bright-orange-led Anthropic editorial — warm cream ground, ink, lead `#e0764a`/deep `#b8532a`,
+  muted blue/green/kraft/ink supports in a CVD-validated chip order (worst adjacent ΔE 55), serif
+  display; every colored mark direct-labeled) and `references/render.mjs` (Playwright: HTML
+  art-boards → 2× PNGs; convention `docs/marketing/media/src/` → `media/`). SKILL.md gains a
+  **Brand & visuals** section plus a MAKE-stage rule: **embed every visual inline in the draft**
+  (cover under the title block, infographic at the section it illustrates) so the human never
+  hand-inserts images. Why: the skill said "match the brand's card language" but carried no brand —
+  a run in agentic-portfolio (3-article LinkedIn series) shipped neutral-palette visuals twice
+  before landing the brand; now the setting travels with the plugin to every machine. README hero
+  restyled to the anyagent repo pattern (centered header + badges + jump links + dated 📰 News).
+
+  _Investigated / Rejected:_ keeping brand tokens only in the product repo's `shared.css`
+  (dies there — the exact failure this repo's §2 exists to fix); snapping the muted Anthropic
+  hues to pass a strict chart-palette chroma floor (destroys the brand look; the relief rule —
+  direct labels on every mark — is the validator's own prescribed mitigation).
+
 - Personal operating instructions, distributed cross-machine: `plugins/sos/instructions/claude-instructions.md`
   is the canonical "Instructions for Claude — Paul Wu" (voice, two-rail output contract, focus
   protocol, hard mode, debug doctrine), and `plugins/sos/scripts/install-claude-instructions.sh`
