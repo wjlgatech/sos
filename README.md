@@ -61,6 +61,21 @@ curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scri
 # update later:  claude plugin marketplace update wjlgatech-plugins
 ```
 
+**Want Claude to know _you_ — every session, every machine?** Skills teach Claude _how to do
+tasks_; this teaches it _how to work with Paul_ (voice, two-rail output contract, focus
+protocol, hard mode, debug doctrine). The canonical file is
+[`plugins/sos/instructions/claude-instructions.md`](plugins/sos/instructions/claude-instructions.md);
+one idempotent command copies it to `~/.claude/instructions-paul-wu.md` and adds the import
+line `@~/.claude/instructions-paul-wu.md` to `~/.claude/CLAUDE.md`. Claude Code reads
+`~/.claude/CLAUDE.md` at the start of **every session in every project**, and an `@path` line
+is a file import — so the instructions load everywhere on that machine, automatically. Re-run
+on each new computer, and again after editing the repo file (the `~/.claude` copy is
+generated — **edit the repo file, not the copy**):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wjlgatech/sos/main/plugins/sos/scripts/install-claude-instructions.sh | sh
+```
+
 > **Other agents (Hermes, etc.) on any machine:** clone this repo and run `bash plugins/sos/scripts/install-skills-global.sh` — it symlinks the skills into Claude Code's (`~/.claude/skills`) and Hermes's (`$HERMES_SKILLS_DIR`) global skill dirs from the clone, so both agents discover them everywhere.
 
 Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop that researches the codebase + the user's intention, coaches via adaptive Q&A + ADEPT explanations, drives every objective to green (verify → fix → loop), and self-improves each run.
@@ -95,6 +110,8 @@ Headliner: **`/sos:goal-10x`** — a project-agnostic objective-driven dev loop 
 | `scripts/install-goal-10x.sh`      | util    | one-command, idempotent cross-machine install: add marketplace + install plugin + symlink bare `/goal-10x`                                                                     |
 | `scripts/install-doc-sync.sh`      | util    | CHANGELOG + docs-sync pre-commit guard for any repo (run manually)                                                                                                             |
 | `scripts/install-skills-global.sh` | util    | symlink the skills into Claude Code + Hermes global skill dirs from a clone (cross-agent, cross-machine)                                                                       |
+| `instructions/claude-instructions.md` | config | Paul's personal operating instructions (voice, two-rail contract, focus protocol, hard mode) — the canonical copy Claude loads every session                                |
+| `scripts/install-claude-instructions.sh` | util | idempotent per-machine install: copy instructions to `~/.claude/instructions-paul-wu.md` + add the `@` import to `~/.claude/CLAUDE.md`                                      |
 
 See [`plugins/sos/README.md`](plugins/sos/README.md) for details + provenance.
 
