@@ -96,9 +96,40 @@ without an explicit go.
 ### 4 · PUBLISH + ENGAGE (assisted)
 Paste-ready copy + share-intent URLs (`twitter.com/intent/tweet?text=…`,
 `linkedin.com/sharing/share-offsite/?url=…`). On publish, record it
-(`marketing-publish` or a ledger row). When the human pastes incoming comments, draft a
-reply per comment in their voice — answer, thank specifics, never argue, route qualified
-people to the outreach playbook if one exists. Batch the replies. **The human sends.**
+(`marketing-publish` or a ledger row). Engagement has two modes — **both draft, neither sends:**
+
+**(a) Inbound** — when the human pastes incoming comments, draft a reply per comment in their
+voice: answer, thank specifics, never argue, route qualified people to the outreach playbook if
+one exists. Batch the replies.
+
+**(b) Outbound / proactive — the engagement scout.** Go OUT and find readers already discussing
+the topic, then draft a helpful reply to each. Run
+[`references/engage-scout.mjs`](references/engage-scout.mjs) (Node 18+, no deps, no keys):
+
+```bash
+node engage-scout.mjs --from marketing/<the-article>.md --out marketing/engagement-queue.md
+# or: --keywords "llm inference, kv cache, disaggregation" --platform hn,reddit --min-score 0.2
+```
+
+It searches **public, server-readable** surfaces (Hacker News via Algolia — reliable; Reddit
+best-effort), scores each hit's relevance **in code** (a spam gate — an empty queue is the gate
+working, not a failure), dedups, and writes a review queue: each genuinely-relevant thread with
+its direct URL and an empty `draftReply` slot. **You then draft each reply in the author's voice,
+grounded in the article** (same discipline as §MAKE — read the piece, don't remember it). The
+human reviews, posts from their own account, and marks it sent → §MEASURE/§LEARN.
+
+**⚠️ The hard line (rule 1, restated because this is where it's tempting):** the scout finds and
+drafts; it **never** posts, replies, DMs, follows, or likes — not via API, not via browser
+automation. Auto-engagement violates LinkedIn/X ToS (LinkedIn won a $13M automation case), gets
+accounts banned, and a bot reply converts nobody. **LinkedIn / X / Instagram / Facebook are
+login-walled** — no server reads or posts there; you watch those and paste a thread in for a draft.
+Bots get banned; a real human answer earns trust. The tool saves you the *finding*, never fakes
+the *relationship*.
+
+**Automatic cadence (proactive, still drafts-only):** schedule the discovery, not the sending —
+a weekly cron that appends to the queue and pings you to review, e.g.
+`0 9 * * 1  cd <repo> && node …/engage-scout.mjs --from marketing/<article>.md --out marketing/engagement-queue.md`.
+The loop runs itself up to the human gate and stops there, every time.
 
 ### 5 · MEASURE (auto, on pasted numbers)
 At a consistent checkpoint (48h): `marketing-metrics --content-id <id> --impressions …`

@@ -7,6 +7,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **viral-loop engage-scout — proactive engagement discovery (drafts, never sends). Plugin v1.5.0.**
+  `plugins/sos/skills/viral-loop/references/engage-scout.mjs` (Node 18+, zero deps, no keys/auth)
+  is the outbound half of PUBLISH+ENGAGE: it goes OUT and finds readers already discussing your
+  content's topics on **public, server-readable** surfaces (Hacker News via Algolia — reliable;
+  Reddit best-effort), scores each hit's relevance **in code** (a spam gate — an empty queue is the
+  gate working), dedups, and writes a review queue (each thread + direct URL + an empty `draftReply`
+  slot). The agent then drafts each reply in the author's voice, grounded in the article; the human
+  reviews, posts from their own account, and marks it sent → MEASURE/LEARN. `--from <file>` extracts
+  keywords automatically; `--json` feeds a cron. SKILL.md §4 documents both engagement modes
+  (inbound + proactive) and a weekly-cron cadence. Smoke: `references/engage-scout-smoke.sh`
+  (arg-handling, the DRAFTS-ONLY framing, a live queue — network-tolerant). Live-verified: 17
+  genuinely-relevant HN threads for the distributed-inference series.
+
+  _The hard line holds, restated where it's tempting:_ the scout **discovers and drafts**; it never
+  posts/replies/DMs/follows/likes — not via API, not via browser automation. Auto-engagement
+  violates LinkedIn/X ToS (LinkedIn's $13M automation case), gets accounts banned, and a bot reply
+  converts nobody. LinkedIn/X/Instagram/Facebook are login-walled — a server can't (and mustn't)
+  read or post there; the human watches those and pastes a thread in for a draft. _Rejected:_
+  auto-reply/auto-DM via API or headless browser (ToS + bans + off-brand); a "post it for me" flag
+  (there is deliberately no send path in the tool).
+
 - **"Ship a Loop, Not a Demo" — a viral-loop MAKE, scored to 100/100 by the engine.**
   `marketing/ship-a-loop-linkedin.md`: a 1,826-word LinkedIn long-form piece (one mental model —
   highlight reel vs. training log — mapped term-by-term to the architecture, ~15-line pseudocode,
