@@ -7,6 +7,62 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **viral-loop engage-scout — proactive engagement discovery (drafts, never sends). Plugin v1.5.0.**
+  `plugins/sos/skills/viral-loop/references/engage-scout.mjs` (Node 18+, zero deps, no keys/auth)
+  is the outbound half of PUBLISH+ENGAGE: it goes OUT and finds readers already discussing your
+  content's topics on **public, server-readable** surfaces (Hacker News via Algolia — reliable;
+  Reddit best-effort), scores each hit's relevance **in code** (a spam gate — an empty queue is the
+  gate working), dedups, and writes a review queue (each thread + direct URL + an empty `draftReply`
+  slot). The agent then drafts each reply in the author's voice, grounded in the article; the human
+  reviews, posts from their own account, and marks it sent → MEASURE/LEARN. `--from <file>` extracts
+  keywords automatically; `--json` feeds a cron. SKILL.md §4 documents both engagement modes
+  (inbound + proactive) and a weekly-cron cadence. Smoke: `references/engage-scout-smoke.sh`
+  (arg-handling, the DRAFTS-ONLY framing, a live queue — network-tolerant). Live-verified: 17
+  genuinely-relevant HN threads for the distributed-inference series.
+
+  _The hard line holds, restated where it's tempting:_ the scout **discovers and drafts**; it never
+  posts/replies/DMs/follows/likes — not via API, not via browser automation. Auto-engagement
+  violates LinkedIn/X ToS (LinkedIn's $13M automation case), gets accounts banned, and a bot reply
+  converts nobody. LinkedIn/X/Instagram/Facebook are login-walled — a server can't (and mustn't)
+  read or post there; the human watches those and pastes a thread in for a draft. _Rejected:_
+  auto-reply/auto-DM via API or headless browser (ToS + bans + off-brand); a "post it for me" flag
+  (there is deliberately no send path in the tool).
+
+- **"Ship a Loop, Not a Demo" — a viral-loop MAKE, scored to 100/100 by the engine.**
+  `marketing/ship-a-loop-linkedin.md`: a 1,826-word LinkedIn long-form piece (one mental model —
+  highlight reel vs. training log — mapped term-by-term to the architecture, ~15-line pseudocode,
+  real citations: RT-2 · Open X-Embodiment · π0.5 · SPARK · Reflexion). Brand-kit thumbnail (1200×627)
+  + 3 embedded infographics rendered to `marketing/media/`. Auto-review: engine `content_quality`
+  40→100, human rubric 4.8/5. **Drafted, not published — the human owns Send.**
+
+### Changed
+
+- **marketing-eval: content quality is now channel-aware (eval → reflect → improve).** Scoring this
+  article surfaced two real defects and fixed them: (1) `IDEAL_WORD_COUNT` was a single 50–500 band
+  applied to every channel, so a long-form LinkedIn article scored *worse* than a tweet —
+  `IDEAL_WORD_COUNT_BY_CHANNEL` now scores each channel against its own band; (2) `_infer_channel`
+  ignored the filename, the strongest channel signal — it now reads title **and** filename (a
+  `*-linkedin.md` file scores against the LinkedIn band). New test
+  `test_content_quality_word_band_is_channel_aware`; the viral-loop SKILL.md documents the behavior.
+
+- **viral-loop brand kit — the marketing skill now carries its visual setting (plugin v1.4.0).**
+  `plugins/sos/skills/viral-loop/references/brand-tokens.css` (Paul's default marketing style:
+  bright-orange-led Anthropic editorial — warm cream ground, ink, lead `#e0764a`/deep `#b8532a`,
+  muted blue/green/kraft/ink supports in a CVD-validated chip order (worst adjacent ΔE 55), serif
+  display; every colored mark direct-labeled) and `references/render.mjs` (Playwright: HTML
+  art-boards → 2× PNGs; convention `docs/marketing/media/src/` → `media/`). SKILL.md gains a
+  **Brand & visuals** section plus a MAKE-stage rule: **embed every visual inline in the draft**
+  (cover under the title block, infographic at the section it illustrates) so the human never
+  hand-inserts images. Why: the skill said "match the brand's card language" but carried no brand —
+  a run in agentic-portfolio (3-article LinkedIn series) shipped neutral-palette visuals twice
+  before landing the brand; now the setting travels with the plugin to every machine. README hero
+  restyled to the anyagent repo pattern (centered header + badges + jump links + dated 📰 News).
+
+  _Investigated / Rejected:_ keeping brand tokens only in the product repo's `shared.css`
+  (dies there — the exact failure this repo's §2 exists to fix); snapping the muted Anthropic
+  hues to pass a strict chart-palette chroma floor (destroys the brand look; the relief rule —
+  direct labels on every mark — is the validator's own prescribed mitigation).
+
 - Personal operating instructions, distributed cross-machine: `plugins/sos/instructions/claude-instructions.md`
   is the canonical "Instructions for Claude — Paul Wu" (voice, two-rail output contract, focus
   protocol, hard mode, debug doctrine), and `plugins/sos/scripts/install-claude-instructions.sh`

@@ -1,18 +1,68 @@
-# SOS: Self-Optimization System
+<div align="center">
 
-**Your AI agents forget to work. This system catches them — and fixes them automatically.**
+# 🧭 SOS — Self-Optimization System
 
-**Your AI bills are 19x higher than they need to be. One command cuts 94.7%.**
+### Monitor · Heal · Optimize · **Compound** — your agents, your bills, your content, your skills.
 
-**All three OpenClaw services monitored: base gateway (3000), enterprise bot (18789), web UI (5173). Crash at 3 AM → detected in 5 minutes.**
+**Your AI agents forget to work; this catches and fixes them. Your AI bills are 19× too high; one command cuts 94.7%. Your best Claude Code skills die inside one repo; this ships them to every machine as a plugin.**
 
-A zero-dependency Python framework that makes AI agent operations reliable, affordable, and self-correcting. Built for [OpenClaw](https://docs.openclaw.ai). 430 tests. Zero external packages. Runs on your machine, on your schedule.
+[![CI](https://github.com/wjlgatech/sos/actions/workflows/ci.yml/badge.svg)](https://github.com/wjlgatech/sos/actions/workflows/ci.yml)
+[![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
+[![tests](https://img.shields.io/badge/tests-430-success)](tests/)
+[![deps](https://img.shields.io/badge/runtime%20deps-0-success)](pyproject.toml)
+[![plugin](https://img.shields.io/badge/claude%20plugin-sos%20v1.4.0-d97757)](plugins/sos/)
+[![license](https://img.shields.io/badge/license-MIT-black)](LICENSE)
+
+[Quickstart](#quickstart) · [Skills & Commands](#2-claude-code-artifacts-reusable-skills--commands) · [Marketing Loop](#4-marketing-eval-close-the-loop-on-content) · [Cost Governor](#8-cost-governor-cut-your-ai-bill-by-947) · [Watchdog](#9-gateway-watchdog-sleep-through-outages) · [Architecture](#architecture) · [NEWS.md](NEWS.md)
+
+</div>
+
+---
+
+> ### An agent operation you don't measure will quietly rot.
+> SOS is a zero-dependency Python framework + a Claude Code **plugin marketplace** that makes agent operations reliable, affordable, and self-correcting — monitoring, healing, cost-governing, content-scoring, and skill-distributing from one repo. Built for [OpenClaw](https://docs.openclaw.ai); the skills work anywhere. **430 tests. Zero external packages. Runs on your machine, on your schedule.**
 
 ```bash
 pip install -e ".[dev]" && make install-watchdog && make cost-audit
 ```
 
-> See [NEWS.md](NEWS.md) for latest updates
+## 📰 News
+
+- **2026-07-05** — **`/viral-loop` grows a proactive engagement scout — go out, find readers, draft (never send)**:
+  [`engage-scout.mjs`](plugins/sos/skills/viral-loop/references/engage-scout.mjs) (Node, zero deps, no
+  keys) is the outbound half of PUBLISH+ENGAGE — it searches **public** surfaces (Hacker News via
+  Algolia; Reddit best-effort) for readers already discussing your content's topics, scores relevance
+  **in code** (a spam gate), and queues each genuinely-relevant thread with its URL + a `draftReply`
+  slot. The agent drafts each reply in your voice, grounded in the article; **you** post from your own
+  account. **The hard line holds** — the scout finds and drafts, never posts/replies/DMs (LinkedIn/X
+  ToS + bans + brand); LinkedIn/X are login-walled and stay human-watched. `--from <file>` auto-extracts
+  keywords, `--json` feeds a weekly cron. Plugin **v1.5.0**; smoke-tested; live-found 17 HN threads for
+  the distributed-inference series.
+- **2026-07-05** — **"Ship a Loop, Not a Demo" — a `/viral-loop` MAKE that made the engine smarter**:
+  a 1,826-word LinkedIn long-form piece ([`marketing/ship-a-loop-linkedin.md`](marketing/ship-a-loop-linkedin.md))
+  with a brand-kit thumbnail + 3 embedded infographics — one mental model (highlight reel vs.
+  training log) mapped term-by-term to the architecture, ~15 lines of pseudocode, real citations
+  (RT-2 · Open X-Embodiment · π0.5 · SPARK · Reflexion). Auto-reviewing it against the marketing-eval
+  engine surfaced two real defects and fixed them: **content quality is now channel-aware** (a
+  long-form LinkedIn article no longer scores worse than a tweet), and **channel inference reads the
+  filename**, not just the title. Engine `content_quality` 40 → **100/100**; human rubric 4.8/5.
+  Drafted, not published — the human owns Send.
+- **2026-07-04** — **`/viral-loop` ships its brand kit — marketing visuals that travel with the skill**:
+  the closed-loop marketing skill now carries a portable **setting** — [`references/brand-tokens.css`](plugins/sos/skills/viral-loop/references/brand-tokens.css)
+  (bright-orange-led Anthropic editorial: warm cream, ink, lead accent `#e0764a`, serif display;
+  chip order CVD-validated, every mark direct-labeled) and [`references/render.mjs`](plugins/sos/skills/viral-loop/references/render.mjs)
+  (Playwright: HTML art-boards → 2× PNGs). Plus a MAKE-stage rule: **every visual embeds inline in
+  the draft** (cover under the title, infographic at the section it illustrates) — the human never
+  hand-inserts images. Battle-tested on a 3-article LinkedIn series (agentic-portfolio
+  `docs/marketing/`). Plugin **v1.4.0** — one `/plugin install` puts it on every machine.
+- **2026-07-04** — **Personal Claude instructions, synced everywhere**: `plugins/sos/instructions/claude-instructions.md`
+  + a one-command installer load "how to work with Paul" (voice, two-rail output, focus protocol)
+  into `~/.claude/CLAUDE.md` on every machine ([#22](https://github.com/wjlgatech/sos/pull/22)).
+- **2026-07-02** — **`/viral-loop` — closed-loop viral marketing as a skill**: MAKE → AUTO-REVIEW
+  (rubric ≥4/5) → HUMAN GATE → PUBLISH+ENGAGE → MEASURE → LEARN; drafts everything, sends nothing
+  ([#20](https://github.com/wjlgatech/sos/pull/20)). Scored by the marketing-eval engine below.
+- **2026-06-27** — **`/goal-10x` deepened**: ce-review/ce-debug wiring, swappable-seams, leveled
+  coaching, dual-upgrade learn.
 
 ---
 
@@ -205,6 +255,14 @@ See `tests/e2e_framework/README.md` for full documentation.
 **The problem you're solving:** You wrote marketing content for your project — social posts, articles, launch announcements. Then you published it and never looked at it again. No impressions tracked. No engagement measured. No way to know what's working. Your optimization system optimizes everything except how you tell people about it.
 
 **With this:** The same DISCOVER → SCORE → RECOMMEND → REPORT architecture that evaluates code quality now evaluates marketing content. Five sub-scores, channel-normalized benchmarks, six recommendation types, and GitHub Issues on grade degradation.
+
+**The agent-side half is the [`/viral-loop` skill](plugins/sos/skills/viral-loop/SKILL.md)** — the
+whole loop as Claude behavior: MAKE (visuals **embedded inline** in every draft, wearing the
+[brand kit](plugins/sos/skills/viral-loop/references/brand-tokens.css): bright-orange Anthropic
+tokens + a [Playwright art-board renderer](plugins/sos/skills/viral-loop/references/render.mjs)) →
+AUTO-REVIEW (rubric ≥4/5, scored by this engine where present) → **HUMAN GATE** → PUBLISH+ENGAGE
+(drafted-never-sent) → MEASURE (this engine's ledger) → LEARN. Installing the plugin (§2) puts the
+skill, the brand tokens, and the renderer on every machine.
 
 ```bash
 make marketing-discover    # scan marketing/ for content

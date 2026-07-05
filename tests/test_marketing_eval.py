@@ -242,6 +242,18 @@ class TestScoring:
         }
         assert engine._score_content_quality(content) == 100.0
 
+    def test_content_quality_word_band_is_channel_aware(self, engine):
+        # A 1600-word long-form article scores the word-count band on LinkedIn
+        # (its native format) but not on Twitter (where it's far too long).
+        base = {"has_cta": False, "has_link": False, "has_code_block": False, "hashtags": []}
+        linkedin = {**base, "word_count": 1600, "channel": "linkedin"}
+        twitter = {**base, "word_count": 1600, "channel": "twitter"}
+        assert engine._score_content_quality(linkedin) == 20.0
+        assert engine._score_content_quality(twitter) == 0.0
+        # Unknown channel falls back to the default band (back-compat).
+        default = {**base, "word_count": 100}
+        assert engine._score_content_quality(default) == 20.0
+
     def test_freshness_decay(self, engine):
         now = datetime.now(timezone.utc)
         # Published today: 100

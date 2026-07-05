@@ -39,6 +39,9 @@ skills/                               # Public-ecosystem skills (own README/CLI/
 └── email-reader/                     # Read Gmail over IMAP (stdlib, connector-free)
 plugins/sos/                          # Claude Code plugin (marketplace root: .claude-plugin/)
 ├── commands/  skills/  scripts/      # /sos:* commands, skills, per-machine installers
+│   └── skills/viral-loop/references/ # the skill's portable SETTING: brand-tokens.css
+│                                     # (bright-orange Anthropic marketing style, CVD-ordered,
+│                                     # relief-rule) + render.mjs (Playwright art-boards → 2× PNG)
 └── instructions/                     # claude-instructions.md — Paul's personal operating
                                       # instructions; install-claude-instructions.sh copies it
                                       # to ~/.claude/instructions-paul-wu.md + adds an @import

@@ -1,0 +1,59 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   viral-loop brand tokens — Paul Wu's marketing visuals (thumbnails, infographics,
+   art-boards). Bright-orange-led Anthropic editorial style: warm cream ground,
+   ink text, ONE bright orange lead accent (Paul's favorite color), muted warm
+   supports, serif display. Derived from agentic-portfolio app/themes.css
+   [data-theme="anthropic"] + `anyagent brand`, brightened per Paul's direction
+   (2026-07-04). Copy this file next to your art-boards (e.g. as
+   docs/marketing/media/src/shared.css) and reference the tokens by role.
+
+   Dataviz honesty note: these hues are deliberately muted (below a strict
+   categorical chroma floor). The colorblind-separation ordering below PASSES
+   (worst adjacent ΔE 55, target ≥12) — keep the order, and give EVERY colored
+   mark a direct text label (the relief rule). Never encode identity by color
+   alone. Deep steps are for text on cream / white-on-fill contrast.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Ground — warm and bright */
+  --surface: #fbf8f2;   /* board surface */
+  --canvas: #f5efe4;    /* page plane / panel fills (warmer Cloud) */
+  --panel: #e8e6dc;
+
+  /* Ink */
+  --ink: #191919;
+  --ink-2: #6b6657;     /* secondary text, muted warm gray */
+  --muted: #8a8574;     /* footnotes, captions */
+  --grid: #e2ded3;      /* hairlines, card edges */
+  --baseline: #b0aea5;  /* table header rules */
+
+  /* THE LEAD — bright Anthropic orange. Topbars, part chips, hero numbers,
+     rule boxes, quote bars all lead with this. */
+  --terra: #e0764a;
+  --terra-deep: #b8532a;   /* orange for TEXT on cream (contrast-safe) */
+
+  /* Supports — identity chips only, in this CVD-validated order:
+     terra, blue, green, ink-chip, kraft, blue-deep */
+  --blue: #7fa9d8;   --blue-deep: #46698f;
+  --green: #93a968;  --green-deep: #5d7040;
+  --kraft: #d3a075;  --kraft-deep: #96703f;
+  --ink-chip: #141413;
+
+  /* Type — serif display over system-sans body (the Anthropic pairing) */
+  --font-display: "Iowan Old Style", "Palatino", Georgia, "Times New Roman", serif;
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+.board { background: var(--surface); position: relative; overflow: hidden; }
+h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; }
+.eyebrow {
+  font-size: 20px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-2);
+}
+.footnote { color: var(--muted); line-height: 1.45; }
+.chip { display: inline-block; border-radius: 6px; }

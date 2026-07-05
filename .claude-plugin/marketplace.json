@@ -10,8 +10,10 @@
     {
       "name": "sos",
       "description": "Objective-driven dev loop (/goal-10x), the Plan→Code→Validate ship loop (/ship-loop with lavish, treehouse, no-mistakes), the freellmapi free unified-LLM backend, plus skills: skillfy (compress expertise into verifiable skills), living-knowledge explanations, knowledgefy (/knowledgefy <source> → an interactive knowledge-graph page in one shot), CopilotKit integration, the future-self framework, and knowledge-graph (build topic & persona knowledge graphs from multi-source, engagement-ranked evidence).",
-      "version": "1.3.1",
-      "author": { "name": "Paul Wu" },
+      "version": "1.5.0",
+      "author": {
+        "name": "Paul Wu"
+      },
       "category": "development",
       "source": "./plugins/sos",
       "homepage": "https://github.com/wjlgatech/sos#8-claude-code-artifacts-reusable-skills-workflows--commands"

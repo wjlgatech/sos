@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="./shared.css">
+<style>
+  .board{width:1200px;height:720px;padding:48px 56px;display:flex;flex-direction:column}
+  .eyebrow{font-size:18px;margin-bottom:6px;color:var(--terra-deep)}
+  h1{font-size:46px;color:var(--ink);margin-bottom:24px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1}
+  .col{border:2px solid var(--grid);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+  .colhead{padding:16px 22px;font-family:var(--font-sans);font-weight:800;font-size:24px;color:#fff;display:flex;align-items:center;gap:10px}
+  .reel .colhead{background:var(--ink-chip)}
+  .log .colhead{background:var(--terra)}
+  .rows{padding:6px 22px 16px}
+  .row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--grid);font-family:var(--font-sans);font-size:19px;line-height:1.35;color:var(--ink-2)}
+  .row:last-child{border-bottom:0}
+  .row b{color:var(--ink)}
+  .mk{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800;color:#fff;margin-top:1px}
+  .reel .mk{background:var(--baseline)}
+  .log .mk{background:var(--green-deep)}
+  .foot{margin-top:18px;font-family:var(--font-sans);font-size:19px;color:var(--ink);text-align:center}
+  .foot b{color:var(--terra-deep)}
+</style></head>
+<body><div class="board">
+  <div class="eyebrow">The same six habits, two outcomes</div>
+  <h1>Highlight reel vs. training log</h1>
+  <div class="cols">
+    <div class="col reel">
+      <div class="colhead">🎬 Highlight reel — goes viral</div>
+      <div class="rows">
+        <div class="row"><span class="mk">1</span><div>One clean take, best angle, <b>takes 1–47</b> hidden</div></div>
+        <div class="row"><span class="mk">2</span><div>The performer says <b>“nailed it”</b> — and grades itself</div></div>
+        <div class="row"><span class="mk">3</span><div>Studio lights; objects pre-arranged by a human</div></div>
+        <div class="row"><span class="mk">4</span><div>No idea if it works <b>twice</b></div></div>
+        <div class="row"><span class="mk">5</span><div>Impressive once; clumsy the next morning</div></div>
+        <div class="row"><span class="mk">6</span><div>Moat = the video</div></div>
+      </div>
+    </div>
+    <div class="col log">
+      <div class="colhead">📓 Training log — gets boringly strong</div>
+      <div class="rows">
+        <div class="row"><span class="mk">1</span><div>Every rep recorded — <b>the ugly ones too</b></div></div>
+        <div class="row"><span class="mk">2</span><div>An <b>honest coach</b> grades it — not the performer</div></div>
+        <div class="row"><span class="mk">3</span><div>Varied conditions on purpose (diversity &gt; reps)</div></div>
+        <div class="row"><span class="mk">4</span><div><b>“Don’t get hurt”</b> overrides every other score</div></div>
+        <div class="row"><span class="mk">5</span><div>Keeps the drills that <b>compound</b>; drops the rest</div></div>
+        <div class="row"><span class="mk">6</span><div>Moat = the loop</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">In robotics, <b>“boring” is the highest compliment there is.</b></div>
+</div></body></html>

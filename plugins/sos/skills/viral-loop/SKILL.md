@@ -50,15 +50,44 @@ Read the learnings file FIRST — active rules constrain the draft. Draft the ar
 per-platform copy (X ≤280 chars, URLs billed at 23; LinkedIn long-form or feed post;
 YouTube description; IG caption): ONE hook in line 1, ONE ask, real links, grounded in
 the actual repo/product — read it, don't remember it.
+**Embed every visual inline in the draft itself** — cover thumbnail right under the
+title block, each infographic at the exact section it illustrates (relative
+`media/*.png` links) — so the human never hand-inserts images at publish time.
+
+**Visuals wear the brand** — see §Brand & visuals below; never reach for a neutral
+"reference" palette when the property has a brand.
+
+### Brand & visuals (the setting that travels with this skill)
+
+Thumbnails (1200×627) and infographics are HTML **art-boards** rendered to PNG:
+
+- **Tokens:** [`references/brand-tokens.css`](references/brand-tokens.css) — Paul's
+  default marketing style: **bright-orange-led Anthropic editorial** (warm cream ground,
+  ink text, lead accent `#e0764a` / deep `#b8532a` on topbars · part chips · hero numbers ·
+  rule boxes · quote bars; muted supports blue/green/kraft/ink for identity chips; serif
+  display over system-sans body). Copy it next to the boards as `shared.css`.
+- **Renderer:** [`references/render.mjs`](references/render.mjs) — Playwright, every
+  `.board` → PNG at 2×. Convention: boards in `docs/marketing/media/src/`, PNGs in
+  `docs/marketing/media/`.
+- **Color discipline:** keep the token file's chip ORDER (CVD-validated, worst adjacent
+  ΔE 55); every colored mark carries a direct text label (identity never by color alone);
+  deep steps for text-on-cream and white-on-fill. The hues are intentionally muted — if a
+  strict chart validator flags low chroma, that's the accepted brand trade-off, not a bug.
+- If the property defines its own theme (e.g. a `[data-theme]` block, `anyagent brand`),
+  that wins — these tokens are the default, not a cage.
 
 ### 2 · AUTO-REVIEW (auto — iterate until ≥4.0/5, max 3 revisions)
 Score 1–5 each, average: **Hook** (would a scroller stop at line 1?) · **Specificity**
 (concrete nouns/numbers; zero "synergy") · **Honesty** (claims sourced, limits stated) ·
 **CTA** (exactly one, low-friction) · **Fit** (platform-native, length limits met).
 Where the engine exists, also run `marketing-score` on the draft file (its
-content_quality sub-score is rule-based: word count, CTA, link — computed). Report the
-scorecard honestly; below bar after 3 revisions → name the structural weakness, don't
-inflate.
+content_quality sub-score is rule-based: word-count band, CTA, link, code block,
+hashtags — computed). The word-count band is **channel-aware** (`IDEAL_WORD_COUNT_BY_CHANNEL`
+in `src/marketing_eval.py`): a long-form LinkedIn article is scored against the LinkedIn
+band, not the tweet band, so don't cut a good article to chase a number meant for a post.
+Channel is inferred from the title **and the filename** — name long-form files `*-linkedin.md`
+so they score against the right band. Report the scorecard honestly; below bar after 3
+revisions → name the structural weakness, don't inflate.
 
 ### 3 · HUMAN GATE (always human)
 Final draft + scorecard + assets → the human edits, approves, or kills. Never proceed
@@ -67,9 +96,40 @@ without an explicit go.
 ### 4 · PUBLISH + ENGAGE (assisted)
 Paste-ready copy + share-intent URLs (`twitter.com/intent/tweet?text=…`,
 `linkedin.com/sharing/share-offsite/?url=…`). On publish, record it
-(`marketing-publish` or a ledger row). When the human pastes incoming comments, draft a
-reply per comment in their voice — answer, thank specifics, never argue, route qualified
-people to the outreach playbook if one exists. Batch the replies. **The human sends.**
+(`marketing-publish` or a ledger row). Engagement has two modes — **both draft, neither sends:**
+
+**(a) Inbound** — when the human pastes incoming comments, draft a reply per comment in their
+voice: answer, thank specifics, never argue, route qualified people to the outreach playbook if
+one exists. Batch the replies.
+
+**(b) Outbound / proactive — the engagement scout.** Go OUT and find readers already discussing
+the topic, then draft a helpful reply to each. Run
+[`references/engage-scout.mjs`](references/engage-scout.mjs) (Node 18+, no deps, no keys):
+
+```bash
+node engage-scout.mjs --from marketing/<the-article>.md --out marketing/engagement-queue.md
+# or: --keywords "llm inference, kv cache, disaggregation" --platform hn,reddit --min-score 0.2
+```
+
+It searches **public, server-readable** surfaces (Hacker News via Algolia — reliable; Reddit
+best-effort), scores each hit's relevance **in code** (a spam gate — an empty queue is the gate
+working, not a failure), dedups, and writes a review queue: each genuinely-relevant thread with
+its direct URL and an empty `draftReply` slot. **You then draft each reply in the author's voice,
+grounded in the article** (same discipline as §MAKE — read the piece, don't remember it). The
+human reviews, posts from their own account, and marks it sent → §MEASURE/§LEARN.
+
+**⚠️ The hard line (rule 1, restated because this is where it's tempting):** the scout finds and
+drafts; it **never** posts, replies, DMs, follows, or likes — not via API, not via browser
+automation. Auto-engagement violates LinkedIn/X ToS (LinkedIn won a $13M automation case), gets
+accounts banned, and a bot reply converts nobody. **LinkedIn / X / Instagram / Facebook are
+login-walled** — no server reads or posts there; you watch those and paste a thread in for a draft.
+Bots get banned; a real human answer earns trust. The tool saves you the *finding*, never fakes
+the *relationship*.
+
+**Automatic cadence (proactive, still drafts-only):** schedule the discovery, not the sending —
+a weekly cron that appends to the queue and pings you to review, e.g.
+`0 9 * * 1  cd <repo> && node …/engage-scout.mjs --from marketing/<article>.md --out marketing/engagement-queue.md`.
+The loop runs itself up to the human gate and stops there, every time.
 
 ### 5 · MEASURE (auto, on pasted numbers)
 At a consistent checkpoint (48h): `marketing-metrics --content-id <id> --impressions …`

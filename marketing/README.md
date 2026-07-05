@@ -4,6 +4,7 @@ Promotional content for the self-optimization repo.
 
 | File | Type | Audience |
 |------|------|----------|
+| [ship-a-loop-linkedin.md](ship-a-loop-linkedin.md) | Long-form article: "Ship a loop, not a demo" (robots → agents), with thumbnail + 3 embedded brand infographics ([media/](media/)) | LinkedIn / tech professionals |
 | [linkedin-article.md](linkedin-article.md) | Long-form article: idle detection + self-improvement | LinkedIn / tech professionals |
 | [social-posts.md](social-posts.md) | 5 promotional posts: core system | Twitter/X, LinkedIn, Reddit, HN |
 | [linkedin-article-marketing-eval.md](linkedin-article-marketing-eval.md) | Long-form article: marketing eval engine | LinkedIn / tech professionals |

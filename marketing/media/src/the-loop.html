@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="./shared.css">
+<style>
+  .board{width:1200px;height:680px;padding:48px 56px;display:flex;flex-direction:column}
+  .eyebrow{font-size:18px;margin-bottom:6px;color:var(--terra-deep)}
+  h1{font-size:46px;color:var(--ink);margin-bottom:6px}
+  .sub{font-family:var(--font-sans);font-size:20px;color:var(--ink-2);margin-bottom:26px}
+  .flow{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;flex:1}
+  .step{border:2px solid var(--grid);border-radius:14px;background:var(--surface);padding:16px 14px;display:flex;flex-direction:column;position:relative}
+  .n{width:30px;height:30px;border-radius:50%;background:var(--terra);color:#fff;display:grid;place-items:center;font-family:var(--font-sans);font-weight:800;font-size:16px;margin-bottom:12px}
+  .step.gate .n{background:var(--terra-deep)}
+  .st{font-family:var(--font-sans);font-weight:800;font-size:20px;color:var(--ink);margin-bottom:6px;line-height:1.1}
+  .sd{font-family:var(--font-sans);font-size:15.5px;line-height:1.32;color:var(--ink-2)}
+  .sd code{background:var(--panel);border-radius:4px;padding:0 4px;font-size:13.5px}
+  .arrow{position:absolute;right:-11px;top:22px;color:var(--terra);font-weight:900;font-size:22px;z-index:2}
+  .back{margin-top:16px;display:flex;align-items:center;gap:10px;font-family:var(--font-sans);font-size:19px;color:var(--terra-deep);font-weight:700;justify-content:center}
+  .foot{margin-top:8px;font-family:var(--font-sans);font-size:16px;color:var(--muted);text-align:center}
+</style></head>
+<body><div class="board">
+  <div class="eyebrow">The outer loop · maker ≠ checker</div>
+  <h1>The machine behind a compounding company</h1>
+  <div class="sub">Six components and one rule. Miss any one, and you have a highlight reel with a payroll.</div>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><div class="st">Capture</div><div class="sd">Every attempt as <code>(obs, action, outcome, verdict)</code> — replayable</div><span class="arrow">→</span></div>
+    <div class="step"><div class="n">2</div><div class="st">Referee</div><div class="sd">An <b>independent</b> judge scores it — never the actor grading itself</div><span class="arrow">→</span></div>
+    <div class="step gate"><div class="n">3</div><div class="st">Safety gate</div><div class="sd">A safety fail <b>zeroes</b> the score &amp; rolls back — not a weighted term</div><span class="arrow">→</span></div>
+    <div class="step"><div class="n">4</div><div class="st">Improve</div><div class="sd">Fix the named failure; add a regression asset so it can’t return</div><span class="arrow">→</span></div>
+    <div class="step"><div class="n">5</div><div class="st">Remember</div><div class="sd">Bank only <b>proven</b> lessons — versioned memory, not a log dump</div><span class="arrow">→</span></div>
+    <div class="step"><div class="n">6</div><div class="st">Promote</div><div class="sd">Move up the <b>0→5</b> ladder on evidence, in a defined domain</div></div>
+  </div>
+  <div class="back">↺ &nbsp;every deploy feeds new evidence back into Capture — the loop compounds</div>
+  <div class="foot">Robots: RT-2 · Open X-Embodiment · π0.5 · SPARK &nbsp;·&nbsp; Software agents: Reflexion · sos</div>
+</div></body></html>
