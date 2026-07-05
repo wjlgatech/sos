@@ -7,6 +7,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **"Top-Down vs. Bottom-Up" — a second `/viral-loop` MAKE (engine 100/100).**
+  `marketing/top-down-vs-bottom-up-linkedin.md`: a long-form LinkedIn piece on top-down vs bottom-up
+  org design in an AI-native robotics company (one mental model — two kitchens — mapped term-by-term
+  to the on-chain incentive machinery: maker≠checker, compounding vesting, safety-zero, Solidity
+  in-line). Brand-kit thumbnail + 2 embedded infographics. Real citations (Open X-Embodiment · RT-2 ·
+  π0.5 · Reflexion). Auto-review: engine `content_quality` **100/100**, human rubric ~5/5. Paste-ready
+  LinkedIn/X teasers + 1-click intents in `marketing/top-down-vs-bottom-up-social.md`. **Drafted, not
+  published — the human owns Send.**
+
+### Changed
+
+- **`engage-scout`: `--from` keyword extraction now ranks by distinctiveness, not raw frequency.**
+  Observed on the article above — the old extractor returned generic words ("one, everyone, company,
+  kitchen") that matched off-topic HN threads. Fixed: it now (1) preserves hyphenated compounds whole
+  (`top-down`, `bottom-up`, `physical-ai-native` — the topical gold a shredded tokenizer loses),
+  (2) weights title/heading/emphasis lines ×4 over body, and (3) drops a `COMMON` word set. Result on
+  the same article: top terms went generic → `bottom-up, top-down, physical-ai-native`. Deterministic
+  (no LLM); the hard rule is unchanged — it drafts, never sends.
+
 - **"Ship a Loop, Not a Demo" — a viral-loop MAKE, scored to 100/100 by the engine.**
   `marketing/ship-a-loop-linkedin.md`: a 1,826-word LinkedIn long-form piece (one mental model —
   highlight reel vs. training log — mapped term-by-term to the architecture, ~15-line pseudocode,

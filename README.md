@@ -28,6 +28,15 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
 
 ## 📰 News
 
+- **2026-07-05** — **"Top-Down vs. Bottom-Up" — a second `/viral-loop` MAKE that upgraded the scout**:
+  a long-form LinkedIn piece ([`marketing/top-down-vs-bottom-up-linkedin.md`](marketing/top-down-vs-bottom-up-linkedin.md))
+  on top-down vs bottom-up in an AI-native robotics company — two-kitchens mental model, the on-chain
+  incentive machinery (maker≠checker · compounding vesting · safety-zero) mapped term-by-term with the
+  Solidity in-line, thumbnail + 2 brand infographics, engine `content_quality` **100/100**. Running
+  the engagement scout on it exposed a real defect and fixed it: **`engage-scout --from` now ranks
+  keywords by distinctiveness** (preserves hyphenated compounds like `top-down`/`physical-ai-native`,
+  weights headings, drops common words) instead of raw frequency — so it finds on-topic threads, not
+  a food-pyramid post. Drafted, not published — the human owns Send.
 - **2026-07-05** — **"Ship a Loop, Not a Demo" — a `/viral-loop` MAKE that made the engine smarter**:
   a 1,826-word LinkedIn long-form piece ([`marketing/ship-a-loop-linkedin.md`](marketing/ship-a-loop-linkedin.md))
   with a brand-kit thumbnail + 3 embedded infographics — one mental model (highlight reel vs.

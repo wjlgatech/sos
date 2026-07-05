@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="./shared.css">
+<style>
+  .board{width:1200px;height:730px;padding:46px 54px;display:flex;flex-direction:column}
+  .eyebrow{font-size:18px;margin-bottom:6px;color:var(--terra-deep)}
+  h1{font-size:44px;color:var(--ink);margin-bottom:22px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1}
+  .col{border:2px solid var(--grid);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+  .colhead{padding:15px 22px;font-family:var(--font-sans);font-weight:800;font-size:23px;color:#fff;display:flex;align-items:center;gap:10px}
+  .a .colhead{background:var(--ink-chip)}
+  .b .colhead{background:var(--terra)}
+  .rows{padding:6px 22px 14px}
+  .row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--grid);font-family:var(--font-sans);font-size:19px;line-height:1.35;color:var(--ink-2)}
+  .row:last-child{border-bottom:0}
+  .row b{color:var(--ink)}
+  .mk{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:800;color:#fff;margin-top:1px}
+  .a .mk{background:var(--baseline)}
+  .b .mk{background:var(--green-deep)}
+  .foot{margin-top:16px;font-family:var(--font-sans);font-size:19px;color:var(--ink);text-align:center}
+  .foot b{color:var(--terra-deep)}
+</style></head>
+<body><div class="board">
+  <div class="eyebrow">Two kitchens on the same street</div>
+  <h1>How the work actually improves</h1>
+  <div class="cols">
+    <div class="col a">
+      <div class="colhead">🍳 Top-down — the chef barks</div>
+      <div class="rows">
+        <div class="row"><span class="mk">1</span><div>Only the <b>chef</b> spots the backed-up station</div></div>
+        <div class="row"><span class="mk">2</span><div>A fix needs the chef in a <b>good mood</b></div></div>
+        <div class="row"><span class="mk">3</span><div>Every improvement funnels through <b>one brain</b></div></div>
+        <div class="row"><span class="mk">4</span><div>“Innovate!” = a slide with a rocket</div></div>
+        <div class="row"><span class="mk">5</span><div>Scales to exactly <b>one genius</b></div></div>
+      </div>
+    </div>
+    <div class="col b">
+      <div class="colhead">🔥 Bottom-up — the open kitchen</div>
+      <div class="rows">
+        <div class="row"><span class="mk">1</span><div><b>Anyone</b> sees the ticket board + calls the gap</div></div>
+        <div class="row"><span class="mk">2</span><div>Try a tweak <b>one shift, one station</b> (reversible)</div></div>
+        <div class="row"><span class="mk">3</span><div>The <b>expo</b> verifies — not the cook (maker ≠ checker)</div></div>
+        <div class="row"><span class="mk">4</span><div>The <b>tip formula on the wall</b> pays the verified fix</div></div>
+        <div class="row"><span class="mk">5</span><div>Scales to <b>everyone</b></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">The head chef <b>never cooks</b> — he builds the kitchen and writes the tip formula.</div>
+</div></div></body></html>
