@@ -31,8 +31,18 @@ CHANNEL_BENCHMARKS: dict[str, dict[str, int]] = {
     "reddit": {"good": 1000, "great": 5000},
 }
 
-# Word count range for content quality scoring
+# Word count range for content quality scoring.
+# IDEAL_WORD_COUNT is the channel-agnostic default (kept for back-compat). Real
+# platforms reward very different lengths — a 200-word band that flatters a tweet
+# unfairly fails a long-form LinkedIn article, which is exactly the format LinkedIn
+# rewards. IDEAL_WORD_COUNT_BY_CHANNEL applies the right band per channel; the
+# scorer falls back to the default when the channel is unknown.
 IDEAL_WORD_COUNT = {"min": 50, "max": 500}
+IDEAL_WORD_COUNT_BY_CHANNEL: dict[str, dict[str, int]] = {
+    "twitter": {"min": 20, "max": 400},      # a thread/post is punchy
+    "reddit": {"min": 80, "max": 900},       # a post with substance
+    "linkedin": {"min": 200, "max": 2500},   # feed posts through long-form articles
+}
 
 # Channel inference patterns
 CHANNEL_PATTERNS: dict[str, list[str]] = {
@@ -226,7 +236,7 @@ class MarketingEvalEngine:
             body, re.IGNORECASE,
         ))
         hashtags = re.findall(r"#\w+", body)
-        channel = self._infer_channel(title)
+        channel = self._infer_channel(title, content_id)
         content_hash = hashlib.sha256(body.encode("utf-8")).hexdigest()[:16]
 
         return {
@@ -243,12 +253,17 @@ class MarketingEvalEngine:
             "hash": content_hash,
         }
 
-    def _infer_channel(self, title: str) -> str:
-        """Infer channel from header text."""
-        title_lower = title.lower()
+    def _infer_channel(self, title: str, identifier: str = "") -> str:
+        """Infer channel from the header text and the filename/content id.
+
+        The filename an author chose (e.g. ``ship-a-loop-linkedin.md``) is often
+        the strongest channel signal, even when the title — which doubles as the
+        published headline — deliberately says nothing about the platform.
+        """
+        haystack = f"{title} {identifier}".lower()
         for channel, patterns in CHANNEL_PATTERNS.items():
             for pattern in patterns:
-                if pattern in title_lower:
+                if pattern in haystack:
                     return channel
         return "unknown"
 
@@ -335,7 +350,10 @@ class MarketingEvalEngine:
         """Rule-based quality score: 20 pts each for 5 attributes."""
         score = 0.0
         wc = content.get("word_count", 0)
-        if IDEAL_WORD_COUNT["min"] <= wc <= IDEAL_WORD_COUNT["max"]:
+        band = IDEAL_WORD_COUNT_BY_CHANNEL.get(
+            content.get("channel", ""), IDEAL_WORD_COUNT
+        )
+        if band["min"] <= wc <= band["max"]:
             score += 20
         if content.get("has_cta"):
             score += 20

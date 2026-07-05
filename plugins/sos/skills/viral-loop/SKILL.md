@@ -81,9 +81,13 @@ Score 1–5 each, average: **Hook** (would a scroller stop at line 1?) · **Spec
 (concrete nouns/numbers; zero "synergy") · **Honesty** (claims sourced, limits stated) ·
 **CTA** (exactly one, low-friction) · **Fit** (platform-native, length limits met).
 Where the engine exists, also run `marketing-score` on the draft file (its
-content_quality sub-score is rule-based: word count, CTA, link — computed). Report the
-scorecard honestly; below bar after 3 revisions → name the structural weakness, don't
-inflate.
+content_quality sub-score is rule-based: word-count band, CTA, link, code block,
+hashtags — computed). The word-count band is **channel-aware** (`IDEAL_WORD_COUNT_BY_CHANNEL`
+in `src/marketing_eval.py`): a long-form LinkedIn article is scored against the LinkedIn
+band, not the tweet band, so don't cut a good article to chase a number meant for a post.
+Channel is inferred from the title **and the filename** — name long-form files `*-linkedin.md`
+so they score against the right band. Report the scorecard honestly; below bar after 3
+revisions → name the structural weakness, don't inflate.
 
 ### 3 · HUMAN GATE (always human)
 Final draft + scorecard + assets → the human edits, approves, or kills. Never proceed

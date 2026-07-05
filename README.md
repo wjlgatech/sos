@@ -28,6 +28,15 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
 
 ## 📰 News
 
+- **2026-07-05** — **"Ship a Loop, Not a Demo" — a `/viral-loop` MAKE that made the engine smarter**:
+  a 1,826-word LinkedIn long-form piece ([`marketing/ship-a-loop-linkedin.md`](marketing/ship-a-loop-linkedin.md))
+  with a brand-kit thumbnail + 3 embedded infographics — one mental model (highlight reel vs.
+  training log) mapped term-by-term to the architecture, ~15 lines of pseudocode, real citations
+  (RT-2 · Open X-Embodiment · π0.5 · SPARK · Reflexion). Auto-reviewing it against the marketing-eval
+  engine surfaced two real defects and fixed them: **content quality is now channel-aware** (a
+  long-form LinkedIn article no longer scores worse than a tweet), and **channel inference reads the
+  filename**, not just the title. Engine `content_quality` 40 → **100/100**; human rubric 4.8/5.
+  Drafted, not published — the human owns Send.
 - **2026-07-04** — **`/viral-loop` ships its brand kit — marketing visuals that travel with the skill**:
   the closed-loop marketing skill now carries a portable **setting** — [`references/brand-tokens.css`](plugins/sos/skills/viral-loop/references/brand-tokens.css)
   (bright-orange-led Anthropic editorial: warm cream, ink, lead accent `#e0764a`, serif display;

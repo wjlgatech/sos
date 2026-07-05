@@ -7,6 +7,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **"Ship a Loop, Not a Demo" — a viral-loop MAKE, scored to 100/100 by the engine.**
+  `marketing/ship-a-loop-linkedin.md`: a 1,826-word LinkedIn long-form piece (one mental model —
+  highlight reel vs. training log — mapped term-by-term to the architecture, ~15-line pseudocode,
+  real citations: RT-2 · Open X-Embodiment · π0.5 · SPARK · Reflexion). Brand-kit thumbnail (1200×627)
+  + 3 embedded infographics rendered to `marketing/media/`. Auto-review: engine `content_quality`
+  40→100, human rubric 4.8/5. **Drafted, not published — the human owns Send.**
+
+### Changed
+
+- **marketing-eval: content quality is now channel-aware (eval → reflect → improve).** Scoring this
+  article surfaced two real defects and fixed them: (1) `IDEAL_WORD_COUNT` was a single 50–500 band
+  applied to every channel, so a long-form LinkedIn article scored *worse* than a tweet —
+  `IDEAL_WORD_COUNT_BY_CHANNEL` now scores each channel against its own band; (2) `_infer_channel`
+  ignored the filename, the strongest channel signal — it now reads title **and** filename (a
+  `*-linkedin.md` file scores against the LinkedIn band). New test
+  `test_content_quality_word_band_is_channel_aware`; the viral-loop SKILL.md documents the behavior.
+
 - **viral-loop brand kit — the marketing skill now carries its visual setting (plugin v1.4.0).**
   `plugins/sos/skills/viral-loop/references/brand-tokens.css` (Paul's default marketing style:
   bright-orange-led Anthropic editorial — warm cream ground, ink, lead `#e0764a`/deep `#b8532a`,
