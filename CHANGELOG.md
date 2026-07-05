@@ -7,6 +7,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **`/viral-loop` gets the POSSE syndication kit — publish once, fan out everywhere (plugin v1.7.0).**
+  `plugins/sos/skills/viral-loop/references/syndicate.mjs` (Node 18+, zero deps, no keys,
+  deterministic) turns one canonical article + its live URL into a **syndication kit**: 1-click share
+  intents for X/LinkedIn/Facebook/Reddit/HN/Bluesky/Threads (open a pre-filled composer, the human
+  clicks Post), the **owned-homes recipe** (Medium *Import a story* + Substack canonical — both keep
+  the canonical pointing home), and per-channel copy scaffolds (LinkedIn/X/IG/YouTube) the agent then
+  polishes into the author's voice. `references/syndicate-smoke.sh` covers arg-handling, the
+  DRAFTS-ONLY framing, every intent, and the channel sections. **The hard line holds** — it drafts and
+  links, never posts/schedules. SKILL.md §4 documents the POSSE flow. Demonstrated end-to-end on the
+  "Top-Down vs Bottom-Up" article (`marketing/top-down-vs-bottom-up-syndication.md`).
+
 - **"Top-Down vs. Bottom-Up" — a second `/viral-loop` MAKE (engine 100/100).**
   `marketing/top-down-vs-bottom-up-linkedin.md`: a long-form LinkedIn piece on top-down vs bottom-up
   org design in an AI-native robotics company (one mental model — two kitchens — mapped term-by-term

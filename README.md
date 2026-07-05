@@ -28,6 +28,15 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
 
 ## 📰 News
 
+- **2026-07-05** — **`/viral-loop` gets the POSSE syndication kit (plugin v1.7.0)**: publish once on
+  your own site, fan out everywhere. [`syndicate.mjs`](plugins/sos/skills/viral-loop/references/syndicate.mjs)
+  (Node 18+, zero deps, no keys, deterministic) turns one canonical article + its live URL into a
+  **syndication kit** — 1-click share intents for X/LinkedIn/Facebook/Reddit/HN/Bluesky/Threads (a
+  pre-filled composer opens; the human clicks Post), the **owned-homes recipe** (Medium *Import a
+  story* + Substack canonical, both keeping `rel=canonical` pointing home), and per-channel copy
+  scaffolds the agent polishes into the author's voice. The hard line holds — **it drafts and links,
+  never sends.** Demonstrated on the "Top-Down vs. Bottom-Up" article
+  ([`marketing/top-down-vs-bottom-up-syndication.md`](marketing/top-down-vs-bottom-up-syndication.md)).
 - **2026-07-05** — **"Top-Down vs. Bottom-Up" — a second `/viral-loop` MAKE that upgraded the scout**:
   a long-form LinkedIn piece ([`marketing/top-down-vs-bottom-up-linkedin.md`](marketing/top-down-vs-bottom-up-linkedin.md))
   on top-down vs bottom-up in an AI-native robotics company — two-kitchens mental model, the on-chain

@@ -94,9 +94,25 @@ Final draft + scorecard + assets → the human edits, approves, or kills. Never 
 without an explicit go.
 
 ### 4 · PUBLISH + ENGAGE (assisted)
-Paste-ready copy + share-intent URLs (`twitter.com/intent/tweet?text=…`,
-`linkedin.com/sharing/share-offsite/?url=…`). On publish, record it
-(`marketing-publish` or a ledger row). Engagement has two modes — **both draft, neither sends:**
+
+**POSSE — Publish on Own Site, Syndicate Elsewhere.** The source of truth is the author's OWN
+site (an RSS/JSON feed + `rel=canonical` on each article makes it canonical); social platforms are
+syndicated copies that link home. Generate the syndication kit with
+[`references/syndicate.mjs`](references/syndicate.mjs) (Node 18+, no deps, no keys, deterministic):
+
+```bash
+node syndicate.mjs --from marketing/<article>.md --url <live-canonical-url> --handle <x> \
+  --out marketing/<article>-syndication.md
+```
+
+It emits **1-click share intents** (X/LinkedIn/Facebook/Reddit/HN/Bluesky/Threads — open a pre-filled
+composer, the human clicks Post), the **owned-homes recipe** (Medium *Import a story* + Substack
+canonical, both of which keep the canonical pointing home), and **per-channel copy scaffolds**
+(LinkedIn/X/IG/YouTube). The scaffolds are a starting point — **the agent then polishes each into the
+author's voice, grounded in the article** (same discipline as §MAKE; deterministic extraction can't
+match voice on its own). Never a send path exists in the tool.
+
+On publish, record it (`marketing-publish` or a ledger row). Engagement has two modes — **both draft, neither sends:**
 
 **(a) Inbound** — when the human pastes incoming comments, draft a reply per comment in their
 voice: answer, thank specifics, never argue, route qualified people to the outreach playbook if
