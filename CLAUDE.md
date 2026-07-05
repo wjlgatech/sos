@@ -44,6 +44,9 @@ plugins/sos/                          # Claude Code plugin (marketplace root: .c
 │   └── skills/viral-loop/references/ # the skill's portable SETTING: brand-tokens.css
 │                                     # (bright-orange Anthropic marketing style, CVD-ordered,
 │                                     # relief-rule) + render.mjs (Playwright art-boards → 2× PNG)
+│                                     # + engage-scout.mjs (find threads to reply to, drafts-only)
+│                                     # + syndicate.mjs (POSSE kit: 1-click intents + owned-homes
+│                                     #   recipe + per-channel scaffolds; drafts + links, never sends)
 └── instructions/                     # claude-instructions.md — Paul's personal operating
                                       # instructions; install-claude-instructions.sh copies it
                                       # to ~/.claude/instructions-paul-wu.md + adds an @import
