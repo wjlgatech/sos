@@ -28,6 +28,14 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
 
 ## 📰 News
 
+- **2026-07-05** — **Two agent-agnostic skills join the plugin (v1.6.0)**:
+  [`/installable-web-app`](plugins/sos/skills/installable-web-app/SKILL.md) — one-tap **Install** for
+  ANY web app (a permanent phone/desktop icon, opens full-screen like a native app; PWA + `.url`/`.webloc`
+  shortcuts), framework-agnostic, with the three silent-failure gotchas baked in (SW-must-not-cache ·
+  static-icons-must-actually-ship · rasterizer-fallback). And
+  [`/proactive-intervention`](plugins/sos/skills/proactive-intervention/SKILL.md) — catch a repeated
+  instruction / redone rework and turn it into a permanent rule without being asked. Both distribute to
+  every agent + machine via `install-skills-global.sh`.
 - **2026-07-05** — **`/viral-loop` grows a proactive engagement scout — go out, find readers, draft (never send)**:
   [`engage-scout.mjs`](plugins/sos/skills/viral-loop/references/engage-scout.mjs) (Node, zero deps, no
   keys) is the outbound half of PUBLISH+ENGAGE — it searches **public** surfaces (Hacker News via
