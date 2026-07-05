@@ -37,6 +37,24 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
   keywords by distinctiveness** (preserves hyphenated compounds like `top-down`/`physical-ai-native`,
   weights headings, drops common words) instead of raw frequency — so it finds on-topic threads, not
   a food-pyramid post. Drafted, not published — the human owns Send.
+- **2026-07-05** — **Two agent-agnostic skills join the plugin (v1.6.0)**:
+  [`/installable-web-app`](plugins/sos/skills/installable-web-app/SKILL.md) — one-tap **Install** for
+  ANY web app (a permanent phone/desktop icon, opens full-screen like a native app; PWA + `.url`/`.webloc`
+  shortcuts), framework-agnostic, with the three silent-failure gotchas baked in (SW-must-not-cache ·
+  static-icons-must-actually-ship · rasterizer-fallback). And
+  [`/proactive-intervention`](plugins/sos/skills/proactive-intervention/SKILL.md) — catch a repeated
+  instruction / redone rework and turn it into a permanent rule without being asked. Both distribute to
+  every agent + machine via `install-skills-global.sh`.
+- **2026-07-05** — **`/viral-loop` grows a proactive engagement scout — go out, find readers, draft (never send)**:
+  [`engage-scout.mjs`](plugins/sos/skills/viral-loop/references/engage-scout.mjs) (Node, zero deps, no
+  keys) is the outbound half of PUBLISH+ENGAGE — it searches **public** surfaces (Hacker News via
+  Algolia; Reddit best-effort) for readers already discussing your content's topics, scores relevance
+  **in code** (a spam gate), and queues each genuinely-relevant thread with its URL + a `draftReply`
+  slot. The agent drafts each reply in your voice, grounded in the article; **you** post from your own
+  account. **The hard line holds** — the scout finds and drafts, never posts/replies/DMs (LinkedIn/X
+  ToS + bans + brand); LinkedIn/X are login-walled and stay human-watched. `--from <file>` auto-extracts
+  keywords, `--json` feeds a weekly cron. Plugin **v1.5.0**; smoke-tested; live-found 17 HN threads for
+  the distributed-inference series.
 - **2026-07-05** — **"Ship a Loop, Not a Demo" — a `/viral-loop` MAKE that made the engine smarter**:
   a 1,826-word LinkedIn long-form piece ([`marketing/ship-a-loop-linkedin.md`](marketing/ship-a-loop-linkedin.md))
   with a brand-kit thumbnail + 3 embedded infographics — one mental model (highlight reel vs.

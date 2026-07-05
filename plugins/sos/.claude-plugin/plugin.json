@@ -1,7 +1,7 @@
 {
   "name": "sos",
-  "description": "Reusable, agent-agnostic toolkit: the /goal-10x objective-driven dev loop, the /ship-loop Plan→Code→Validate lifecycle (lavish/treehouse/no-mistakes), the freellmapi free unified-LLM backend, the living-repo awesome-list→knowledge-graph compiler, plus skills for living-knowledge explanations, knowledge graphs, knowledgefy (/knowledgefy <source> → an interactive knowledge-graph page in one shot), dreammaketrue, NVIDIA free NIM, CopilotKit integration, the future-self framework, and viral-loop (closed-loop viral marketing: draft/review/measure/learn by machine, Send always human, scored by the marketing-eval engine — now with a portable brand kit: bright-orange Anthropic tokens + a Playwright art-board renderer, visuals embedded inline in every draft).",
-  "version": "1.4.0",
+  "description": "Reusable, agent-agnostic toolkit: the /goal-10x objective-driven dev loop, the /ship-loop Plan→Code→Validate lifecycle (lavish/treehouse/no-mistakes), the freellmapi free unified-LLM backend, the living-repo awesome-list→knowledge-graph compiler, plus skills for living-knowledge explanations, knowledge graphs, knowledgefy (/knowledgefy <source> → an interactive knowledge-graph page in one shot), dreammaketrue, NVIDIA free NIM, CopilotKit integration, the future-self framework, and viral-loop (closed-loop viral marketing: draft/review/measure/learn by machine, Send always human, scored by the marketing-eval engine — now with a portable brand kit: bright-orange Anthropic tokens + a Playwright art-board renderer, visuals embedded inline in every draft; plus engage-scout — proactive engagement discovery that goes out, finds readers discussing your topics, and queues drafts for review, never auto-sends).",
+  "version": "1.6.0",
   "author": {
     "name": "Paul Wu",
     "email": "wjlgatech@gmail.com"
