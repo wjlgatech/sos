@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="./shared.css">
+<style>
+  .board{width:1200px;height:600px;padding:46px 54px;display:flex;flex-direction:column}
+  .eyebrow{font-size:18px;margin-bottom:6px;color:var(--terra-deep)}
+  h1{font-size:44px;color:var(--ink);margin-bottom:6px}
+  .sub{font-family:var(--font-sans);font-size:20px;color:var(--ink-2);margin-bottom:24px;max-width:70ch}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;flex:1}
+  .card{border:2px solid var(--grid);border-radius:16px;background:var(--surface);padding:22px 20px;display:flex;flex-direction:column}
+  .card.safe{border-color:var(--terra)}
+  .ic{font-size:30px;margin-bottom:12px}
+  .card h3{font-size:22px;color:var(--ink);margin-bottom:8px;font-family:var(--font-sans);font-weight:800}
+  .card p{font-family:var(--font-sans);font-size:17px;line-height:1.4;color:var(--ink-2);margin:0}
+  .card code{background:var(--panel);border-radius:5px;padding:1px 5px;font-size:14.5px;color:var(--terra-deep)}
+  .foot{margin-top:20px;font-family:var(--font-sans);font-size:18px;color:var(--ink);text-align:center}
+  .foot b{color:var(--terra-deep)}
+</style></head>
+<body><div class="board">
+  <div class="eyebrow">The tip formula, written on the wall (in Solidity)</div>
+  <h1>What the contract rewards</h1>
+  <div class="sub">Reward triggers on a <b>verified close</b> — never a proposal, never effort. Three <code>require</code>s, not a values poster.</div>
+  <div class="cards">
+    <div class="card">
+      <div class="ic">✍️</div><h3>maker ≠ checker</h3>
+      <p>Two signatures on-chain. <code>require(msg.sender != maker)</code> — the person who did the work can't certify it for money. Encoded in code, not a handbook.</p>
+    </div>
+    <div class="card">
+      <div class="ic">📈</div><h3>compounding vesting</h3>
+      <p>The payout <b>streams</b>; re-verifying durability <b>extends</b> it. A fix that keeps paying earns more than a one-shot — so people chase <b>leverage</b>, not a trophy.</p>
+    </div>
+    <div class="card safe">
+      <div class="ic">🔒</div><h3>safety = hard zero</h3>
+      <p>A safety failure <b>zeroes</b> the unreleased reward and halts — regardless of ROI. A terminal gate, never a weighted term.</p>
+    </div>
+  </div>
+  <div class="foot">Culture first, contract second — <b>never code an incentive you haven't first run by hand.</b></div>
+</div></div></body></html>

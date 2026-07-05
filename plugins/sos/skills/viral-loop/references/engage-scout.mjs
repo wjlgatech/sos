@@ -42,6 +42,9 @@ Searches PUBLIC, server-readable surfaces only. LinkedIn/X are login-walled — 
 cannot (and must not) read or post there; you watch those and paste threads in for a draft.`;
 
 const STOP = new Set(("the a an and or of to in on for with is are be this that your you our we it as at by from into than then so if not no yes can will just how what why when who which their they them its it's about over under across via using use used more most less least new here there".split(" ")));
+// Common/generic words that dominate frequency counts but say nothing about the
+// TOPIC — extracting them makes `--from` match off-topic threads (observed 2026-07-05).
+const COMMON = new Set(("one two three every everyone everything anyone someone something anything nobody company companies people person need needs needed work works working thing things way ways get gets got make makes made build builds built look looks like only even still much many first second next own actually really where when what because while before after around per out own does doesn done good best better want wants really you're they're here's that's it's".split(" ")));
 
 const args = parseArgs(process.argv.slice(2));
 if (args.help || (!args.keywords && !args.from)) {
@@ -66,11 +69,22 @@ function tokenize(s) {
 }
 
 function keywordsFromFile(path) {
-  
+  // Distinctiveness beats raw frequency: (1) keep hyphenated compounds whole
+  // ("top-down", "ai-native") — they're the topical gold a shredded tokenizer
+  // loses; (2) weight title/heading/emphasis lines far above body; (3) drop the
+  // COMMON words that otherwise win on count alone.
   const text = fs.readFileSync(path, "utf8");
-  const freq = new Map();
-  for (const w of tokenize(text)) freq.set(w, (freq.get(w) || 0) + 1);
-  return [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([w]) => w);
+  const score = new Map();
+  const bump = (w, k) => {
+    if (w.length > 2 && !STOP.has(w) && !COMMON.has(w)) score.set(w, (score.get(w) || 0) + k);
+  };
+  for (const line of text.split("\n")) {
+    const t = line.trim();
+    const weight = /^#{1,6}\s/.test(t) || /^[*_]/.test(t) ? 4 : 1;   // headings, title/subtitle
+    for (const m of (t.toLowerCase().match(/[a-z0-9]+(?:-[a-z0-9]+)+/g) || [])) bump(m, weight * 2);
+    for (const w of tokenize(t)) bump(w, weight);
+  }
+  return [...score.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([w]) => w);
 }
 
 // Relevance IN CODE (never vibes): fraction of the query's terms present in the hit.

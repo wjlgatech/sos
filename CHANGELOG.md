@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **"Top-Down vs. Bottom-Up" — a second `/viral-loop` MAKE (engine 100/100).**
+  `marketing/top-down-vs-bottom-up-linkedin.md`: a long-form LinkedIn piece on top-down vs bottom-up
+  org design in an AI-native robotics company (one mental model — two kitchens — mapped term-by-term
+  to the on-chain incentive machinery: maker≠checker, compounding vesting, safety-zero, Solidity
+  in-line). Brand-kit thumbnail + 2 embedded infographics. Real citations (Open X-Embodiment · RT-2 ·
+  π0.5 · Reflexion). Auto-review: engine `content_quality` **100/100**, human rubric ~5/5. Paste-ready
+  LinkedIn/X teasers + 1-click intents in `marketing/top-down-vs-bottom-up-social.md`. **Drafted, not
+  published — the human owns Send.**
+
 - **Two agent-agnostic skills, distributed to every agent/machine. Plugin v1.6.0.**
   - `plugins/sos/skills/installable-web-app/` — give ANY web app a one-tap **Install** so it
     lands a permanent icon on a phone/iPad/desktop and opens full-screen like a native app (a
@@ -48,6 +57,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
   40→100, human rubric 4.8/5. **Drafted, not published — the human owns Send.**
 
 ### Changed
+
+- **`engage-scout`: `--from` keyword extraction now ranks by distinctiveness, not raw frequency.**
+  Observed on the article above — the old extractor returned generic words ("one, everyone, company,
+  kitchen") that matched off-topic HN threads. Fixed: it now (1) preserves hyphenated compounds whole
+  (`top-down`, `bottom-up`, `physical-ai-native` — the topical gold a shredded tokenizer loses),
+  (2) weights title/heading/emphasis lines ×4 over body, and (3) drops a `COMMON` word set. Result on
+  the same article: top terms went generic → `bottom-up, top-down, physical-ai-native`. Deterministic
+  (no LLM); the hard rule is unchanged — it drafts, never sends.
 
 - **marketing-eval: content quality is now channel-aware (eval → reflect → improve).** Scoring this
   article surfaced two real defects and fixed them: (1) `IDEAL_WORD_COUNT` was a single 50–500 band
