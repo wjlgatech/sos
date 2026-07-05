@@ -7,6 +7,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **Two agent-agnostic skills, distributed to every agent/machine. Plugin v1.6.0.**
+  - `plugins/sos/skills/installable-web-app/` — give ANY web app a one-tap **Install** so it
+    lands a permanent icon on a phone/iPad/desktop and opens full-screen like a native app (a
+    PWA), with double-click `.url`/`.webloc` desktop shortcuts as the fallback. Framework-agnostic
+    recipe + copy-paste kit + per-stack adapters, and the three silent-failure gotchas baked in
+    (service-worker-must-not-cache · static-icons-must-actually-ship · rasterizer-fallback-chain).
+    Exemplar: `song-of-songs` `sos/webapp.py` + `sos/static/`. **Default practice for every web app.**
+  - `plugins/sos/skills/proactive-intervention/` — notice recurring friction (a repeated
+    instruction, redone rework, a by-hand step) and turn it into a PERMANENT solution (a rule,
+    skill, hook, or memory) without waiting to be asked. The OBSERVE→CLASSIFY→PLACE→APPLY→SURFACE
+    loop + guardrails. _Why:_ every repeated instruction is a rule that should already exist.
+
 - **viral-loop engage-scout — proactive engagement discovery (drafts, never sends). Plugin v1.5.0.**
   `plugins/sos/skills/viral-loop/references/engage-scout.mjs` (Node 18+, zero deps, no keys/auth)
   is the outbound half of PUBLISH+ENGAGE: it goes OUT and finds readers already discussing your
