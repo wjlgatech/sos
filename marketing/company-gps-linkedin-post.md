@@ -22,7 +22,7 @@ Here's what I can't stop thinking about: there's a boring, 70-year-old, *solved*
 
 I made a little app to plan my week and called it "Life GPS." Under the cute UI was a binary integer linear program that re-solved "the best next move" every time I told it what actually happened. That last part has a name in robotics — Model Predictive Control — the exact loop a self-driving robot uses to replan when a box appears in the hallway.
 
-I built org-level MPC in a weekend and mistook it for a to-do list.
+I built org-level MPC in a weekend and mistook it for a to-do list. (Wild part: it's still live — you can set a few goals, hit "Update My Plan," and watch it re-solve the rest of your week in real time. Link in the article.)
 
 Why did it stay a toy? It was starved of three things I had to type in by hand: the weights, the tasks, the feedback. The AI-native age now supplies all three automatically. The idea didn't get smarter — the sensors got 1,000× cheaper.
 
