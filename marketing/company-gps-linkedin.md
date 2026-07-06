@@ -24,7 +24,7 @@ So the honest correction — and I'll happily eat my own earlier framing here �
 
 ## The confession: I built this in 2019 and called it "Life GPS"
 
-Six years ago I was drowning — too many things to learn, too few hours, and every rigid weekly plan died by Wednesday. So I built a little app to fix *me*. I called it **Life GPS** ([it's on GitHub](https://github.com/wjlgatech/life_GPS)), and the pitch was simple: *a planner that tells you the next best step, no matter how many turns you miss — like a GPS.*
+Six years ago I was drowning — too many things to learn, too few hours, and every rigid weekly plan died by Wednesday. So I built a little app to fix *me*. I called it **Life GPS**, and the pitch was simple: *a planner that tells you the next best step, no matter how many turns you miss — like a GPS.* (Want the big picture first? Here's the [original write-up on Medium](https://medium.com/@paulwu_70786/life-gps-a-smart-planner-that-adapts-to-your-changes-and-prioritizes-your-days-ahead-3cefbf298bb6). Want to *feel* it? Six years later you can still [poke at the live app yourself](https://dreamsachievers.shinyapps.io/dreamsachieversapp/), and the [code is on GitHub](https://github.com/wjlgatech/life_GPS).)
 
 Under the cute UI was a **Binary Integer Linear Program.** In plain words: it treats your week as a grid of hour-slots, and it flips each slot on or off for a task, to **maximize how much of what matters actually gets done**, subject to hard rules — each task needs a minimum but caps out at a maximum, one thing per hour, don't schedule past a deadline. A solver finds the single best filling of the grid. That's it. That's the whole brain — and swap "hour-slots" for "engineer-hours and dollars" and it's a company:
 
