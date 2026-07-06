@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="./shared.css">
+<style>
+  .board{width:1200px;height:760px;padding:48px 58px;display:flex;flex-direction:column}
+  .eyebrow{margin-bottom:8px}
+  h1{font-size:46px;line-height:1.04;color:var(--ink);max-width:26ch}
+  h1 b{color:var(--terra-deep)}
+  .rule{height:7px;width:104px;background:var(--terra);border-radius:6px;margin:18px 0 26px}
+  .cols{display:grid;grid-template-columns:1fr 78px 1fr;gap:0;align-items:stretch;flex:1}
+  .colhead{font-family:var(--font-sans);font-weight:800;font-size:21px;letter-spacing:.02em;padding:10px 20px;border-radius:10px 10px 0 0}
+  .left .colhead{background:var(--panel);color:var(--ink-2)}
+  .right .colhead{background:var(--terra);color:#fff}
+  .col{display:flex;flex-direction:column}
+  .cell{padding:20px 20px;border-bottom:2px solid var(--grid)}
+  .left .cell{background:var(--canvas)}
+  .right .cell{background:#fff}
+  .feed{font-family:var(--font-sans);font-weight:800;font-size:19px;color:var(--terra-deep);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+  .what{font-family:var(--font-display);font-size:24px;line-height:1.22;color:var(--ink)}
+  .left .what{color:var(--ink-2)}
+  .note{font-family:var(--font-sans);font-size:15px;color:var(--muted);margin-top:5px}
+  .arrowcol{display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+  .arrow{font-size:34px;color:var(--terra);font-weight:800}
+  .foot{font-family:var(--font-sans);font-size:17px;color:var(--ink-2);margin-top:22px;border-top:2px solid var(--baseline);padding-top:14px}
+  .foot b{color:var(--terra-deep)}
+</style></head>
+<body><div class="board">
+  <div class="eyebrow">The three starved feeds</div>
+  <h1>A correct engine, <b>hand-cranked</b> in 2019 — now fed automatically.</h1>
+  <div class="rule"></div>
+  <div class="cols">
+    <div class="col left">
+      <div class="colhead">2019 · a human types it in</div>
+      <div class="cell"><div class="feed">Weights</div><div class="what">"Learning = 10, Play = 6"</div><div class="note">pure gut; nobody agrees</div></div>
+      <div class="cell"><div class="feed">Tasks &amp; rules</div><div class="what">typed into a table</div><div class="note">tedious, static, always stale</div></div>
+      <div class="cell" style="border-bottom:none"><div class="feed">Feedback</div><div class="what">self-scored twice a day</div><div class="note">a chore — so you stop</div></div>
+    </div>
+    <div class="arrowcol"><span class="arrow">→</span><span class="arrow">→</span><span class="arrow">→</span></div>
+    <div class="col right">
+      <div class="colhead">AI-native · the company supplies it</div>
+      <div class="cell"><div class="feed">Weights</div><div class="what">agents price value/cost/risk</div><div class="note">continuously, no meeting</div></div>
+      <div class="cell"><div class="feed">Tasks &amp; rules</div><div class="what">read from the work-item graph</div><div class="note">live dependencies, no retyping</div></div>
+      <div class="cell" style="border-bottom:none"><div class="feed">Feedback</div><div class="what">instrumented outcomes</div><div class="note">a gate passes → it re-solves itself</div></div>
+    </div>
+  </div>
+  <div class="foot">The optimizer was always right. <b>The sensors just got a thousand times cheaper</b> — and the toy becomes an org control loop.</div>
+</div></body></html>

@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **New `/viral-loop` article + brand visuals: "I Built My Company's Brain in 2019 and Mistook It
+  for a To-Do List."** Third in the physical-AI series. Resource allocation across departments framed
+  as constrained optimization + Model Predictive Control, grounded in the author's 2019 `life_GPS`
+  repo (a binary integer LP that re-solves each cycle). `marketing/company-gps-linkedin.md`
+  (content_quality **100/100** via `marketing_eval`), three rendered art-boards
+  (`media/company-gps-thumb|feeds|loop.png` from `media/src/*.html`), a paste-ready LinkedIn post +
+  short intro (`company-gps-linkedin-post.md`), and the POSSE kit (`company-gps-syndication.md`).
+  Published to agentic-portfolio (`public/articles/company-gps.html`).
+
 - **`/viral-loop` gets the POSSE syndication kit — publish once, fan out everywhere (plugin v1.7.0).**
   `plugins/sos/skills/viral-loop/references/syndicate.mjs` (Node 18+, zero deps, no keys,
   deterministic) turns one canonical article + its live URL into a **syndication kit**: 1-click share

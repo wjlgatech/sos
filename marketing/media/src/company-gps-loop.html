@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="./shared.css">
+<style>
+  .board{width:1200px;height:680px;padding:46px 58px;display:flex;flex-direction:column}
+  .eyebrow{margin-bottom:8px}
+  h1{font-size:44px;line-height:1.05;color:var(--ink);max-width:28ch}
+  h1 b{color:var(--terra-deep)}
+  .rule{height:7px;width:104px;background:var(--terra);border-radius:6px;margin:16px 0 20px}
+  .wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:56px}
+  .ring{position:relative;width:430px;height:430px;flex:0 0 auto}
+  .node{position:absolute;width:150px;text-align:center;font-family:var(--font-sans)}
+  .dot{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;margin:0 auto 8px;color:#fff;font-size:38px;box-shadow:0 6px 18px rgba(184,83,42,.18)}
+  .nlab{font-weight:800;font-size:20px;color:var(--ink)}
+  .nsub{font-size:14px;color:var(--muted);line-height:1.3;margin-top:2px}
+  .n1{top:-6px;left:140px}   .n1 .dot{background:var(--terra)}
+  .n2{top:150px;right:-18px} .n2 .dot{background:var(--terra-deep)}
+  .n3{bottom:-6px;left:140px}.n3 .dot{background:var(--green-deep)}
+  .n4{top:150px;left:-18px}  .n4 .dot{background:var(--blue-deep)}
+  .center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;text-align:center}
+  .center .big{font-family:var(--font-display);font-size:27px;color:var(--terra-deep);font-weight:600;line-height:1.05}
+  .center .sm{font-family:var(--font-sans);font-size:13px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+  svg{position:absolute;inset:0;pointer-events:none}
+  .side{max-width:320px}
+  .side .q{font-family:var(--font-display);font-size:27px;line-height:1.3;color:var(--ink)}
+  .side .q b{color:var(--terra-deep)}
+  .side .a{font-family:var(--font-sans);font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:14px}
+  .foot{font-family:var(--font-sans);font-size:16px;color:var(--muted);margin-top:14px;border-top:2px solid var(--baseline);padding-top:12px}
+</style></head>
+<body><div class="board">
+  <div class="eyebrow">Model Predictive Control · the company edition</div>
+  <h1>Plan a few steps, act, watch reality move, <b>re-plan.</b> Forever.</h1>
+  <div class="rule"></div>
+  <div class="wrap">
+    <div class="ring">
+      <svg viewBox="0 0 430 430"><circle cx="215" cy="215" r="150" fill="none" stroke="var(--terra)" stroke-width="3" stroke-dasharray="7 9" opacity="0.55"/>
+        <path d="M355 205 l8 14 l-16 0 z" fill="var(--terra)"/></svg>
+      <div class="node n1"><div class="dot">📡</div><div class="nlab">Sense</div><div class="nsub">telemetry: gates, tests, $</div></div>
+      <div class="node n2"><div class="dot">🧮</div><div class="nlab">Solve</div><div class="nsub">LP: the best next move</div></div>
+      <div class="node n3"><div class="dot">⚙️</div><div class="nlab">Act</div><div class="nsub">allocate the next dollar/hour</div></div>
+      <div class="node n4"><div class="dot">🗺️</div><div class="nlab">Re-plan</div><div class="nsub">the map moved — reroute</div></div>
+      <div class="center"><div class="big">next best<br>move</div><div class="sm">every cycle</div></div>
+    </div>
+    <div class="side">
+      <div class="q">The same control law <b>your robots</b> use to steer the world.</div>
+      <div class="a">A self-driving robot never charges blindly down one fixed plan — it re-plans as the hallway changes. Put that loop <b>above</b> the robots too: the company reroutes its money and people the instant a gate fails or a market shifts.</div>
+    </div>
+  </div>
+  <div class="foot">No annual plan carved in January and dead by March — a living plan that hands leadership one move at a time.</div>
+</div></body></html>
