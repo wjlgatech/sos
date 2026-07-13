@@ -7,6 +7,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **`/animate-anything` skill (plugin v1.8.0)** — turn a concept into a 3Blue1Brown-style Manim
+  explainer. Reverse-engineered Grant Sanderson's toolchain (target **ManimCommunity** `from manim
+  import *`, not ManimGL) and production style (the `#333333` warm-grey canvas — the #1 tell, NOT pure
+  black; role-based palette blue=given/yellow=focus/red=tension/green=resolved; *morph-to-show-
+  equivalence* via `Transform`/`TransformMatchingTex`, never `FadeOut→FadeIn`; play→wait pacing;
+  concrete-first arc). Bundled stdlib engine `scripts/animate.py` (`scaffold`/`lint`/`contract`) +
+  two golden `examples/` (Text-only + LaTeX). The `lint` gives a computed 0–100 style score, gateable
+  in CI. Principle: **emit the composition, render locally** (`manim -qh`) — no cloud video API, no
+  bundled renderer. Validated: lint discriminates (slop 50/FAIL vs golden 100/PASS) and both goldens
+  render (LaTeX one via the home repo's Docker/CI). Home repo + ranked animation catalog:
+  github.com/wjlgatech/animate-anything. Distributed as `/sos:animate-anything`.
 - **New `/viral-loop` article + brand visuals: "I Built My Company's Brain in 2019 and Mistook It
   for a To-Do List."** Third in the physical-AI series. Resource allocation across departments framed
   as constrained optimization + Model Predictive Control, grounded in the author's 2019 `life_GPS`
