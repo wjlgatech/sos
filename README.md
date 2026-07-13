@@ -28,6 +28,16 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
 
 ## 📰 News
 
+- **2026-07-13** — **`/animate-anything` — a concept → a 3Blue1Brown-style explainer (plugin v1.8.0)**:
+  reverse-engineered Grant Sanderson's toolchain (ManimCommunity) + production style, then packaged a
+  tool an agent drives — scaffold a 3b1b-style Manim scene, **lint it 0–100** against the style contract
+  (the `#333333` warm-grey canvas, role-based palette, *morph-to-show-equivalence*, play→wait pacing),
+  render locally to MP4. Bundled engine [`scripts/animate.py`](plugins/sos/skills/animate-anything/scripts/animate.py)
+  (stdlib) + two golden [`examples/`](plugins/sos/skills/animate-anything/examples/) (Text + LaTeX). Validated:
+  lint discriminates (slop 50/FAIL vs golden 100/PASS) and both goldens render (incl. LaTeX in CI). Emit
+  the composition, render locally — no cloud video API. Home + ranked animation catalog:
+  [wjlgatech/animate-anything](https://github.com/wjlgatech/animate-anything). Use `/sos:animate-anything`.
+
 - **2026-07-05** — **`/viral-loop` gets the POSSE syndication kit (plugin v1.7.0)**: publish once on
   your own site, fan out everywhere. [`syndicate.mjs`](plugins/sos/skills/viral-loop/references/syndicate.mjs)
   (Node 18+, zero deps, no keys, deterministic) turns one canonical article + its live URL into a

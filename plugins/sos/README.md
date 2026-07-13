@@ -14,8 +14,8 @@ machine** (not just where they were built). Markdown skills + a command — no P
 Then the skills are available **namespaced** under `sos:` in every project on that machine:
 `/sos:goal-10x`, `/sos:ship-loop`, `/sos:lavish`, `/sos:treehouse`, `/sos:no-mistakes`,
 `/sos:freellmapi`, `/sos:living-knowledge`, `/sos:living-repo`, `/sos:knowledge-graph`,
-`/sos:dreammaketrue`, `/sos:free-llm`, `/sos:copilotkit`, `/sos:future-self`. Update with
-`/plugin marketplace update wjlgatech-plugins`.
+`/sos:dreammaketrue`, `/sos:free-llm`, `/sos:copilotkit`, `/sos:future-self`,
+`/sos:animate-anything`. Update with `/plugin marketplace update wjlgatech-plugins`.
 
 To also get the **bare** `/goal-10x` (no `sos:` prefix) on every machine, run the bundled
 bootstrap — it does both commands above *and* symlinks `~/.claude/commands/goal-10x.md` to the
@@ -67,6 +67,7 @@ and installing it across projects **and** computers.
 | `skills/dreammaketrue/`       | skill     | Drive the DreamMakeTrue Participation Engine via `dmt.py`: ingest any source, build knowledge maps + grounded avatars, `kgfy` one-shot living-knowledge artifacts.               |
 | `skills/free-llm/`     | skill     | Free LLMs for any agent (formerly nvidia-free-llm): NVIDIA NIM primary + the standing fallback chain NIM → Ollama → OpenRouter → Anthropic/OpenAI; `nim.py` probes the live catalog; `nim-bridge/` CORS proxy for browser apps.                                                      |
 | `skills/viral-loop/`   | skill     | **Closed-loop viral marketing** — loop engineering applied to media content: MAKE → AUTO-REVIEW (rubric ≥4/5) → 🔑 HUMAN GATE → PUBLISH+ENGAGE (drafted-never-sent replies) → MEASURE → LEARN. Backed by sos's `marketing_eval` engine when present (scores computed, never vibes); ledger fallback elsewhere. Drafts everything, sends nothing.                                                      |
+| `skills/animate-anything/` | skill | **Concept → a 3Blue1Brown-style animated explainer.** Reverse-engineered Grant Sanderson's toolchain (target ManimCommunity, not ManimGL) + production style (the `#333333` warm-grey canvas, role-based palette, *morph-to-show-equivalence*, play→wait pacing). Bundled engine `scripts/animate.py` (stdlib): scaffold a 5-beat scene, lint it 0–100 against the style contract (gate slop), render locally to MP4. Two golden `examples/` (Text + LaTeX). Emit-the-composition, render-locally — no cloud video API. Home repo + ranked animation catalog: [wjlgatech/animate-anything](https://github.com/wjlgatech/animate-anything). |
 | `scripts/install-goal-10x.sh` | installer | one-command cross-machine setup: add marketplace + install plugin + symlink the bare `/goal-10x` name. Idempotent; re-run per machine.                                            |
 | `scripts/install-doc-sync.sh` | installer | (bundled util, run manually) drops a CHANGELOG + pre-commit docs-sync guard into any git repo.                                                                                   |
 | `scripts/install-skills-global.sh` | installer | (run once per machine) symlinks these skills into Claude Code + Hermes global skill dirs from a clone — cross-agent, cross-machine availability without the marketplace.        |
