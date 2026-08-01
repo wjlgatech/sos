@@ -7,6 +7,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ### Added
 
+- **`/voice` skill (plugin v1.9.0)** — push-to-talk voice for any agent CLI, doctor-first. Recreated
+  and **simplified/decoupled** from the hermes-agent voice engine (`tools/voice_mode.py`, 1218 lines,
+  coupled to hermes internals) into ONE self-contained `scripts/voice.py` (stdlib; audio + STT/TTS
+  lazily imported). Subcommands: `doctor` (name the failing layer — audio / STT / TTS / env — and the
+  exact `pip`/`export` to fix it), `record` (mic → a 16 kHz mono WAV via stdlib `wave`, Enter/silence/
+  seconds stop), `transcribe` (local faster-whisper, no key, silence-hallucinations filtered),
+  `contract`. Principle (same as `/animate-anything`): **capture is bundled, the STT/TTS provider is a
+  seam you wire** — prefer a local model (no key, offline); never bundle a model or call a paid API.
+  Robustness recreated faithfully: **never crashes headless** (lazy audio import), honors **forwarded
+  audio** (`PULSE_SERVER`/`PIPEWIRE_REMOTE` over SSH/Docker/WSL), 16 kHz Whisper-native capture, drops
+  clips under 0.3 s / below the silence RMS floor. Validated: `doctor`/`contract`/graceful `record`
+  all run with **zero** audio deps installed (no traceback). Featured at the top of the README + skill
+  table. Reference: hermes-agent `tools/voice_mode.py`.
+
 - **`/animate-anything` skill (plugin v1.8.0)** — turn a concept into a 3Blue1Brown-style Manim
   explainer. Reverse-engineered Grant Sanderson's toolchain (target **ManimCommunity** `from manim
   import *`, not ManimGL) and production style (the `#333333` warm-grey canvas — the #1 tell, NOT pure

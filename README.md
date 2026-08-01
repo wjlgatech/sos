@@ -28,6 +28,17 @@ pip install -e ".[dev]" && make install-watchdog && make cost-audit
 
 ## 📰 News
 
+- **2026-08-01** — **`/voice` — push-to-talk voice for any agent, doctor-first (plugin v1.9.0)**:
+  recreated and simplified from the hermes-agent voice engine into one self-contained script
+  ([`scripts/voice.py`](plugins/sos/skills/voice/scripts/voice.py), stdlib) — record the mic → a 16 kHz
+  WAV → text **locally, no key** (faster-whisper), and speak replies back. Same principle as the plugin's
+  other tools: **capture is bundled, the STT/TTS provider is a seam you wire**. It leads with
+  **`voice.py doctor`** — voice fails silently from the *environment* (missing audio stack, headless box,
+  no provider) far more than from logic, so the diagnostic names the layer and the exact `pip`/`export`
+  to fix it, honors forwarded audio (SSH/Docker/WSL), and never crashes headless (audio libs lazy-imported).
+  Validated: `doctor`/`contract` run clean with zero audio deps; `record` degrades to a fix, not a
+  traceback. Use `/sos:voice`.
+
 - **2026-07-13** — **`/animate-anything` — a concept → a 3Blue1Brown-style explainer (plugin v1.8.0)**:
   reverse-engineered Grant Sanderson's toolchain (ManimCommunity) + production style, then packaged a
   tool an agent drives — scaffold a 3b1b-style Manim scene, **lint it 0–100** against the style contract

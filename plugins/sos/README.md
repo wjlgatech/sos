@@ -15,7 +15,7 @@ Then the skills are available **namespaced** under `sos:` in every project on th
 `/sos:goal-10x`, `/sos:ship-loop`, `/sos:lavish`, `/sos:treehouse`, `/sos:no-mistakes`,
 `/sos:freellmapi`, `/sos:living-knowledge`, `/sos:living-repo`, `/sos:knowledge-graph`,
 `/sos:dreammaketrue`, `/sos:free-llm`, `/sos:copilotkit`, `/sos:future-self`,
-`/sos:animate-anything`. Update with `/plugin marketplace update wjlgatech-plugins`.
+`/sos:animate-anything`, `/sos:voice`. Update with `/plugin marketplace update wjlgatech-plugins`.
 
 To also get the **bare** `/goal-10x` (no `sos:` prefix) on every machine, run the bundled
 bootstrap — it does both commands above *and* symlinks `~/.claude/commands/goal-10x.md` to the
@@ -51,8 +51,12 @@ and installing it across projects **and** computers.
 
 ## What's inside
 
+> **★ Newest — `/voice`** (v1.9.0): push-to-talk voice for any agent, doctor-first. Record the mic →
+> a WAV → text **locally, no key**; capture bundled, STT/TTS a seam you wire. Details in the table below.
+
 | Component                     | Type      | What it does                                                                                                                                                                     |
 | ----------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `skills/voice/`               | skill     | **★ `/sos:voice` — push-to-talk voice for any agent, doctor-first.** Recreated + simplified from the hermes-agent voice engine into one self-contained `scripts/voice.py` (stdlib): `doctor` (name the missing layer + the exact fix), `record` (mic → 16 kHz WAV), `transcribe` (local faster-whisper, no key). **Capture is bundled; STT/TTS are a wired seam.** Never crashes headless (audio libs lazy-imported); honors forwarded audio (SSH/Docker/WSL). |
 | `commands/goal-10x.md`        | command   | `/sos:goal-10x` — **the front door** (one loop, two gears): research codebase + user intention, coach via adaptive Q&A + ADEPT, drive to green, self-improve. Sequential gear by default; escalates to the parallel gear when work is decomposable. |
 | `commands/ship-loop.md`       | command   | `/sos:ship-loop` — **the parallel gear of goal-10x**: the Plan→Code→Validate fan-out composing lavish + treehouse + no-mistakes to drive a rough idea to audited PRs at volume. Agent-agnostic; invoke directly only for knowingly bulk work. |
 | `skills/lavish/`              | skill     | **Plan.** Turn a rough idea into an AI-ready **HTML** spec (queryable `data-*` requirements, machine-checkable acceptance, parallelization tags). Why HTML beats Markdown for specs. + `new-spec.sh` scaffold/validator. |
