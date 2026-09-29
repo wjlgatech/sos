@@ -75,6 +75,7 @@ and installing it across projects **and** computers.
 | `scripts/install-goal-10x.sh` | installer | one-command cross-machine setup: add marketplace + install plugin + symlink the bare `/goal-10x` name. Idempotent; re-run per machine.                                            |
 | `scripts/install-doc-sync.sh` | installer | (bundled util, run manually) drops a CHANGELOG + pre-commit docs-sync guard into any git repo.                                                                                   |
 | `scripts/install-skills-global.sh` | installer | (run once per machine) symlinks these skills into Claude Code + Hermes global skill dirs from a clone — cross-agent, cross-machine availability without the marketplace.        |
+| `scripts/install-voice.sh` | installer | (run once per machine) end-to-end `/voice` setup: symlink the skill, install the audio stack (mic + local no-key STT/TTS, PEP-668 aware), and wire a `talk` shell alias (push-to-talk → transcribe → clipboard). Idempotent. |
 | `instructions/claude-instructions.md` | config | Paul's personal operating instructions — the canonical copy of how Claude should work with him (voice, two-rail contract, focus protocol, hard mode, debug doctrine).       |
 | `scripts/install-claude-instructions.sh` | installer | per-machine: copy the instructions to `~/.claude/instructions-paul-wu.md` + add the `@` import line to `~/.claude/CLAUDE.md` so every session loads them. Idempotent.  |
 
